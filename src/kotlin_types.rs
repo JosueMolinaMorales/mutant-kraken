@@ -437,4 +437,10 @@ mod tests {
         let res = KotlinTypes::new("Not_valid_Type");
         assert!(res.is_err());
     }
+
+    #[test]
+    fn should_successfully_convert_kotlin_types_to_string() {
+        let res = KotlinTypes::ValueArgument.as_str();
+        assert!(res == "value_argument");
+    }
 }
