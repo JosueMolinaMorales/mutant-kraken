@@ -1,8 +1,11 @@
 use std::{fs::{File, self}, mem};
 
+use kotlin_types::KotlinTypes;
 use tree_sitter::{Parser, InputEdit};
 
-const KOTLIN_FILE: &str = include_str!("stack.kt");
+pub mod kotlin_types;
+
+const KOTLIN_FILE: &str = include_str!("bigger_examples.kt");
 
 fn main() {
     let mut parser = Parser::new();
@@ -12,7 +15,9 @@ fn main() {
     let mut cursor = parsed.walk();
     fs::copy("./src/stack.kt", "./stack_mutate.kt").unwrap();
     search_children(root_node, &mut cursor, " ", false);
+    println!("{}", KotlinTypes::AdditiveExpression.as_str());
 }
+
 
 fn search_children(
     root: tree_sitter::Node, 
@@ -30,23 +35,11 @@ fn search_children(
                     if i >= (node.end_byte() - node.start_byte()) {
                         break;
                     }
-                    println!("{} - {}", i, node.end_byte() - node.start_byte());
                     *b = new_op[i];
                 }
                 fs::write("./stack_mutate.kt", kt_file).unwrap();
-                // kt_file[0] = ">".as_bytes();
-                // kt_file.
-                // let edit = InputEdit {
-                //     start_byte: ,
-                //     old_end_byte: todo!(),
-                //     new_end_byte: todo!(),
-                //     start_position: todo!(),
-                //     old_end_position: todo!(),
-                //     new_end_position: todo!(),
-                // };
-                // node.edit(&edit);
-                println!("{}({} {} - {})", prefix, node.kind(), node.start_byte(), node.end_byte());
             }
+            println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
             search_children(
                 node, 
                 &mut cursor.clone(), 
