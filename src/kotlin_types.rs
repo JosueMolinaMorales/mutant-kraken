@@ -128,6 +128,7 @@ pub enum KotlinTypes {
     PropertyModifier,
     RealLiteral,
     ReificationModifier,
+    Error,
     NonNamedType(String)
 }
 
@@ -261,6 +262,7 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::RealLiteral => write!(f, "RealLiteral"),
             KotlinTypes::ReificationModifier => write!(f, "ReificationModifier"),
             KotlinTypes::NonNamedType(s) => write!(f, "{}", s),
+            KotlinTypes::Error => write!(f, "Error"),
         }
     }
 }
@@ -270,7 +272,7 @@ impl KotlinTypes {
         let binding: String = s
             .split('_')
             .map(|p| 
-                if p.len() > 0 { 
+                if p.len() > 0 && !NON_NAMED_TYPES.contains(&s) { 
                     let mut v: Vec<char> = p.chars().collect();
                     v[0] = v[0].to_uppercase().nth(0).unwrap();
                     let x: String = v.into_iter().collect();
@@ -406,11 +408,12 @@ impl KotlinTypes {
             "PropertyModifier" => KotlinTypes::PropertyModifier,
             "RealLiteral" => KotlinTypes::RealLiteral,
             "ReificationModifier" => KotlinTypes::ReificationModifier,
-            str => {
-                if !NON_NAMED_TYPES.contains(&str) {
-                    return Err(format!("{} is not a valid Kotlin type", str));
+            "ERROR" => KotlinTypes::Error,
+            unnamed => {
+                if !NON_NAMED_TYPES.contains(&unnamed) {
+                    return Err(format!("{} is not a valid Kotlin type", unnamed));
                 }
-                KotlinTypes::NonNamedType(str.to_string())
+                KotlinTypes::NonNamedType(unnamed.to_string())
             }
         };
         Ok(res)
