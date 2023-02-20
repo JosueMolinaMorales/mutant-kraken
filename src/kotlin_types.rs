@@ -1,5 +1,5 @@
 use std::fmt;
-
+const NON_NAMED_TYPES: [&str; 128] = ["!","!!","!=","!==","!in","\"","\"\"\"","#!","$","${","%","%=","&&","'","(",")","*","*=","+","++","+=",",","-","--","-=","->",".",".*","..","/","/=",":","::",";","<","<=","=","==","===",">",">=","?:","@","L","[","\\","]","abstract","actual","annotation","as","as?","break","break@","by","catch","class","companion","constructor","continue","continue@","crossinline","data","delegate","do","dynamic","else","enum","expect","external","false","field","file","final","finally","for","fun","get","if","import","in","infix","init","inline","inner","interface","internal","is","lateinit","noinline","null","object","open","operator","out","override","package","param","private","property","protected","public","receiver","return","return@","sealed","set","setparam","super","super@","suspend","tailrec","this","this@","throw","true","try","typealias","u","val","var","vararg","when","where","while","{","||","}"];
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum KotlinTypes {
     AdditiveExpression,
@@ -127,7 +127,8 @@ pub enum KotlinTypes {
     Label,
     PropertyModifier,
     RealLiteral,
-    ReificationModifier
+    ReificationModifier,
+    NonNamedType(String)
 }
 
 impl fmt::Display for KotlinTypes {
@@ -259,6 +260,7 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::PropertyModifier => write!(f, "PropertyModifier"),
             KotlinTypes::RealLiteral => write!(f, "RealLiteral"),
             KotlinTypes::ReificationModifier => write!(f, "ReificationModifier"),
+            KotlinTypes::NonNamedType(s) => write!(f, "{}", s),
         }
     }
 }
@@ -404,7 +406,12 @@ impl KotlinTypes {
             "PropertyModifier" => KotlinTypes::PropertyModifier,
             "RealLiteral" => KotlinTypes::RealLiteral,
             "ReificationModifier" => KotlinTypes::ReificationModifier,
-            _ => return Err(format!("Cannot convert {} to KotlinTypes", s))
+            str => {
+                if !NON_NAMED_TYPES.contains(&str) {
+                    return Err(format!("{} is not a valid Kotlin type", str));
+                }
+                KotlinTypes::NonNamedType(str.to_string())
+            }
         };
         Ok(res)
     }
@@ -424,6 +431,8 @@ impl KotlinTypes {
 
 #[cfg(test)]
 mod tests {
+    use crate::kotlin_types::NON_NAMED_TYPES;
+
     use super::KotlinTypes;
 
     #[test]
@@ -442,5 +451,19 @@ mod tests {
     fn should_successfully_convert_kotlin_types_to_string() {
         let res = KotlinTypes::ValueArgument.as_str();
         assert!(res == "value_argument");
+    }
+
+    #[test]
+    fn should_successfully_convert_non_named_type() {
+        let non_named_type = NON_NAMED_TYPES[0];
+        let res = KotlinTypes::new(non_named_type).unwrap();
+        assert!(res == KotlinTypes::NonNamedType(non_named_type.to_string()));
+    }
+
+    #[test]
+    fn should_successfully_convert_non_named_type_to_string() {
+        let non_named_type = NON_NAMED_TYPES[0];
+        let res = KotlinTypes::NonNamedType(non_named_type.to_string()).as_str();
+        assert!(res == non_named_type.to_string());
     }
 }

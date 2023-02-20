@@ -27,6 +27,7 @@ fn search_children(
     root
         .children(&mut cursor.clone())
         .for_each(|node| {
+            let node_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
             if parent_was_comp_exp && node.kind() == "<" {
                 let new_op = ">".as_bytes();
                 let mut kt_file: Vec<u8> = KOTLIN_FILE.as_bytes().iter().map(|b| *b).collect();
