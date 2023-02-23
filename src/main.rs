@@ -1,5 +1,5 @@
-use std::{fs, path::PathBuf};
-use clap::{Parser, Subcommand, Args};
+use std::{fs, path::{self, Path}};
+use clap::{Parser, Subcommand, Args, CommandFactory, error::ErrorKind};
 use kotlin_types::KotlinTypes;
 
 pub mod kotlin_types;
@@ -8,12 +8,12 @@ pub mod kotlin_types;
 enum Commands {
     Mutate(MutationCommandConfig),
 }
-
+const ABOUT: &str = include_str!("./about.txt");
 #[derive(Parser, Debug)]
 #[command(
     author, 
     version, 
-    about="KodeKraken", 
+    about = ABOUT, 
     long_about = None
 )]
 struct Cli {
@@ -23,88 +23,83 @@ struct Cli {
 
 #[derive(Args, Debug, Clone)]
 struct MutationCommandConfig {
+    /// The path to the files to be mutated
+    /// Error will be thrown if the path is not a directory
+    path: String,
+}
+
+#[derive(Debug)]
+struct FileMutations {
+    mutations: Vec<Mutation>,
     file: String,
+}
+
+struct CliError {
+    kind: ErrorKind,
+    message: String,
 }
 
 fn main() {
     let args = Cli::parse();
-    println!("{:?}", args);
-    // let command = get_command(std::env::args().collect());
-    // match command {
-    //     Commands::Mutate(config) => {
-    //         mutate(config);
-    //     },
-    //     Commands::Help => {
-    //         print_help_message();
-    //     }
-    // }
-}
-
-/// Get the command from the command line arguments
-fn get_command(args: Vec<String>) -> Commands {
-    if args.len() < 2 {
-        println!("No command provided");
-        print_help_message();
-        std::process::exit(1);
-    }
-    let command = args.get(1).expect("No command provided");
-    let command = match command.as_str() {
-        "mutate" => {
-            let file = args.get(2).expect("No file provided");
-            if file == "--help" || file == "-h" {
-                print_mutate_help_message();
-                std::process::exit(0);
+    match args.command {
+        Commands::Mutate(config) => {
+            // Check if config.path is a directory
+            if !path::Path::new(config.path.as_str()).is_dir() {
+                Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
             }
-            // Check if file exists
-            if !PathBuf::from(file).exists() {
-                panic!("File does not exist");
+            if let Some(error) = mutate(config).err() {
+                Cli::command().error(error.kind, error.message).exit();
             }
-            Commands::Mutate(MutationCommandConfig {
-                file: file.trim().to_string(),
-            })
         },
-        _ => {
-            println!("Unknown command: {}", command);
-            print_help_message();
-            std::process::exit(1);
-        }
-    };
-    command
-
+    }
 }
 
-fn print_mutate_help_message() {
-    println!("Usage: kotlin-mutator mutate <file>");
-    println!("Mutate the given file");
-}
-
-fn print_help_message() {
-    println!("Usage: kotlin-mutator <command> [options]");
-    println!("Commands:");
-    println!("    mutate <file> - Mutate the given file");
-    println!("    help - Print this help message");
-}
-
-fn mutate(config: MutationCommandConfig) {
+fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
     let mut parser = tree_sitter::Parser::new();
     parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
-    let kotlin_file = fs::read_to_string(&config.file).expect("File Not Found!");
-    let parsed = parser.parse(&kotlin_file, None).unwrap();
-    let root_node = parsed.root_node();
-    let mut cursor = parsed.walk();
+    let mut file_mutations: Vec<FileMutations> = vec![];
+    let directory = Path::new(config.path.as_str())
+        .read_dir()
+        .map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
 
-    let mut mutations_made = Vec::new();
-    search_children(
-        root_node, 
-        &mut cursor, 
-        " ", 
-        false, 
-        &mut mutations_made,
-        kotlin_file.to_string(),
-        format!("./examples/mutations/{}", config.file.split("/").last().expect("Failed to get file name"))
-    );
-    println!("Mutations made: {:#?}", mutations_made)
+    for entry in directory {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        // Refactoring for a directory will be needed
+        if !path.is_file() {
+            continue;
+        }
+
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+        if !file_name.ends_with(".kt") {
+            continue;
+        }
+        // prepend mutation to file name
+        let file_name = format!("mutation_{}", file_name);
+        let file = fs::read_to_string(path.clone()).expect("File Not Found!");
+        let parsed = parser.parse(&file, None).unwrap();
+        let root_node = parsed.root_node();
+        let mut cursor = parsed.walk();
+
+        let mut mutations_made = Vec::new();
+        search_children(
+            root_node, 
+            &mut cursor, 
+            " ", 
+            false, 
+            &mut mutations_made,
+            file.to_string(),
+            format!("./examples/mutations/{}", file_name)
+        );
+        file_mutations.push(FileMutations {
+            mutations: mutations_made,
+            file: file_name.to_string(),
+        });
+    }
+
+    println!("File Mutations: {:#?}", file_mutations);
+    Ok(())
 }
 
 #[derive(Debug)]
@@ -155,7 +150,7 @@ fn search_children(
                     *b = new_op[i];
                 }
                 fs::write(&output_file, mutated_file).unwrap();
-                kt_file = fs::read_to_string("./examples/mutations/bigger_examples_mutate.kt").unwrap();
+                kt_file = fs::read_to_string(&output_file).unwrap();
                 mutations_made.push(Mutation::new(node.start_byte(), node.end_byte(), "!=".to_string(), "==".to_string()));
             }
             println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
@@ -174,44 +169,11 @@ fn search_children(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clap::CommandFactory;
 
     #[test]
-    fn test_get_command() {
-        let args = vec!["kotlin-mutator".to_string(), "mutate".to_string(), "./examples/bigger_examples.kt".to_string()];
-        let command = get_command(args);
-        match command {
-            Commands::Mutate(config) => {
-                assert_eq!(config.file, "./examples/bigger_examples.kt");
-            },
-            _ => panic!("Expected mutate command"),
-        }
+    fn verify_cli_parse() {
+        Cli::command().debug_assert();
     }
 
-    #[test]
-    #[should_panic]
-    fn test_get_command_no_command() {
-        let args = vec!["kotlin-mutator".to_string()];
-        get_command(args);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_get_command_unknown_command() {
-        let args = vec!["kotlin-mutator".to_string(), "unknown".to_string()];
-        get_command(args);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_get_command_no_file() {
-        let args = vec!["kotlin-mutator".to_string(), "mutate".to_string()];
-        get_command(args);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_get_command_file_does_not_exist() {
-        let args = vec!["kotlin-mutator".to_string(), "mutate".to_string(), "./examples/does_not_exist.kt".to_string()];
-        get_command(args);
-    }
 }
