@@ -1,28 +1,43 @@
 use std::{fs, path::PathBuf};
+use clap::{Parser, Subcommand, Args};
 use kotlin_types::KotlinTypes;
-use tree_sitter::Parser;
 
 pub mod kotlin_types;
 
+#[derive(Subcommand, Debug, Clone)]
 enum Commands {
     Mutate(MutationCommandConfig),
-    Help
 }
 
+#[derive(Parser, Debug)]
+#[command(
+    author, 
+    version, 
+    about="KodeKraken", 
+    long_about = None
+)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Args, Debug, Clone)]
 struct MutationCommandConfig {
     file: String,
 }
 
 fn main() {
-    let command = get_command(std::env::args().collect());
-    match command {
-        Commands::Mutate(config) => {
-            mutate(config);
-        },
-        Commands::Help => {
-            print_help_message();
-        }
-    }
+    let args = Cli::parse();
+    println!("{:?}", args);
+    // let command = get_command(std::env::args().collect());
+    // match command {
+    //     Commands::Mutate(config) => {
+    //         mutate(config);
+    //     },
+    //     Commands::Help => {
+    //         print_help_message();
+    //     }
+    // }
 }
 
 /// Get the command from the command line arguments
@@ -48,7 +63,6 @@ fn get_command(args: Vec<String>) -> Commands {
                 file: file.trim().to_string(),
             })
         },
-        "help" => Commands::Help,
         _ => {
             println!("Unknown command: {}", command);
             print_help_message();
@@ -72,7 +86,7 @@ fn print_help_message() {
 }
 
 fn mutate(config: MutationCommandConfig) {
-    let mut parser = Parser::new();
+    let mut parser = tree_sitter::Parser::new();
     parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
     let kotlin_file = fs::read_to_string(&config.file).expect("File Not Found!");
