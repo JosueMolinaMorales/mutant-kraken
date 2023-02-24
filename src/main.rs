@@ -6,7 +6,11 @@ pub mod kotlin_types;
 
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
+    /// Mutate the files in the given path
     Mutate(MutationCommandConfig),
+
+    /// Clear the output directory of all files
+    ClearOutputDirectory,
 }
 const ABOUT: &str = include_str!("./about.txt");
 #[derive(Parser, Debug)]
@@ -19,6 +23,14 @@ const ABOUT: &str = include_str!("./about.txt");
 struct Cli {
     #[command(subcommand)]
     command: Commands,
+
+    /// Print out verbose information
+    #[clap(short, long, default_value = "false")]
+    verbose: bool,
+
+    /// The path to the output directory
+    #[clap(short, long, default_value = "./examples/mutations/")]
+    output_directory: String,
 }
 
 #[derive(Args, Debug, Clone)]
@@ -47,14 +59,22 @@ fn main() {
             if !path::Path::new(config.path.as_str()).is_dir() {
                 Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
             }
-            if let Some(error) = mutate(config).err() {
+            if let Some(error) = mutate(config, args.output_directory).err() {
                 Cli::command().error(error.kind, error.message).exit();
             }
         },
+        Commands::ClearOutputDirectory => clear_output_directory(args.output_directory),
     }
 }
 
-fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
+fn clear_output_directory(ouptut_directory: String) {
+    let dir = Path::new(ouptut_directory.as_str());
+    if dir.exists() {
+        fs::remove_dir_all(dir).unwrap();
+    }
+}
+
+fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(), CliError> {
     let mut parser = tree_sitter::Parser::new();
     parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
@@ -62,6 +82,12 @@ fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
     let directory = Path::new(config.path.as_str())
         .read_dir()
         .map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
+
+    // Check to see if the output directory exists if not create it
+    let output_dir = Path::new(ouptut_directory.as_str());
+    if !output_dir.exists() {
+        fs::create_dir_all(output_dir).unwrap();
+    }
 
     for entry in directory {
         let entry = entry.unwrap();
@@ -83,6 +109,9 @@ fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
         let mut cursor = parsed.walk();
 
         let mut mutations_made = Vec::new();
+        println!("File: {}", output_dir.join(&file_name).display());
+        // Write file to mutation folder
+        fs::write(output_dir.join(&file_name), file.clone()).unwrap();
         search_children(
             root_node, 
             &mut cursor, 
@@ -90,7 +119,7 @@ fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
             false, 
             &mut mutations_made,
             file.to_string(),
-            format!("./examples/mutations/{}", file_name)
+            format!("{}", output_dir.join(&file_name).display())
         );
         file_mutations.push(FileMutations {
             mutations: mutations_made,
@@ -107,15 +136,23 @@ fn mutate(config: MutationCommandConfig) -> Result<(), CliError> {
 struct Mutation {
     start_byte: usize,
     end_byte: usize,
+    line_number: usize,
     new_op: String,
     old_op: String,
 }
 
 impl Mutation {
-    pub fn new(start_byte: usize, end_byte: usize, new_op: String, old_op: String) -> Self {
+    pub fn new(
+        start_byte: usize, 
+        end_byte: usize, 
+        new_op: String,
+        old_op: String,
+        line_number: usize,
+    ) -> Self {
         Self {
             start_byte,
             end_byte,
+            line_number,
             new_op,
             old_op,
         }
@@ -132,7 +169,6 @@ fn search_children(
     kt_file: String,
     output_file: String,
 ) {
-    let mut kt_file = kt_file;
     root
         .children(&mut cursor.clone())
         .for_each(|node| {
@@ -150,10 +186,17 @@ fn search_children(
                     *b = new_op[i];
                 }
                 fs::write(&output_file, mutated_file).unwrap();
-                kt_file = fs::read_to_string(&output_file).unwrap();
-                mutations_made.push(Mutation::new(node.start_byte(), node.end_byte(), "!=".to_string(), "==".to_string()));
+                mutations_made.push(Mutation::new(
+                    node.start_byte(), 
+                    node.end_byte(), 
+                    "!=".to_string(), 
+                    "==".to_string(),
+                    node.start_position().row + 1,
+                ));
             }
-            println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
+            // println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
+            let kt_file = fs::read_to_string(&output_file).unwrap();
+
             search_children(
                 node, 
                 &mut cursor.clone(), 
