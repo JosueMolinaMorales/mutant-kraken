@@ -261,7 +261,7 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::PropertyModifier => write!(f, "PropertyModifier"),
             KotlinTypes::RealLiteral => write!(f, "RealLiteral"),
             KotlinTypes::ReificationModifier => write!(f, "ReificationModifier"),
-            KotlinTypes::NonNamedType(s) => write!(f, "{}", s),
+            KotlinTypes::NonNamedType(s) => write!(f, "{s}"),
             KotlinTypes::Error => write!(f, "Error"),
         }
     }
@@ -272,9 +272,9 @@ impl KotlinTypes {
         let binding: String = s
             .split('_')
             .map(|p| 
-                if p.len() > 0 && !NON_NAMED_TYPES.contains(&s) { 
+                if !p.is_empty() && !NON_NAMED_TYPES.contains(&s) { 
                     let mut v: Vec<char> = p.chars().collect();
-                    v[0] = v[0].to_uppercase().nth(0).unwrap();
+                    v[0] = v[0].to_uppercase().next().unwrap();
                     let x: String = v.into_iter().collect();
                     x
                 } else { p.to_string() }
@@ -411,7 +411,7 @@ impl KotlinTypes {
             "ERROR" => KotlinTypes::Error,
             unnamed => {
                 if !NON_NAMED_TYPES.contains(&unnamed) {
-                    return Err(format!("{} is not a valid Kotlin type", unnamed));
+                    return Err(format!("{unnamed} is not a valid Kotlin type",));
                 }
                 KotlinTypes::NonNamedType(unnamed.to_string())
             }

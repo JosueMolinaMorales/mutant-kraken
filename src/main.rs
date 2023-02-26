@@ -102,7 +102,7 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
             continue;
         }
         // prepend mutation to file name
-        let file_name = format!("mutation_{}", file_name);
+        let file_name = format!("mutation_{file_name}",);
         let file = fs::read_to_string(path.clone()).expect("File Not Found!");
         let parsed = parser.parse(&file, None).unwrap();
         let root_node = parsed.root_node();
@@ -127,7 +127,7 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
         });
     }
 
-    println!("File Mutations: {:#?}", file_mutations);
+    println!("File Mutations: {file_mutations:#?}",);
     Ok(())
 }
 
@@ -178,7 +178,7 @@ fn search_children(
                 //       to account for the fact that the start and end
                 //       bytes will change as we insert new mutants
                 let new_op = "!=".as_bytes();
-                let mut mutated_file: Vec<u8> = kt_file.as_bytes().iter().map(|b| *b).collect();
+                let mut mutated_file: Vec<u8> = kt_file.as_bytes().to_vec();
                 for (i, b) in mutated_file.iter_mut().skip(node.start_byte()).enumerate() {
                     if i >= (node.end_byte() - node.start_byte()) {
                         break;
@@ -200,10 +200,10 @@ fn search_children(
             search_children(
                 node, 
                 &mut cursor.clone(), 
-                &format!("    {}", prefix),
+                &format!("    {prefix}"),
                 node_type == KotlinTypes::ComparisonExpression || node_type == KotlinTypes::EqualityExpression,
                 mutations_made,
-                kt_file.clone(),
+                kt_file,
                 output_file.clone()
             )
         })
