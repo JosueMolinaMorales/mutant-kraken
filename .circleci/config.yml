@@ -1,0 +1,20 @@
+version: 2.1
+
+orbs:
+  rust: circleci/rust@1.6.0
+
+jobs:
+  build-app:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+        - checkout
+        - rust/install
+        - run:
+            name: Build project
+            command: |-
+              cargo build --releases
+workflows:
+  build-function:
+    jobs:
+      - build-app
