@@ -10,10 +10,9 @@ jobs:
     steps:
         - checkout
         - rust/install
-        - run:
-            name: Build project
-            command: |-
-              cargo build --releases
+        - rust/build:
+            release: true
+        - rust/test
 workflows:
   build-function:
     jobs:
