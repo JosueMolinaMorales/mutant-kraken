@@ -59,12 +59,46 @@ fn main() {
             if !path::Path::new(config.path.as_str()).is_dir() {
                 Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
             }
-            if let Some(error) = mutate(config, args.output_directory).err() {
+            let mut existing_files: Vec<String> = vec![];
+            if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
                 Cli::command().error(error.kind, error.message).exit();
             }
+            // if let Some(error) = mutate(config, args.output_directory).err() {
+            //     Cli::command().error(error.kind, error.message).exit();
+            // }
+            println!("Existing Files: {:#?}", existing_files);
         },
         Commands::ClearOutputDirectory => clear_output_directory(args.output_directory),
     }
+}
+
+/*
+    Take in path to directory and get all files that end with .kt
+*/
+fn get_files_from_directory(path: String, existing_files: &mut Vec<String>) -> Result<(), CliError> {
+    let directory = Path::new(path.as_str())
+        .read_dir()
+        .map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
+    for entry in directory {
+        let entry = entry.map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
+        let path = entry.path();
+        if path.is_dir() {
+            get_files_from_directory(
+                path
+                    .to_str()
+                    .ok_or_else(|| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?
+                    .to_string(), 
+                existing_files
+            )?;
+            continue;
+        }
+        if path.extension() != Some("kt".as_ref()) {
+            continue;
+        }
+        existing_files.push(path.to_str().unwrap().to_string());
+    }
+
+    Ok(())
 }
 
 fn clear_output_directory(ouptut_directory: String) {
