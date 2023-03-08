@@ -1,8 +1,10 @@
 use std::{fs, path::{self, Path}};
 use clap::{Parser, Subcommand, Args, CommandFactory, error::ErrorKind};
 use kotlin_types::KotlinTypes;
+use mutation_operators::MutationOperators;
 
 pub mod kotlin_types;
+pub mod mutation_operators;
 
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
@@ -52,7 +54,16 @@ struct CliError {
 }
 
 fn main() {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_target(false)
+        .init();
     let args = Cli::parse();
+    let verbose = args.verbose;
+    if verbose {
+        tracing::info!("Verbose Mode Enabled");
+        tracing::info!("Starting Mutation Testing Tool");
+    }
     match args.command {
         Commands::Mutate(config) => {
             // Check if config.path is a directory
@@ -63,10 +74,31 @@ fn main() {
             if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
                 Cli::command().error(error.kind, error.message).exit();
             }
+            if verbose {
+                tracing::debug!("Files found from path: {:#?}", existing_files);
+            }
+
+            let mut parser = tree_sitter::Parser::new();
+            parser.set_language(tree_sitter_kotlin::language()).unwrap();
+
+            let mut file_mutations: Vec<FileMutations> = vec![];
+            let mutation_operators = mutation_operators::AllMutationOperators::new();
+            for mut_op in mutation_operators {
+                if mut_op != MutationOperators::RelationalOperator {
+                    continue
+                }
+                for file in existing_files.clone() {
+                    // Get a list of mutations that can be made
+                    let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
+                    let mut mutations = mut_op.find_mutation(ast);
+                    println!("Mutations for file {}: {:#?}", file, mutations);
+                }
+            }
+
             // if let Some(error) = mutate(config, args.output_directory).err() {
             //     Cli::command().error(error.kind, error.message).exit();
             // }
-            println!("Existing Files: {:#?}", existing_files);
+            // println!("Existing Files: {:#?}", existing_files);
         },
         Commands::ClearOutputDirectory => clear_output_directory(args.output_directory),
     }
@@ -167,7 +199,7 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
 
 #[derive(Debug)]
 #[allow(dead_code)]
-struct Mutation {
+pub struct Mutation {
     start_byte: usize,
     end_byte: usize,
     line_number: usize,

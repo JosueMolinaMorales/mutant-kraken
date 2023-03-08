@@ -1,6 +1,6 @@
 use std::fmt;
 const NON_NAMED_TYPES: [&str; 128] = ["!","!!","!=","!==","!in","\"","\"\"\"","#!","$","${","%","%=","&&","'","(",")","*","*=","+","++","+=",",","-","--","-=","->",".",".*","..","/","/=",":","::",";","<","<=","=","==","===",">",">=","?:","@","L","[","\\","]","abstract","actual","annotation","as","as?","break","break@","by","catch","class","companion","constructor","continue","continue@","crossinline","data","delegate","do","dynamic","else","enum","expect","external","false","field","file","final","finally","for","fun","get","if","import","in","infix","init","inline","inner","interface","internal","is","lateinit","noinline","null","object","open","operator","out","override","package","param","private","property","protected","public","receiver","return","return@","sealed","set","setparam","super","super@","suspend","tailrec","this","this@","throw","true","try","typealias","u","val","var","vararg","when","where","while","{","||","}"];
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum KotlinTypes {
     AdditiveExpression,
     AnnotatedLambda,
