@@ -410,6 +410,9 @@ impl KotlinTypes {
             "ReificationModifier" => KotlinTypes::ReificationModifier,
             "ERROR" => KotlinTypes::Error,
             unnamed => {
+                if unnamed == " " {
+                    return Ok(KotlinTypes::NonNamedType("REMOVE".to_string()));
+                }
                 if !NON_NAMED_TYPES.contains(&unnamed) {
                     return Err(format!("{unnamed} is not a valid Kotlin type",));
                 }

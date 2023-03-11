@@ -1,4 +1,4 @@
-
+/*
 fun main() {
 	// Given a string containing brackets of 4 types: (), [], {}, <>
 	// Check whether brackets are in the correct sequence, ignore all other characters
@@ -45,15 +45,73 @@ fun isBracketSequenceCorrect(line: String): Int {
     }
     return if (stack.isEmpty()) 1 else 0
 }
+*/
 
-fun comparisons() {
-    val x = 10
-    val y = 11
-    if (x < y) {
-        println("X is less than Y")
+fun main() {
+    // Arithmetic expressions
+    val a = 10
+    val b = 3
+    val c = a + b
+    val d = a - b
+    val e = a * b
+    val f = a / b
+    val g = a % b
+
+    // Assignment operators
+    var h = 5
+    h += 3
+    h -= 1
+    h *= 2
+    h /= 4
+    h %= 2
+
+    // Conditional operators
+    val i = 7
+    val j = 8
+    val k = if (i < j) i else j
+    val l = if (i > j) i else j
+    val m = if (i <= j) i else j
+    val n = if (i >= j) i else j
+    val o = if (i == j) i else j
+    val p = if (i != j) i else j
+
+    // Loops
+    for (q in 1..5) {
+        println(q)
     }
-    
-    if (x == y) {
-        println("X equals Y")
+
+    var r = 0
+    while (r < 5) {
+        r++
+        println(r)
     }
+
+    var s = 0
+    do {
+        s++
+        println(s)
+    } while (s < 5)
+
+    // Logical expressions
+    val t = true
+    val u = false
+    val v = t && u
+    val w = t || u
+    val x = !t
+
+    println(c)
+    println(d)
+    println(e)
+    println(f)
+    println(g)
+    println(h)
+    println(k)
+    println(l)
+    println(m)
+    println(n)
+    println(o)
+    println(p)
+    println(v)
+    println(w)
+    println(x)
 }

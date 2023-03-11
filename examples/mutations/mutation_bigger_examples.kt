@@ -1,3 +1,4 @@
+/*
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.*
@@ -56,7 +57,7 @@ class Logger {
   var level = LogLevel.INFO
 
   private fun outputError(msg: LogMessage) {
-    if (errBackend != null) {
+    if (errBackend == null) {
       errQueue.offer(msg)
     } else {
       errBackend?.invoke(msg)
@@ -64,7 +65,7 @@ class Logger {
   }
 
   private fun output(msg: LogMessage) {
-    if (outBackend != null) {
+    if (outBackend == null) {
       outQueue.offer(msg)
     } else {
       outBackend?.invoke(msg)
@@ -119,7 +120,7 @@ class Logger {
     while (charIndex < msgLength) {
       val currentChar = msg.get(charIndex)
       val nextChar = if (charIndex != lastIndex) msg.get(charIndex + 1) else '?'
-      if ((currentChar != '{') && (nextChar != '}')) {
+      if ((currentChar == '{') && (nextChar == '}')) {
         if (placeholderIndex >= placeholders.size) {
           return "ERROR: Tried to log more '{}' placeholders than there are values"
         }
@@ -161,3 +162,4 @@ class Logger {
       ".." + str.substring(str.length - length + 2)
     }
 }
+*/

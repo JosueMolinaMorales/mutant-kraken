@@ -48,6 +48,7 @@ struct FileMutations {
     file: String,
 }
 
+#[derive(Debug)]
 struct CliError {
     kind: ErrorKind,
     message: String,
@@ -70,30 +71,31 @@ fn main() {
             if !path::Path::new(config.path.as_str()).is_dir() {
                 Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
             }
-            let mut existing_files: Vec<String> = vec![];
-            if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
-                Cli::command().error(error.kind, error.message).exit();
-            }
-            if verbose {
-                tracing::debug!("Files found from path: {:#?}", existing_files);
-            }
+            mutate(config, args.output_directory).unwrap();
+            // let mut existing_files: Vec<String> = vec![];
+            // if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
+            //     Cli::command().error(error.kind, error.message).exit();
+            // }
+            // if verbose {
+            //     tracing::debug!("Files found from path: {:#?}", existing_files);
+            // }
 
-            let mut parser = tree_sitter::Parser::new();
-            parser.set_language(tree_sitter_kotlin::language()).unwrap();
+            // let mut parser = tree_sitter::Parser::new();
+            // parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
-            let mut file_mutations: Vec<FileMutations> = vec![];
-            let mutation_operators = mutation_operators::AllMutationOperators::new();
-            for mut_op in mutation_operators {
-                if mut_op != MutationOperators::RelationalOperator {
-                    continue
-                }
-                for file in existing_files.clone() {
-                    // Get a list of mutations that can be made
-                    let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
-                    let mut mutations = mut_op.find_mutation(ast);
-                    println!("Mutations for file {}: {:#?}", file, mutations);
-                }
-            }
+            // let mut file_mutations: Vec<FileMutations> = vec![];
+            // let mutation_operators = mutation_operators::AllMutationOperators::new();
+            // for mut_op in mutation_operators {
+            //     if mut_op != MutationOperators::RelationalOperator {
+            //         continue
+            //     }
+            //     for file in existing_files.clone() {
+            //         // Get a list of mutations that can be made
+            //         let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
+            //         let mut mutations = mut_op.find_mutation(ast);
+            //         println!("Mutations for file {}: {:#?}", file, mutations);
+            //     }
+            // }
 
             // if let Some(error) = mutate(config, args.output_directory).err() {
             //     Cli::command().error(error.kind, error.message).exit();
@@ -260,7 +262,7 @@ fn search_children(
                     node.start_position().row + 1,
                 ));
             }
-            // println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
+            println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
             let kt_file = fs::read_to_string(&output_file).unwrap();
 
             search_children(

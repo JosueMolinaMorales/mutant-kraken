@@ -1,3 +1,4 @@
+/*
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.*
@@ -161,3 +162,4 @@ class Logger {
       ".." + str.substring(str.length - length + 2)
     }
 }
+*/
