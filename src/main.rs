@@ -1,10 +1,12 @@
 use std::{fs, path::{self, Path}, collections::HashMap};
 use clap::{Parser, Subcommand, Args, CommandFactory, error::ErrorKind};
 use kotlin_types::KotlinTypes;
+use mutate::Mutation;
 use mutation_operators::MutationOperators;
 
 pub mod kotlin_types;
 pub mod mutation_operators;
+pub mod mutate;
 
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
@@ -36,7 +38,7 @@ struct Cli {
 }
 
 #[derive(Args, Debug, Clone)]
-struct MutationCommandConfig {
+pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
     path: String,
@@ -48,7 +50,7 @@ struct FileMutations {
 }
 
 #[derive(Debug)]
-struct CliError {
+pub struct CliError {
     kind: ErrorKind,
     message: String,
 }
@@ -66,72 +68,10 @@ fn main() {
     }
     match args.command {
         Commands::Mutate(config) => {
-            // Check if config.path is a directory
-            if !path::Path::new(config.path.as_str()).is_dir() {
-                Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
-            }
-            // mutate(config, args.output_directory).unwrap();
-            let mut existing_files: Vec<String> = vec![];
-            if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
-                Cli::command().error(error.kind, error.message).exit();
-            }
-            if verbose {
-                tracing::debug!("Files found from path: {:#?}", existing_files);
-            }
-
-            let mut parser = tree_sitter::Parser::new();
-            parser.set_language(tree_sitter_kotlin::language()).unwrap();
-
-            let mut file_mutations: HashMap<String,FileMutations> = HashMap::new();
-            let mutation_operators = mutation_operators::AllMutationOperators::new();
-            for mut_op in mutation_operators {
-                for file in existing_files.clone() {
-                    // Get a list of mutations that can be made
-                    let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
-                    let mutations = mut_op.find_mutation(ast);
-                    file_mutations.entry(file.clone()).or_insert(FileMutations {
-                        mutations: mutations.clone(),
-                    }).mutations.extend(mutations);
-                }
-            }
-            println!("File Mutations: {:#?}", file_mutations);
-
-            // if let Some(error) = mutate(config, args.output_directory).err() {
-            //     Cli::command().error(error.kind, error.message).exit();
-            // }
-            // println!("Existing Files: {:#?}", existing_files);
+            mutate::MutationTool::new(args.verbose, config).mutate();
         },
         Commands::ClearOutputDirectory => clear_output_directory(args.output_directory),
     }
-}
-
-/*
-    Take in path to directory and get all files that end with .kt
-*/
-fn get_files_from_directory(path: String, existing_files: &mut Vec<String>) -> Result<(), CliError> {
-    let directory = Path::new(path.as_str())
-        .read_dir()
-        .map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
-    for entry in directory {
-        let entry = entry.map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
-        let path = entry.path();
-        if path.is_dir() {
-            get_files_from_directory(
-                path
-                    .to_str()
-                    .ok_or_else(|| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?
-                    .to_string(), 
-                existing_files
-            )?;
-            continue;
-        }
-        if path.extension() != Some("kt".as_ref()) {
-            continue;
-        }
-        existing_files.push(path.to_str().unwrap().to_string());
-    }
-
-    Ok(())
 }
 
 fn clear_output_directory(ouptut_directory: String) {
@@ -195,38 +135,6 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
 
     println!("File Mutations: {file_mutations:#?}",);
     Ok(())
-}
-
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub struct Mutation {
-    start_byte: usize,
-    end_byte: usize,
-    line_number: usize,
-    new_op: String,
-    old_op: String,
-    mutation_type: MutationOperators,
-}
-
-impl Mutation {
-    pub fn new(
-        start_byte: usize, 
-        end_byte: usize, 
-        new_op: String,
-        old_op: String,
-        line_number: usize,
-        mutation_type: MutationOperators,
-    ) -> Self {
-        Self {
-            start_byte,
-            end_byte,
-            line_number,
-            new_op,
-            old_op,
-            mutation_type,
-        }
-    }
-
 }
 
 fn search_children(
