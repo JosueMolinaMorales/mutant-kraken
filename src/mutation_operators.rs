@@ -9,7 +9,7 @@ pub struct AllMutationOperators {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MutationOperators {
     ArthimeticOperator,
-    ArthimeticRemovalOperator,
+    UnaryRemovalOperator,
     LogicalOperator,
     RelationalOperator,
     AssignmentOperator,
@@ -28,13 +28,11 @@ impl MutationOperators {
                     KotlinTypes::NonNamedType("%".to_string()),
                 ].into_iter().collect()
             },
-            MutationOperators::ArthimeticRemovalOperator => {
+            MutationOperators::UnaryRemovalOperator => {
                 vec![
                     KotlinTypes::NonNamedType("+".to_string()),
                     KotlinTypes::NonNamedType("-".to_string()),
-                    KotlinTypes::NonNamedType("*".to_string()),
-                    KotlinTypes::NonNamedType("/".to_string()),
-                    KotlinTypes::NonNamedType("%".to_string()),
+                    KotlinTypes::NonNamedType("!".to_string()),
                 ].into_iter().collect()
             },
             MutationOperators::LogicalOperator => {
@@ -68,7 +66,7 @@ impl MutationOperators {
                     KotlinTypes::NonNamedType("!".to_string()),
                     KotlinTypes::NonNamedType("++".to_string()),
                     KotlinTypes::NonNamedType("--".to_string()),
-                    KotlinTypes::NonNamedType(" ".to_string())
+                    KotlinTypes::RemoveOperator,
                 ].into_iter().collect()
             },
         }
@@ -81,7 +79,10 @@ impl MutationOperators {
                     KotlinTypes::AdditiveExpression,
                     KotlinTypes::MultiplicativeExpression,
                 ],
-            MutationOperators::ArthimeticRemovalOperator => todo!(),
+            MutationOperators::UnaryRemovalOperator => 
+                vec![
+                    KotlinTypes::PrefixExpression,
+                ],
             MutationOperators::LogicalOperator => 
                 vec![
                     KotlinTypes::ConjunctionExpression,
@@ -126,7 +127,6 @@ impl MutationOperators {
         .for_each(|node| {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
             let parent_type = parent.map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
-            // tracing::debug!("Root: {:?}, Parent: {:?}", root_type, parent_type);
             self.mutate_operator(
                 &root,
                 &root_type,
@@ -169,6 +169,11 @@ impl MutationOperators {
         }
         let mut random_operator;
         loop {
+            if *self == MutationOperators::UnaryRemovalOperator {
+                // If the operator is a unary removal operator, we just remove the operator
+                random_operator = &KotlinTypes::RemoveOperator;
+                break;
+            }
             // Get a random opertor from mutation_operators
             random_operator = mutation_operators.iter().choose(&mut rand::thread_rng()).unwrap();
             if random_operator != root {
@@ -181,7 +186,8 @@ impl MutationOperators {
             root_node.end_byte(),
             random_operator.to_string(),
             root.as_str(),
-            root_node.start_position().row + 1
+            root_node.start_position().row + 1,
+            self.clone()
         );
         mutations_made.push(mutation)
     }
@@ -192,7 +198,7 @@ impl AllMutationOperators {
         Self {
             mutation_operators: vec![
                 MutationOperators::ArthimeticOperator,
-                MutationOperators::ArthimeticRemovalOperator,
+                MutationOperators::UnaryRemovalOperator,
                 MutationOperators::LogicalOperator,
                 MutationOperators::RelationalOperator,
                 MutationOperators::AssignmentOperator,
@@ -340,5 +346,67 @@ mod tests {
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
+    }
+
+    const KOTLIN_UNARY_REMOVAL_TEST_CODE: &str = r#"
+        var h = 5
+        h++
+        h--
+        ++h
+        --h
+        val a = !h
+        val b = -h
+        val c = +h
+    "#;
+
+    #[test]
+    fn test_unary_removal_operator() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::UnaryRemovalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        dbg!(&mutations_made);
+        assert_eq!(mutations_made.len(), 3);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+            assert_eq!(mutation.new_op, "".to_string());
+        }
+    }
+
+    #[test]
+    fn test_arthimetic_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::ArthimeticOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_relational_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::RelationalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_logical_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::LogicalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_assignment_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::AssignmentOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        assert_eq!(mutations_made.len(), 0);
     }
 }

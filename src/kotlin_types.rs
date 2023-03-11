@@ -85,6 +85,8 @@ pub enum KotlinTypes {
     PropertyDelegate,
     RangeExpression,
     RangeTest,
+    /// Custom type for the removal of an operator
+    RemoveOperator,
     SecondaryConstructor,
     Setter,
     ShebangLine,
@@ -217,6 +219,7 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::PropertyDeclaration => write!(f, "PropertyDeclaration"),
             KotlinTypes::PropertyDelegate => write!(f, "PropertyDelegate"),
             KotlinTypes::RangeExpression => write!(f, "RangeExpression"),
+            KotlinTypes::RemoveOperator => write!(f, ""),
             KotlinTypes::RangeTest => write!(f, "RangeTest"),
             KotlinTypes::SecondaryConstructor => write!(f, "SecondaryConstructor"),
             KotlinTypes::Setter => write!(f, "Setter"),
@@ -409,10 +412,8 @@ impl KotlinTypes {
             "RealLiteral" => KotlinTypes::RealLiteral,
             "ReificationModifier" => KotlinTypes::ReificationModifier,
             "ERROR" => KotlinTypes::Error,
+            "REMOVE" => KotlinTypes::RemoveOperator,
             unnamed => {
-                if unnamed == " " {
-                    return Ok(KotlinTypes::NonNamedType("REMOVE".to_string()));
-                }
                 if !NON_NAMED_TYPES.contains(&unnamed) {
                     return Err(format!("{unnamed} is not a valid Kotlin type",));
                 }

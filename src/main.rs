@@ -1,4 +1,4 @@
-use std::{fs, path::{self, Path}};
+use std::{fs, path::{self, Path}, collections::HashMap};
 use clap::{Parser, Subcommand, Args, CommandFactory, error::ErrorKind};
 use kotlin_types::KotlinTypes;
 use mutation_operators::MutationOperators;
@@ -45,7 +45,6 @@ struct MutationCommandConfig {
 #[derive(Debug)]
 struct FileMutations {
     mutations: Vec<Mutation>,
-    file: String,
 }
 
 #[derive(Debug)]
@@ -71,31 +70,31 @@ fn main() {
             if !path::Path::new(config.path.as_str()).is_dir() {
                 Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
             }
-            mutate(config, args.output_directory).unwrap();
-            // let mut existing_files: Vec<String> = vec![];
-            // if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
-            //     Cli::command().error(error.kind, error.message).exit();
-            // }
-            // if verbose {
-            //     tracing::debug!("Files found from path: {:#?}", existing_files);
-            // }
+            // mutate(config, args.output_directory).unwrap();
+            let mut existing_files: Vec<String> = vec![];
+            if let Some(error) = get_files_from_directory(config.path, &mut existing_files).err() {
+                Cli::command().error(error.kind, error.message).exit();
+            }
+            if verbose {
+                tracing::debug!("Files found from path: {:#?}", existing_files);
+            }
 
-            // let mut parser = tree_sitter::Parser::new();
-            // parser.set_language(tree_sitter_kotlin::language()).unwrap();
+            let mut parser = tree_sitter::Parser::new();
+            parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
-            // let mut file_mutations: Vec<FileMutations> = vec![];
-            // let mutation_operators = mutation_operators::AllMutationOperators::new();
-            // for mut_op in mutation_operators {
-            //     if mut_op != MutationOperators::RelationalOperator {
-            //         continue
-            //     }
-            //     for file in existing_files.clone() {
-            //         // Get a list of mutations that can be made
-            //         let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
-            //         let mut mutations = mut_op.find_mutation(ast);
-            //         println!("Mutations for file {}: {:#?}", file, mutations);
-            //     }
-            // }
+            let mut file_mutations: HashMap<String,FileMutations> = HashMap::new();
+            let mutation_operators = mutation_operators::AllMutationOperators::new();
+            for mut_op in mutation_operators {
+                for file in existing_files.clone() {
+                    // Get a list of mutations that can be made
+                    let ast = parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
+                    let mutations = mut_op.find_mutation(ast);
+                    file_mutations.entry(file.clone()).or_insert(FileMutations {
+                        mutations: mutations.clone(),
+                    }).mutations.extend(mutations);
+                }
+            }
+            println!("File Mutations: {:#?}", file_mutations);
 
             // if let Some(error) = mutate(config, args.output_directory).err() {
             //     Cli::command().error(error.kind, error.message).exit();
@@ -191,7 +190,6 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
         );
         file_mutations.push(FileMutations {
             mutations: mutations_made,
-            file: file_name.to_string(),
         });
     }
 
@@ -199,7 +197,7 @@ fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(),
     Ok(())
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct Mutation {
     start_byte: usize,
@@ -207,6 +205,7 @@ pub struct Mutation {
     line_number: usize,
     new_op: String,
     old_op: String,
+    mutation_type: MutationOperators,
 }
 
 impl Mutation {
@@ -216,6 +215,7 @@ impl Mutation {
         new_op: String,
         old_op: String,
         line_number: usize,
+        mutation_type: MutationOperators,
     ) -> Self {
         Self {
             start_byte,
@@ -223,6 +223,7 @@ impl Mutation {
             line_number,
             new_op,
             old_op,
+            mutation_type,
         }
     }
 
@@ -260,6 +261,7 @@ fn search_children(
                     "!=".to_string(), 
                     "==".to_string(),
                     node.start_position().row + 1,
+                    MutationOperators::RelationalOperator
                 ));
             }
             println!("{}({} {} - {})", prefix, node.kind(), node.start_position(), node.end_position());
