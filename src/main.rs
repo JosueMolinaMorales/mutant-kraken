@@ -4,6 +4,7 @@ use mutate::Mutation;
 pub mod kotlin_types;
 pub mod mutate;
 pub mod mutation_operators;
+#[cfg(test)] pub mod test_config;
 
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
@@ -41,7 +42,7 @@ pub struct MutationCommandConfig {
     path: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct FileMutations {
     mutations: Vec<Mutation>,
 }
@@ -59,16 +60,23 @@ fn main() {
         .init();
     let args = Cli::parse();
     let verbose = args.verbose;
+    let mutate_tool = mutate::MutationTool::default();
     if verbose {
         tracing::info!("Verbose Mode Enabled");
         tracing::info!("Starting Mutation Testing Tool");
     }
     match args.command {
         Commands::Mutate(config) => {
-            mutate::MutationTool::new(args.verbose, config).mutate();
+            mutate_tool
+                .set_verbose(verbose)
+                .set_config(config)
+                .set_output_directory(args.output_directory)
+                .mutate();
         }
         Commands::ClearOutputDirectory => {
-            mutate::MutationTool::clear_output_directory(args.output_directory, args.verbose)
+            mutate_tool
+                .set_verbose(verbose)
+                .clear_output_directory(args.output_directory);
         }
     }
 }

@@ -5,9 +5,10 @@ use std::{
 };
 
 use clap::{error::ErrorKind, CommandFactory};
+use uuid::Uuid;
 
 use crate::{
-    mutation_operators::{self, MutationOperators},
+    mutation_operators::{MutationOperators, AllMutationOperators},
     Cli, CliError, FileMutations, MutationCommandConfig,
 };
 
@@ -19,6 +20,7 @@ pub struct Mutation {
     pub new_op: String,
     pub old_op: String,
     pub mutation_type: MutationOperators,
+    pub id: Uuid,
 }
 
 impl Mutation {
@@ -37,6 +39,7 @@ impl Mutation {
             new_op,
             old_op,
             mutation_type,
+            id: Uuid::new_v4(),
         }
     }
 }
@@ -45,27 +48,96 @@ pub struct MutationTool {
     parser: tree_sitter::Parser,
     verbose: bool,
     config: MutationCommandConfig,
+    output_directory: String,
+    mutation_operators: Vec<MutationOperators>
+}
+
+impl Default for MutationTool {
+    fn default() -> Self {
+        Self::new(
+            false, 
+            MutationCommandConfig {
+                path: String::new()
+            },
+            String::new(),
+            AllMutationOperators::new().get_mutation_operators()
+        )
+    }
 }
 
 impl MutationTool {
-    pub fn new(verbose: bool, config: MutationCommandConfig) -> Self {
+    pub fn set_output_directory(mut self, output_directory: String) -> Self {
+        self.output_directory = output_directory;
+        self
+    }
+    
+    pub fn set_verbose(mut self, verbose: bool) -> Self {
+        self.verbose = verbose;
+        self
+    }
+
+    pub fn set_config(mut self, config: MutationCommandConfig) -> Self {
+        self.config = config;
+        self
+    }
+
+    pub fn new(verbose: bool, config: MutationCommandConfig, output_directory: String, mutation_operators: Vec<MutationOperators>) -> Self {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
+
+        // Validate config path
+        if !path::Path::new(config.path.as_str()).is_dir() {
+            Cli::command()
+                .error(ErrorKind::ArgumentConflict, "Path is not a directory")
+                .exit();
+        }
+
+        // Validate output directory
+        if !path::Path::new(output_directory.as_str()).is_dir() {
+            Cli::command()
+                .error(ErrorKind::ArgumentConflict, "Output directory is not a directory")
+                .exit();
+        }
 
         Self {
             verbose,
             config,
             parser,
+            output_directory,
+            mutation_operators
         }
     }
 
     pub fn mutate(&mut self) {
-        // Check if config.path is a directory
-        if !path::Path::new(self.config.path.as_str()).is_dir() {
-            Cli::command()
-                .error(ErrorKind::ArgumentConflict, "Path is not a directory")
-                .exit();
+        let file_mutations = self.gather_mutations_per_file();
+        self.generate_mutations_per_file(file_mutations);
+    }
+
+    fn generate_mutations_per_file(&self, file_mutations: HashMap<String, FileMutations>) {
+        for (file_name, fm) in file_mutations {
+            let mut file_str = fs::read_to_string(file_name.clone()).unwrap();
+            for m in fm.mutations.iter() {
+                let new_op_bytes = m.new_op.as_bytes();
+                let mut file = file_str.as_bytes().to_vec();
+
+                file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+                // Write bytes to file
+                // Prepend 'mut' to the file name
+                let mutated_file_name = Path::new(&self.output_directory).join(format!(
+                    "mut_{}_{}",
+                    m.id,
+                    Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+                ));
+                println!("Mutated file name: {}", mutated_file_name.to_str().unwrap());
+                fs::write(mutated_file_name, file).unwrap();
+                // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
+                // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
+                file_str = fs::read_to_string(&file_name).unwrap();
+            }
         }
+    }
+
+    fn gather_mutations_per_file(&mut self) -> HashMap<String, FileMutations> {
         let mut existing_files: Vec<String> = vec![];
         if let Some(error) =
             Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err()
@@ -74,12 +146,12 @@ impl MutationTool {
         }
         if self.verbose {
             tracing::debug!("Files found from path: {:#?}", existing_files);
+            tracing::info!("Gathering all mutations for files...");
         }
 
         let mut file_mutations: HashMap<String, FileMutations> = HashMap::new();
-        let mutation_operators = mutation_operators::AllMutationOperators::new();
-        for mut_op in mutation_operators {
-            for file in existing_files.clone() {
+        for file in existing_files.clone() {
+            for mut_op in self.mutation_operators.clone() {
                 // Get a list of mutations that can be made
                 let ast = self
                     .parser
@@ -87,17 +159,21 @@ impl MutationTool {
                         fs::read_to_string(file.clone()).expect("File Not Found!"),
                         None,
                     )
-                    .unwrap();
+                    .unwrap(); // TODO: Remove this unwrap
                 let mutations = mut_op.find_mutation(ast);
+                tracing::debug!("Mutations made to file: {:#?}", mutations);
                 file_mutations
                     .entry(file.clone())
+                    .and_modify(|fm| fm.mutations.extend(mutations.clone()))
                     .or_insert(FileMutations {
                         mutations: mutations.clone(),
-                    })
-                    .mutations
-                    .extend(mutations);
+                    });
             }
         }
+        if self.verbose {
+            tracing::info!("Mutations made to all files");
+        }
+        file_mutations
     }
 
     /*
@@ -138,13 +214,96 @@ impl MutationTool {
         Ok(())
     }
 
-    pub fn clear_output_directory(ouptut_directory: String, verbose: bool) {
+    pub fn clear_output_directory(&self, ouptut_directory: String) {
+        // TODO: Remove contents of directory instead of the entire directory
         let dir = Path::new(ouptut_directory.as_str());
-        if verbose {
+        if self.verbose {
             tracing::info!("Removing directory: {:#?}", dir);
         }
         if dir.exists() {
             fs::remove_dir_all(dir).unwrap();
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_config::*;
+
+    fn create_temp_directory(file_contents: &str) -> (Uuid, String) {
+        let mutation_test_id = Uuid::new_v4();
+        let file_id = format!("./{}/{}.kt", mutation_test_id, mutation_test_id);
+        let output_directory = format!("./{}/mutations/", mutation_test_id);
+        // Create temp output directory
+        std::fs::create_dir_all(&output_directory).unwrap();
+        // Add test files to directory
+        std::fs::write(&file_id, file_contents).unwrap();
+
+        (mutation_test_id, output_directory)
+    }
+
+    fn remove_directory(mutation_test_id: Uuid) {
+        fs::remove_dir_all(format!("./{}", mutation_test_id)).unwrap()
+    }
+
+    #[test]
+    fn test_mutate_arithmetic_mutated_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
+
+        let mut mutator = MutationTool::new(
+            false, 
+            MutationCommandConfig { 
+                path: format!("./{}", mutation_test_id)
+            },
+            output_directory.clone(),
+            vec![MutationOperators::ArthimeticOperator]
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations.clone() {
+                let mutated_file_name = Path::new(&mutator.output_directory).join(format!(
+                    "mut_{}_{}",
+                    m.id,
+                    Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+                ));
+                assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
+            }
+        }
+        // Remove directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_arithmetic_mutations_are_correct() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
+        let mut mutator = MutationTool::new(
+            false, 
+            MutationCommandConfig { 
+                path: format!("./{}", mutation_test_id)
+            },
+            output_directory.clone(),
+            vec![MutationOperators::ArthimeticOperator]
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm{
+            for m in fm.mutations {
+                let mutated_file_name = Path::new(&mutator.output_directory).join(format!(
+                    "mut_{}_{}",
+                    m.id,
+                    Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+                ));
+                let mut_file = fs::read_to_string(mutated_file_name).unwrap().as_bytes().to_vec();
+                let mut_range = m.start_byte..m.end_byte;
+                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
 }

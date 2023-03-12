@@ -2,11 +2,12 @@ use crate::{kotlin_types::KotlinTypes, Mutation};
 use rand::seq::IteratorRandom;
 use std::collections::HashSet;
 
+#[derive(Clone)]
 pub struct AllMutationOperators {
     mutation_operators: Vec<MutationOperators>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord,)]
 pub enum MutationOperators {
     ArthimeticOperator,
     UnaryRemovalOperator,
@@ -96,7 +97,7 @@ impl MutationOperators {
     }
 
     pub fn find_mutation(&self, ast: tree_sitter::Tree) -> Vec<Mutation> {
-        // tracing::debug!("Finding mutations for {:?}", self);
+        tracing::debug!("Finding mutations for {:?}", self);
         let mut mutations = Vec::new();
         let mut cursor = ast.walk();
         let root = ast.root_node();
@@ -117,7 +118,7 @@ impl MutationOperators {
             let parent_type = parent
                 .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
             self.mutate_operator(
-                &root,
+                &node,
                 &root_type,
                 &parent_type,
                 mutations_made,
@@ -193,6 +194,10 @@ impl AllMutationOperators {
             ],
         }
     }
+
+    pub fn get_mutation_operators(&self) -> Vec<MutationOperators> {
+        self.mutation_operators.clone()
+    }
 }
 
 impl Default for AllMutationOperators {
@@ -212,6 +217,7 @@ impl Iterator for AllMutationOperators {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_config::*;
     use tree_sitter::Parser;
 
     fn get_ast(text: &str) -> tree_sitter::Tree {
@@ -220,18 +226,6 @@ mod tests {
         let tree = parser.parse(text, None).unwrap();
         tree
     }
-
-    const KOTLIN_TEST_CODE: &str = r#"
-    fun main() {
-        // Arithmetic expressions
-        val a = 10
-        val b = 3
-        val c = a + b
-        val d = a - b
-        val e = a * b
-        val f = a / b
-        val g = a % b
-    "#;
 
     #[test]
     fn test_arthimetic_operator() {
@@ -250,19 +244,6 @@ mod tests {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
     }
-
-    const KOTLIN_RELATIONAL_TEST_CODE: &str = r#"
-    fun main() {
-        // Relational expressions
-        val a = 10
-        val b = 3
-        val c = a > b
-        val d = a < b
-        val e = a >= b
-        val f = a <= b
-        val g = a == b
-        val h = a != b
-    "#;
 
     #[test]
     fn test_relational_operator() {
@@ -283,15 +264,6 @@ mod tests {
         }
     }
 
-    const KOTLIN_LOGICAL_TEST_CODE: &str = r#"
-    fun main() {
-        // Logical expressions
-        val a = true
-        val b = false
-        val c = a && b
-        val d = a || b
-    "#;
-
     #[test]
     fn test_logical_operator() {
         let tree = get_ast(KOTLIN_LOGICAL_TEST_CODE);
@@ -310,15 +282,6 @@ mod tests {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
     }
-
-    const KOTLIN_ASSIGNMENT_TEST_CODE: &str = r#"
-        var h = 5
-        h += 3
-        h -= 1
-        h *= 2
-        h /= 4
-        h %= 2
-    "#;
 
     #[test]
     fn test_assignment_operator() {
@@ -339,14 +302,6 @@ mod tests {
         }
     }
 
-    const KOTLIN_UNARY_TEST_CODE: &str = r#"
-        var h = 5
-        h++
-        h--
-        ++h
-        --h
-    "#;
-
     #[test]
     fn test_unary_operator() {
         let tree = get_ast(KOTLIN_UNARY_TEST_CODE);
@@ -360,17 +315,6 @@ mod tests {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
     }
-
-    const KOTLIN_UNARY_REMOVAL_TEST_CODE: &str = r#"
-        var h = 5
-        h++
-        h--
-        ++h
-        --h
-        val a = !h
-        val b = -h
-        val c = +h
-    "#;
 
     #[test]
     fn test_unary_removal_operator() {
