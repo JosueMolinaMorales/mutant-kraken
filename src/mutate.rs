@@ -1,8 +1,15 @@
-use std::{path::{self, Path}, collections::HashMap, fs};
+use std::{
+    collections::HashMap,
+    fs,
+    path::{self, Path},
+};
 
-use clap::{CommandFactory, error::ErrorKind};
+use clap::{error::ErrorKind, CommandFactory};
 
-use crate::{MutationCommandConfig, Cli, CliError, FileMutations, mutation_operators::{self, MutationOperators}};
+use crate::{
+    mutation_operators::{self, MutationOperators},
+    Cli, CliError, FileMutations, MutationCommandConfig,
+};
 
 #[derive(Debug, Clone)]
 pub struct Mutation {
@@ -16,8 +23,8 @@ pub struct Mutation {
 
 impl Mutation {
     pub fn new(
-        start_byte: usize, 
-        end_byte: usize, 
+        start_byte: usize,
+        end_byte: usize,
         new_op: String,
         old_op: String,
         line_number: usize,
@@ -55,48 +62,70 @@ impl MutationTool {
     pub fn mutate(&mut self) {
         // Check if config.path is a directory
         if !path::Path::new(self.config.path.as_str()).is_dir() {
-            Cli::command().error(ErrorKind::ArgumentConflict, "Path is not a directory").exit();
+            Cli::command()
+                .error(ErrorKind::ArgumentConflict, "Path is not a directory")
+                .exit();
         }
         let mut existing_files: Vec<String> = vec![];
-        if let Some(error) = Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err() {
+        if let Some(error) =
+            Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err()
+        {
             Cli::command().error(error.kind, error.message).exit();
         }
         if self.verbose {
             tracing::debug!("Files found from path: {:#?}", existing_files);
         }
 
-        let mut file_mutations: HashMap<String,FileMutations> = HashMap::new();
+        let mut file_mutations: HashMap<String, FileMutations> = HashMap::new();
         let mutation_operators = mutation_operators::AllMutationOperators::new();
         for mut_op in mutation_operators {
             for file in existing_files.clone() {
                 // Get a list of mutations that can be made
-                let ast = self.parser.parse(fs::read_to_string(file.clone()).expect("File Not Found!"), None).unwrap();
+                let ast = self
+                    .parser
+                    .parse(
+                        fs::read_to_string(file.clone()).expect("File Not Found!"),
+                        None,
+                    )
+                    .unwrap();
                 let mutations = mut_op.find_mutation(ast);
-                file_mutations.entry(file.clone()).or_insert(FileMutations {
-                    mutations: mutations.clone(),
-                }).mutations.extend(mutations);
+                file_mutations
+                    .entry(file.clone())
+                    .or_insert(FileMutations {
+                        mutations: mutations.clone(),
+                    })
+                    .mutations
+                    .extend(mutations);
             }
         }
-        println!("File Mutations: {:#?}", file_mutations);
     }
 
     /*
         Take in path to directory and get all files that end with .kt
     */
-    fn get_files_from_directory(path: String, existing_files: &mut Vec<String>) -> Result<(), CliError> {
-        let directory = Path::new(path.as_str())
-            .read_dir()
-            .map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
+    fn get_files_from_directory(
+        path: String,
+        existing_files: &mut Vec<String>,
+    ) -> Result<(), CliError> {
+        let directory = Path::new(path.as_str()).read_dir().map_err(|_| CliError {
+            kind: ErrorKind::Io,
+            message: "Could not read directory".into(),
+        })?;
         for entry in directory {
-            let entry = entry.map_err(|_| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?;
+            let entry = entry.map_err(|_| CliError {
+                kind: ErrorKind::Io,
+                message: "Could not read directory".into(),
+            })?;
             let path = entry.path();
             if path.is_dir() {
                 Self::get_files_from_directory(
-                    path
-                        .to_str()
-                        .ok_or_else(|| CliError { kind: ErrorKind::Io, message: "Could not read directory".into()})?
-                        .to_string(), 
-                    existing_files
+                    path.to_str()
+                        .ok_or_else(|| CliError {
+                            kind: ErrorKind::Io,
+                            message: "Could not read directory".into(),
+                        })?
+                        .to_string(),
+                    existing_files,
                 )?;
                 continue;
             }
@@ -109,10 +138,7 @@ impl MutationTool {
         Ok(())
     }
 
-    pub fn clear_output_directory(
-        ouptut_directory: String,
-        verbose: bool
-    ) {
+    pub fn clear_output_directory(ouptut_directory: String, verbose: bool) {
         let dir = Path::new(ouptut_directory.as_str());
         if verbose {
             tracing::info!("Removing directory: {:#?}", dir);

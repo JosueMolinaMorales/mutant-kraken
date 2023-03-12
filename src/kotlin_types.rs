@@ -1,5 +1,134 @@
 use std::fmt;
-const NON_NAMED_TYPES: [&str; 128] = ["!","!!","!=","!==","!in","\"","\"\"\"","#!","$","${","%","%=","&&","'","(",")","*","*=","+","++","+=",",","-","--","-=","->",".",".*","..","/","/=",":","::",";","<","<=","=","==","===",">",">=","?:","@","L","[","\\","]","abstract","actual","annotation","as","as?","break","break@","by","catch","class","companion","constructor","continue","continue@","crossinline","data","delegate","do","dynamic","else","enum","expect","external","false","field","file","final","finally","for","fun","get","if","import","in","infix","init","inline","inner","interface","internal","is","lateinit","noinline","null","object","open","operator","out","override","package","param","private","property","protected","public","receiver","return","return@","sealed","set","setparam","super","super@","suspend","tailrec","this","this@","throw","true","try","typealias","u","val","var","vararg","when","where","while","{","||","}"];
+const NON_NAMED_TYPES: [&str; 128] = [
+    "!",
+    "!!",
+    "!=",
+    "!==",
+    "!in",
+    "\"",
+    "\"\"\"",
+    "#!",
+    "$",
+    "${",
+    "%",
+    "%=",
+    "&&",
+    "'",
+    "(",
+    ")",
+    "*",
+    "*=",
+    "+",
+    "++",
+    "+=",
+    ",",
+    "-",
+    "--",
+    "-=",
+    "->",
+    ".",
+    ".*",
+    "..",
+    "/",
+    "/=",
+    ":",
+    "::",
+    ";",
+    "<",
+    "<=",
+    "=",
+    "==",
+    "===",
+    ">",
+    ">=",
+    "?:",
+    "@",
+    "L",
+    "[",
+    "\\",
+    "]",
+    "abstract",
+    "actual",
+    "annotation",
+    "as",
+    "as?",
+    "break",
+    "break@",
+    "by",
+    "catch",
+    "class",
+    "companion",
+    "constructor",
+    "continue",
+    "continue@",
+    "crossinline",
+    "data",
+    "delegate",
+    "do",
+    "dynamic",
+    "else",
+    "enum",
+    "expect",
+    "external",
+    "false",
+    "field",
+    "file",
+    "final",
+    "finally",
+    "for",
+    "fun",
+    "get",
+    "if",
+    "import",
+    "in",
+    "infix",
+    "init",
+    "inline",
+    "inner",
+    "interface",
+    "internal",
+    "is",
+    "lateinit",
+    "noinline",
+    "null",
+    "object",
+    "open",
+    "operator",
+    "out",
+    "override",
+    "package",
+    "param",
+    "private",
+    "property",
+    "protected",
+    "public",
+    "receiver",
+    "return",
+    "return@",
+    "sealed",
+    "set",
+    "setparam",
+    "super",
+    "super@",
+    "suspend",
+    "tailrec",
+    "this",
+    "this@",
+    "throw",
+    "true",
+    "try",
+    "typealias",
+    "u",
+    "val",
+    "var",
+    "vararg",
+    "when",
+    "where",
+    "while",
+    "{",
+    "||",
+    "}",
+];
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum KotlinTypes {
     AdditiveExpression,
@@ -131,7 +260,7 @@ pub enum KotlinTypes {
     RealLiteral,
     ReificationModifier,
     Error,
-    NonNamedType(String)
+    NonNamedType(String),
 }
 
 impl fmt::Display for KotlinTypes {
@@ -274,14 +403,16 @@ impl KotlinTypes {
     pub fn new(s: &str) -> Result<KotlinTypes, String> {
         let binding: String = s
             .split('_')
-            .map(|p| 
-                if !p.is_empty() && !NON_NAMED_TYPES.contains(&s) { 
+            .map(|p| {
+                if !p.is_empty() && !NON_NAMED_TYPES.contains(&s) {
                     let mut v: Vec<char> = p.chars().collect();
                     v[0] = v[0].to_uppercase().next().unwrap();
                     let x: String = v.into_iter().collect();
                     x
-                } else { p.to_string() }
-            )
+                } else {
+                    p.to_string()
+                }
+            })
             .collect();
         let s = binding;
         let res = match s.as_str() {
@@ -426,7 +557,11 @@ impl KotlinTypes {
     pub fn as_str(&self) -> String {
         let mut second_upper = 0;
         let mut x = format!("{}", *self);
-        x.as_bytes().iter().enumerate().for_each(|(i, c)| if (*c as char).is_uppercase() && i != 0 { second_upper = i });
+        x.as_bytes().iter().enumerate().for_each(|(i, c)| {
+            if (*c as char).is_uppercase() && i != 0 {
+                second_upper = i
+            }
+        });
         x = x.to_lowercase();
         if second_upper != 0 {
             x.insert(second_upper, '_');
@@ -434,7 +569,6 @@ impl KotlinTypes {
         x
     }
 }
-
 
 #[cfg(test)]
 mod tests {

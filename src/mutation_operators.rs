@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+use crate::{kotlin_types::KotlinTypes, Mutation};
 use rand::seq::IteratorRandom;
-use crate::{Mutation, kotlin_types::KotlinTypes};
+use std::collections::HashSet;
 
 pub struct AllMutationOperators {
     mutation_operators: Vec<MutationOperators>,
@@ -19,89 +19,79 @@ pub enum MutationOperators {
 impl MutationOperators {
     fn get_operators(&self) -> HashSet<KotlinTypes> {
         match self {
-            MutationOperators::ArthimeticOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("+".to_string()),
-                    KotlinTypes::NonNamedType("-".to_string()),
-                    KotlinTypes::NonNamedType("*".to_string()),
-                    KotlinTypes::NonNamedType("/".to_string()),
-                    KotlinTypes::NonNamedType("%".to_string()),
-                ].into_iter().collect()
-            },
-            MutationOperators::UnaryRemovalOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("+".to_string()),
-                    KotlinTypes::NonNamedType("-".to_string()),
-                    KotlinTypes::NonNamedType("!".to_string()),
-                ].into_iter().collect()
-            },
-            MutationOperators::LogicalOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("&&".to_string()),
-                    KotlinTypes::NonNamedType("||".to_string()),
-                ].into_iter().collect()
-            },
-            MutationOperators::RelationalOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("==".to_string()),
-                    KotlinTypes::NonNamedType("!=".to_string()),
-                    KotlinTypes::NonNamedType("<".to_string()),
-                    KotlinTypes::NonNamedType("<=".to_string()),
-                    KotlinTypes::NonNamedType(">".to_string()),
-                    KotlinTypes::NonNamedType(">=".to_string()),
-                ].into_iter().collect()
-            },
-            MutationOperators::AssignmentOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("=".to_string()),
-                    KotlinTypes::NonNamedType("+=".to_string()),
-                    KotlinTypes::NonNamedType("-=".to_string()),
-                    KotlinTypes::NonNamedType("*=".to_string()),
-                    KotlinTypes::NonNamedType("/=".to_string()),
-                    KotlinTypes::NonNamedType("%=".to_string()),
-                ].into_iter().collect()
-            },
-            MutationOperators::UnaryOperator => {
-                vec![
-                    KotlinTypes::NonNamedType("!".to_string()),
-                    KotlinTypes::NonNamedType("++".to_string()),
-                    KotlinTypes::NonNamedType("--".to_string()),
-                    KotlinTypes::RemoveOperator,
-                ].into_iter().collect()
-            },
+            MutationOperators::ArthimeticOperator => vec![
+                KotlinTypes::NonNamedType("+".to_string()),
+                KotlinTypes::NonNamedType("-".to_string()),
+                KotlinTypes::NonNamedType("*".to_string()),
+                KotlinTypes::NonNamedType("/".to_string()),
+                KotlinTypes::NonNamedType("%".to_string()),
+            ]
+            .into_iter()
+            .collect(),
+            MutationOperators::UnaryRemovalOperator => vec![
+                KotlinTypes::NonNamedType("+".to_string()),
+                KotlinTypes::NonNamedType("-".to_string()),
+                KotlinTypes::NonNamedType("!".to_string()),
+            ]
+            .into_iter()
+            .collect(),
+            MutationOperators::LogicalOperator => vec![
+                KotlinTypes::NonNamedType("&&".to_string()),
+                KotlinTypes::NonNamedType("||".to_string()),
+            ]
+            .into_iter()
+            .collect(),
+            MutationOperators::RelationalOperator => vec![
+                KotlinTypes::NonNamedType("==".to_string()),
+                KotlinTypes::NonNamedType("!=".to_string()),
+                KotlinTypes::NonNamedType("<".to_string()),
+                KotlinTypes::NonNamedType("<=".to_string()),
+                KotlinTypes::NonNamedType(">".to_string()),
+                KotlinTypes::NonNamedType(">=".to_string()),
+            ]
+            .into_iter()
+            .collect(),
+            MutationOperators::AssignmentOperator => vec![
+                KotlinTypes::NonNamedType("=".to_string()),
+                KotlinTypes::NonNamedType("+=".to_string()),
+                KotlinTypes::NonNamedType("-=".to_string()),
+                KotlinTypes::NonNamedType("*=".to_string()),
+                KotlinTypes::NonNamedType("/=".to_string()),
+                KotlinTypes::NonNamedType("%=".to_string()),
+            ]
+            .into_iter()
+            .collect(),
+            MutationOperators::UnaryOperator => vec![
+                KotlinTypes::NonNamedType("!".to_string()),
+                KotlinTypes::NonNamedType("++".to_string()),
+                KotlinTypes::NonNamedType("--".to_string()),
+                KotlinTypes::RemoveOperator,
+            ]
+            .into_iter()
+            .collect(),
         }
     }
 
     fn get_parent_necessary_types(&self) -> Vec<KotlinTypes> {
         match self {
-            MutationOperators::ArthimeticOperator => 
-                vec![
-                    KotlinTypes::AdditiveExpression,
-                    KotlinTypes::MultiplicativeExpression,
-                ],
-            MutationOperators::UnaryRemovalOperator => 
-                vec![
-                    KotlinTypes::PrefixExpression,
-                ],
-            MutationOperators::LogicalOperator => 
-                vec![
-                    KotlinTypes::ConjunctionExpression,
-                    KotlinTypes::DisjunctionExpression,
-                ],
-            MutationOperators::RelationalOperator => 
-                vec![
-                    KotlinTypes::EqualityExpression,
-                    KotlinTypes::ComparisonExpression,
-                ],
-            MutationOperators::AssignmentOperator => 
-                vec![
-                    KotlinTypes::Assignment,
-                ],
-            MutationOperators::UnaryOperator => 
-                vec![
-                    KotlinTypes::PostfixExpression,
-                    KotlinTypes::PrefixExpression,
-                ],
+            MutationOperators::ArthimeticOperator => vec![
+                KotlinTypes::AdditiveExpression,
+                KotlinTypes::MultiplicativeExpression,
+            ],
+            MutationOperators::UnaryRemovalOperator => vec![KotlinTypes::PrefixExpression],
+            MutationOperators::LogicalOperator => vec![
+                KotlinTypes::ConjunctionExpression,
+                KotlinTypes::DisjunctionExpression,
+            ],
+            MutationOperators::RelationalOperator => vec![
+                KotlinTypes::EqualityExpression,
+                KotlinTypes::ComparisonExpression,
+            ],
+            MutationOperators::AssignmentOperator => vec![KotlinTypes::Assignment],
+            MutationOperators::UnaryOperator => vec![
+                KotlinTypes::PostfixExpression,
+                KotlinTypes::PrefixExpression,
+            ],
         }
     }
 
@@ -122,11 +112,10 @@ impl MutationOperators {
         parent: Option<tree_sitter::Node>,
         mutations_made: &mut Vec<Mutation>,
     ) {
-        root
-        .children(&mut cursor.clone())
-        .for_each(|node| {
+        root.children(&mut cursor.clone()).for_each(|node| {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
-            let parent_type = parent.map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
+            let parent_type = parent
+                .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
             self.mutate_operator(
                 &root,
                 &root_type,
@@ -135,12 +124,7 @@ impl MutationOperators {
                 self.get_operators(),
                 self.get_parent_necessary_types(),
             );
-            self.mutate(
-                node, 
-                cursor, 
-                Some(node), 
-                mutations_made
-            );
+            self.mutate(node, cursor, Some(node), mutations_made);
         });
     }
 
@@ -175,7 +159,10 @@ impl MutationOperators {
                 break;
             }
             // Get a random opertor from mutation_operators
-            random_operator = mutation_operators.iter().choose(&mut rand::thread_rng()).unwrap();
+            random_operator = mutation_operators
+                .iter()
+                .choose(&mut rand::thread_rng())
+                .unwrap();
             if random_operator != root {
                 break;
             }
@@ -187,7 +174,7 @@ impl MutationOperators {
             random_operator.to_string(),
             root.as_str(),
             root_node.start_position().row + 1,
-            self.clone()
+            self.clone(),
         );
         mutations_made.push(mutation)
     }
@@ -208,6 +195,12 @@ impl AllMutationOperators {
     }
 }
 
+impl Default for AllMutationOperators {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Iterator for AllMutationOperators {
     type Item = MutationOperators;
 
@@ -218,16 +211,16 @@ impl Iterator for AllMutationOperators {
 
 #[cfg(test)]
 mod tests {
-    use tree_sitter::Parser;
     use super::*;
-    
+    use tree_sitter::Parser;
+
     fn get_ast(text: &str) -> tree_sitter::Tree {
         let mut parser = Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
         let tree = parser.parse(text, None).unwrap();
         tree
     }
-    
+
     const KOTLIN_TEST_CODE: &str = r#"
     fun main() {
         // Arithmetic expressions
@@ -245,7 +238,12 @@ mod tests {
         let tree = get_ast(KOTLIN_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::ArthimeticOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::ArthimeticOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 5);
         for mutation in mutations_made {
@@ -271,7 +269,12 @@ mod tests {
         let tree = get_ast(KOTLIN_RELATIONAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RelationalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::RelationalOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
 
         assert_eq!(mutations_made.len(), 6);
         // Assert that the old operator is not the same as the new operator
@@ -294,7 +297,12 @@ mod tests {
         let tree = get_ast(KOTLIN_LOGICAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::LogicalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::LogicalOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 2);
         // Assert that the old operator is not the same as the new operator
@@ -311,13 +319,18 @@ mod tests {
         h /= 4
         h %= 2
     "#;
-    
+
     #[test]
     fn test_assignment_operator() {
         let tree = get_ast(KOTLIN_ASSIGNMENT_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::AssignmentOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::AssignmentOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 5);
         // Assert that the old operator is not the same as the new operator
@@ -364,7 +377,12 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::UnaryRemovalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::UnaryRemovalOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 3);
         // Assert that the old operator is not the same as the new operator
@@ -379,7 +397,12 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::ArthimeticOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::ArthimeticOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         assert_eq!(mutations_made.len(), 0);
     }
 
@@ -388,7 +411,12 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RelationalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::RelationalOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         assert_eq!(mutations_made.len(), 0);
     }
 
@@ -397,7 +425,12 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::LogicalOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::LogicalOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         assert_eq!(mutations_made.len(), 0);
     }
 
@@ -406,7 +439,12 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::AssignmentOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::AssignmentOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+        );
         assert_eq!(mutations_made.len(), 0);
     }
 }
