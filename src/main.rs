@@ -1,5 +1,5 @@
-use std::{fs, path::{self, Path}, collections::HashMap};
-use clap::{Parser, Subcommand, Args, CommandFactory, error::ErrorKind};
+use std::{fs, path::Path};
+use clap::{Parser, Subcommand, Args, error::ErrorKind};
 use kotlin_types::KotlinTypes;
 use mutate::Mutation;
 use mutation_operators::MutationOperators;
@@ -70,16 +70,10 @@ fn main() {
         Commands::Mutate(config) => {
             mutate::MutationTool::new(args.verbose, config).mutate();
         },
-        Commands::ClearOutputDirectory => clear_output_directory(args.output_directory),
+        Commands::ClearOutputDirectory => mutate::MutationTool::clear_output_directory(args.output_directory, args.verbose),
     }
 }
 
-fn clear_output_directory(ouptut_directory: String) {
-    let dir = Path::new(ouptut_directory.as_str());
-    if dir.exists() {
-        fs::remove_dir_all(dir).unwrap();
-    }
-}
 
 fn mutate(config: MutationCommandConfig, ouptut_directory: String) -> Result<(), CliError> {
     let mut parser = tree_sitter::Parser::new();

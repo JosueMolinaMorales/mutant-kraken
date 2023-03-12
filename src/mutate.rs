@@ -32,9 +32,7 @@ impl Mutation {
             mutation_type,
         }
     }
-
 }
-
 
 pub struct MutationTool {
     parser: tree_sitter::Parser,
@@ -109,5 +107,18 @@ impl MutationTool {
         }
 
         Ok(())
+    }
+
+    pub fn clear_output_directory(
+        ouptut_directory: String,
+        verbose: bool
+    ) {
+        let dir = Path::new(ouptut_directory.as_str());
+        if verbose {
+            tracing::info!("Removing directory: {:#?}", dir);
+        }
+        if dir.exists() {
+            fs::remove_dir_all(dir).unwrap();
+        }
     }
 }
