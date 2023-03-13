@@ -4,7 +4,8 @@ use mutate::Mutation;
 pub mod kotlin_types;
 pub mod mutate;
 pub mod mutation_operators;
-#[cfg(test)] pub mod test_config;
+#[cfg(test)]
+pub mod test_config;
 
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {

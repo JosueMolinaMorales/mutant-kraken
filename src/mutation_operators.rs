@@ -7,7 +7,7 @@ pub struct AllMutationOperators {
     mutation_operators: Vec<MutationOperators>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord,)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MutationOperators {
     ArthimeticOperator,
     UnaryRemovalOperator,
