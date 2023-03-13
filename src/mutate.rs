@@ -273,7 +273,6 @@ mod tests {
     }
 
     fn get_mutated_file_name(
-        mutation_test_id: Uuid, 
         mutator: &MutationTool,
         file_name: &str,
         m: &Mutation,
@@ -299,7 +298,7 @@ mod tests {
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
-                let mutated_file_name = get_mutated_file_name(mutation_test_id, &mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
                 assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
             }
         }
@@ -320,13 +319,13 @@ mod tests {
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(mutation_test_id, &mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
                 let mut_file = fs::read_to_string(mutated_file_name)
                     .unwrap()
                     .as_bytes()
                     .to_vec();
                 let mut_range = m.start_byte..m.end_byte;
-                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
             }
         }
         // Remove contents in temp directory
@@ -346,7 +345,7 @@ mod tests {
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
-                let mutated_file_name = get_mutated_file_name(mutation_test_id, &mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
                 assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
             }
         }
@@ -367,14 +366,208 @@ mod tests {
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(mutation_test_id, &mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
                 let mut_file = fs::read_to_string(mutated_file_name)
                     .unwrap()
                     .as_bytes()
                     .to_vec();
                 let mut_range = m.start_byte..m.end_byte;
-                // TODO: Fix this, test fails because new_op is = which is not the same number of bytes as the original
-                // assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+                // Checks that the mutated file does not have the same contents as the original file
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_logical_mutated_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::LogicalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations.clone() {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_logical_mutations_are_correct() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::LogicalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mut_file = fs::read_to_string(mutated_file_name)
+                    .unwrap()
+                    .as_bytes()
+                    .to_vec();
+                let mut_range = m.start_byte..m.end_byte;
+                // Checks that the mutated file does not have the same contents as the original file
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_relational_mutated_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::RelationalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations.clone() {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_relational_mutations_are_correct() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::RelationalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mut_file = fs::read_to_string(mutated_file_name)
+                    .unwrap()
+                    .as_bytes()
+                    .to_vec();
+                let mut_range = m.start_byte..m.end_byte;
+                // Checks that the mutated file does not have the same contents as the original file
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_unary_mutated_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::UnaryOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations.clone() {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_unary_mutations_are_correct() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::UnaryOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mut_file = fs::read_to_string(mutated_file_name)
+                    .unwrap()
+                    .as_bytes()
+                    .to_vec();
+                let mut_range = m.start_byte..m.end_byte;
+                // Checks that the mutated file does not have the same contents as the original file
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_unary_removal_mutated_files_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::UnaryRemovalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations.clone() {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
+            }
+        }
+        // Remove contents in temp directory
+        remove_directory(mutation_test_id);
+    }
+
+    #[test]
+    fn test_mutate_unary_removal_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specifc_operators(
+            mutation_test_id,
+            output_directory,
+            vec![MutationOperators::UnaryRemovalOperator],
+        );
+        let fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(fm.clone());
+        // Check that the mutated files were created
+        for (file_name, fm) in fm {
+            for m in fm.mutations {
+                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mut_file = fs::read_to_string(mutated_file_name)
+                    .unwrap()
+                    .as_bytes()
+                    .to_vec();
+                let mut_range = m.start_byte..m.end_byte;
+                // Checks that the mutated file does not have the same contents as the original file
+                assert_ne!(m.old_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
             }
         }
         // Remove contents in temp directory
