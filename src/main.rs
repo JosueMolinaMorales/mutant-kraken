@@ -1,5 +1,5 @@
 use clap::{error::ErrorKind, Args, Parser, Subcommand};
-use mutate::Mutation;
+use mutate::{Mutation, MutationToolBuilder};
 
 pub mod kotlin_types;
 pub mod mutate;
@@ -61,23 +61,25 @@ fn main() {
         .init();
     let args = Cli::parse();
     let verbose = args.verbose;
-    let mutate_tool = mutate::MutationTool::default();
+    let mutate_tool_builder = MutationToolBuilder::new();
     if verbose {
         tracing::info!("Verbose Mode Enabled");
         tracing::info!("Starting Mutation Testing Tool");
     }
     match args.command {
         Commands::Mutate(config) => {
-            mutate_tool
+            mutate_tool_builder
                 .set_verbose(verbose)
-                .set_config(config)
                 .set_output_directory(args.output_directory)
+                .set_config(config)
+                .build()
                 .mutate();
         }
         Commands::ClearOutputDirectory => {
-            mutate_tool
-                .set_verbose(verbose)
-                .clear_output_directory(args.output_directory);
+            mutate_tool_builder
+                .set_verbose(args.verbose)
+                .build()
+                .clear_output_directory(args.output_directory)
         }
     }
 }

@@ -44,6 +44,61 @@ impl Mutation {
     }
 }
 
+pub struct MutationToolBuilder {
+    verbose: bool,
+    config: Option<MutationCommandConfig>,
+    output_directory: Option<String>,
+    mutation_operators: Option<Vec<MutationOperators>>,
+}
+
+impl MutationToolBuilder {
+    pub fn new() -> Self {
+        Self {
+            verbose: false,
+            config: None,
+            output_directory: None,
+            mutation_operators: None,
+        }
+    }
+    pub fn set_verbose(mut self, verbose: bool) -> Self {
+        self.verbose = verbose;
+        self
+    }
+    pub fn set_config(mut self, config: MutationCommandConfig) -> Self {
+        self.config = Some(config);
+        self
+    }
+    pub fn set_output_directory(mut self, output_directory: String) -> Self {
+        self.output_directory = Some(output_directory);
+        if let Some(o_dir) = self.output_directory.as_ref() {
+            // If path does not exist, create it
+            if !path::Path::new(o_dir.as_str()).exists() {
+                fs::create_dir_all(o_dir).unwrap(); // TODO: Remove unwrap
+            }
+        }
+        self
+    }
+    pub fn set_mutation_operators(mut self, mutation_operators: Vec<MutationOperators>) -> Self {
+        self.mutation_operators = Some(mutation_operators);
+        self
+    }
+    pub fn build(self) -> MutationTool {
+        let config = self.config.unwrap_or(MutationCommandConfig {
+            path: ".".into(),
+        });
+        let output_directory = self.output_directory.unwrap_or(".".into());
+        let mutation_operators = self
+            .mutation_operators
+            .unwrap_or(AllMutationOperators::new().get_mutation_operators());
+        MutationTool::new(
+            self.verbose,
+            config,
+            output_directory,
+            mutation_operators,
+        )
+    }
+}
+
 pub struct MutationTool {
     parser: tree_sitter::Parser,
     verbose: bool,
@@ -57,30 +112,15 @@ impl Default for MutationTool {
         Self::new(
             false,
             MutationCommandConfig {
-                path: String::new(),
+                path: ".".into(),
             },
-            String::new(),
+            ".".into(),
             AllMutationOperators::new().get_mutation_operators(),
         )
     }
 }
 
 impl MutationTool {
-    pub fn set_output_directory(mut self, output_directory: String) -> Self {
-        self.output_directory = output_directory;
-        self
-    }
-
-    pub fn set_verbose(mut self, verbose: bool) -> Self {
-        self.verbose = verbose;
-        self
-    }
-
-    pub fn set_config(mut self, config: MutationCommandConfig) -> Self {
-        self.config = config;
-        self
-    }
-
     pub fn new(
         verbose: bool,
         config: MutationCommandConfig,
@@ -91,6 +131,12 @@ impl MutationTool {
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
 
         // Validate config path
+        // Check if it exists
+        if !path::Path::new(config.path.as_str()).exists() {
+            Cli::command()
+                .error(ErrorKind::ArgumentConflict, "Path does not exist")
+                .exit();
+        }
         if !path::Path::new(config.path.as_str()).is_dir() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "Path is not a directory")
