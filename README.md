@@ -1,6 +1,7 @@
+![Circle Ci](https://circleci.com/gh/JosueMolinaMorales/kode-kraken.svg?style=svg)
+
 # Kode Kraken
 
-![Circle Ci](https://circleci.com/gh/JosueMolinaMorales/kode-kraken.svg?style=svg)
 
 A kotlin mutation testing tool built in Rust.
 ```
