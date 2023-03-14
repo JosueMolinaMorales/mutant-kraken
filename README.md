@@ -1,4 +1,4 @@
-![Circle Ci](https://circleci.com/gh/JosueMolinaMorales/kode-kraken.svg?style=svg)
+![Circle Ci](https://circleci.com/gh/JosueMolinaMorales/kode-kraken.svg?style=svg&circle-token=d0cc1fa43125de020e6ecba72aca15c607073190)
 
 # Kode Kraken
 
