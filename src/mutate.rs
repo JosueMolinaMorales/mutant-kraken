@@ -330,6 +330,7 @@ mod tests {
                 Path::new(&file_name).file_name().unwrap().to_str().unwrap()
             ))
     }
+    
     fn assert_all_mutation_files_were_created(
         mutator: &mut MutationTool,
         mutation_test_id: Uuid
@@ -435,25 +436,7 @@ mod tests {
             output_directory,
             vec![MutationOperators::LogicalOperator],
         );
-        let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
-        // Check that the mutated files were created
-        for (file_name, fm) in fm {
-            for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
-                let mut_file = fs::read_to_string(mutated_file_name)
-                    .unwrap()
-                    .as_bytes()
-                    .to_vec();
-                let diff = m.new_op.as_bytes().len() as isize - m.old_op.as_bytes().len() as isize;
-                let mut_range = m.start_byte..(m.end_byte as isize + diff) as usize;
-                // Checks that the mutated file does not have the same contents as the original file
-
-                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
-            }
-        }
-        // Remove contents in temp directory
-        remove_directory(mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
     }
 
     #[test]
@@ -475,26 +458,7 @@ mod tests {
             output_directory,
             vec![MutationOperators::RelationalOperator],
         );
-        let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
-        // Check that the mutated files were created
-        for (file_name, fm) in fm {
-            for m in fm.mutations {
-                println!("mutation: {:?}", m);
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
-                let mut_file = fs::read_to_string(mutated_file_name)
-                    .unwrap()
-                    .as_bytes()
-                    .to_vec();
-                let diff = m.new_op.as_bytes().len() as isize - m.old_op.as_bytes().len() as isize;
-                let mut_range = m.start_byte..(m.end_byte as isize + diff) as usize;
-                // Checks that the mutated file does not have the same contents as the original file
-
-                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
-            }
-        }
-        // Remove contents in temp directory
-        remove_directory(mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
     }
 
     #[test]
@@ -516,25 +480,7 @@ mod tests {
             output_directory,
             vec![MutationOperators::UnaryOperator],
         );
-        let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
-        // Check that the mutated files were created
-        for (file_name, fm) in fm {
-            for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
-                let mut_file = fs::read_to_string(mutated_file_name)
-                    .unwrap()
-                    .as_bytes()
-                    .to_vec();
-                let diff = m.new_op.as_bytes().len() as isize - m.old_op.as_bytes().len() as isize;
-                let mut_range = m.start_byte..(m.end_byte as isize + diff) as usize;
-                // Checks that the mutated file does not have the same contents as the original file
-
-                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
-            }
-        }
-        // Remove contents in temp directory
-        remove_directory(mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
     }
 
     #[test]
@@ -558,24 +504,6 @@ mod tests {
             output_directory,
             vec![MutationOperators::UnaryRemovalOperator],
         );
-        let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
-        // Check that the mutated files were created
-        for (file_name, fm) in fm {
-            for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
-                let mut_file = fs::read_to_string(mutated_file_name)
-                    .unwrap()
-                    .as_bytes()
-                    .to_vec();
-                let diff = m.new_op.as_bytes().len() as isize - m.old_op.as_bytes().len() as isize;
-                let mut_range = m.start_byte..(m.end_byte as isize + diff) as usize;
-                // Checks that the mutated file does not have the same contents as the original file
-
-                assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
-            }
-        }
-        // Remove contents in temp directory
-        remove_directory(mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
     }
 }
