@@ -1,4 +1,6 @@
 # Kode Kraken
+![Kode Kraken](https://circleci.com/gh/JosueMolinaMorales/kode-kraken.svg?style=svg)
+
 A kotlin mutation testing tool built in Rust.
 ```
 ###########################################################################################################
