@@ -83,9 +83,7 @@ impl MutationToolBuilder {
         self
     }
     pub fn build(self) -> MutationTool {
-        let config = self.config.unwrap_or(MutationCommandConfig {
-            path: ".".into(),
-        });
+        let config = self.config.unwrap_or_default();
         let output_directory = self.output_directory.unwrap_or(".".into());
         let mutation_operators = self
             .mutation_operators
@@ -111,9 +109,7 @@ impl Default for MutationTool {
     fn default() -> Self {
         Self::new(
             false,
-            MutationCommandConfig {
-                path: ".".into(),
-            },
+            MutationCommandConfig::default(),
             ".".into(),
             AllMutationOperators::new().get_mutation_operators(),
         )
@@ -121,7 +117,7 @@ impl Default for MutationTool {
 }
 
 impl MutationTool {
-    pub fn new(
+    fn new(
         verbose: bool,
         config: MutationCommandConfig,
         output_directory: String,
@@ -168,25 +164,30 @@ impl MutationTool {
     }
 
     fn generate_mutations_per_file(&self, file_mutations: HashMap<String, FileMutations>) {
+        if self.verbose {
+            tracing::info!("Generating mutations per file");
+        }
         for (file_name, fm) in file_mutations {
-            let mut file_str = fs::read_to_string(file_name.clone()).unwrap();
+            let mut file_str = fs::read_to_string(file_name.clone()).unwrap(); // TODO: Remove unwrap
             for m in fm.mutations.iter() {
-                println!("Mutation: {:#?}", m);
                 let new_op_bytes = m.new_op.as_bytes();
                 let mut file = file_str.as_bytes().to_vec();
-
+                
+                // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
-                // Write bytes to file
+                // Create a file name for the mutated file
                 // Prepend 'mut' to the file name
                 let mutated_file_name = Path::new(&self.output_directory).join(format!(
                     "mut_{}_{}",
                     m.id,
-                    Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+                    Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
                 ));
-                fs::write(mutated_file_name, file).unwrap();
+                // Write the mutated file to the output directory
+                fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                 // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
                 // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
-                file_str = fs::read_to_string(&file_name).unwrap();
+                // Read the original file again
+                file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
             }
         }
     }
@@ -204,6 +205,7 @@ impl MutationTool {
         }
 
         let mut file_mutations: HashMap<String, FileMutations> = HashMap::new();
+        let mut mutation_count = 0;
         for file in existing_files.clone() {
             for mut_op in self.mutation_operators.clone() {
                 // Get a list of mutations that can be made
@@ -215,7 +217,7 @@ impl MutationTool {
                     )
                     .unwrap(); // TODO: Remove this unwrap
                 let mutations = mut_op.find_mutation(ast);
-                tracing::debug!("Mutations made to file: {:#?}", mutations);
+                mutation_count += mutations.len();
                 file_mutations
                     .entry(file.clone())
                     .and_modify(|fm| fm.mutations.extend(mutations.clone()))
@@ -226,6 +228,7 @@ impl MutationTool {
         }
         if self.verbose {
             tracing::info!("Mutations made to all files");
+            tracing::info!("Total mutations made: {}", mutation_count);
         }
         file_mutations
     }

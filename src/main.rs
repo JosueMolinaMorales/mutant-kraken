@@ -32,7 +32,7 @@ struct Cli {
     verbose: bool,
 
     /// The path to the output directory
-    #[clap(short, long, default_value = "./examples/mutations/")]
+    #[clap(short, long, default_value = "./mutations/")]
     output_directory: String,
 }
 
@@ -41,6 +41,14 @@ pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
     path: String,
+}
+
+impl Default for MutationCommandConfig {
+    fn default() -> Self {
+        Self {
+            path: ".".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
