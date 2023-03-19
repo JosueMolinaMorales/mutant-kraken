@@ -83,12 +83,10 @@ fn main() {
                 .build()
                 .mutate();
         }
-        Commands::ClearOutputDirectory => {
-            mutate_tool_builder
-                .set_verbose(args.verbose)
-                .build()
-                .clear_output_directory(args.output_directory)
-        }
+        Commands::ClearOutputDirectory => mutate_tool_builder
+            .set_verbose(args.verbose)
+            .build()
+            .clear_output_directory(args.output_directory),
     }
 }
 

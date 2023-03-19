@@ -88,12 +88,7 @@ impl MutationToolBuilder {
         let mutation_operators = self
             .mutation_operators
             .unwrap_or(AllMutationOperators::new().get_mutation_operators());
-        MutationTool::new(
-            self.verbose,
-            config,
-            output_directory,
-            mutation_operators,
-        )
+        MutationTool::new(self.verbose, config, output_directory, mutation_operators)
     }
 }
 
@@ -172,7 +167,7 @@ impl MutationTool {
             for m in fm.mutations.iter() {
                 let new_op_bytes = m.new_op.as_bytes();
                 let mut file = file_str.as_bytes().to_vec();
-                
+
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
                 // Create a file name for the mutated file
@@ -321,23 +316,15 @@ mod tests {
         )
     }
 
-    fn get_mutated_file_name(
-        mutator: &MutationTool,
-        file_name: &str,
-        m: &Mutation,
-    ) -> PathBuf {
-        Path::new(&mutator.output_directory)
-            .join(format!(
-                "mut_{}_{}",
-                m.id,
-                Path::new(&file_name).file_name().unwrap().to_str().unwrap()
-            ))
+    fn get_mutated_file_name(mutator: &MutationTool, file_name: &str, m: &Mutation) -> PathBuf {
+        Path::new(&mutator.output_directory).join(format!(
+            "mut_{}_{}",
+            m.id,
+            Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+        ))
     }
-    
-    fn assert_all_mutation_files_were_created(
-        mutator: &mut MutationTool,
-        mutation_test_id: Uuid
-    ) {
+
+    fn assert_all_mutation_files_were_created(mutator: &mut MutationTool, mutation_test_id: Uuid) {
         let fm = mutator.gather_mutations_per_file();
         mutator.generate_mutations_per_file(fm.clone());
         // Check that the mutated files were created
@@ -351,10 +338,7 @@ mod tests {
         remove_directory(mutation_test_id);
     }
 
-    fn assert_all_mutations_are_correct(
-        mutator: &mut MutationTool,
-        mutation_test_id: Uuid
-    ) {
+    fn assert_all_mutations_are_correct(mutator: &mut MutationTool, mutation_test_id: Uuid) {
         let fm = mutator.gather_mutations_per_file();
         mutator.generate_mutations_per_file(fm.clone());
         // Check that the mutated files were created
@@ -400,7 +384,8 @@ mod tests {
 
     #[test]
     fn test_mutate_assignment_mutated_files_exist() {
-        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
             output_directory,
@@ -411,7 +396,8 @@ mod tests {
 
     #[test]
     fn test_mutate_assignment_mutations_are_correct() {
-        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
             output_directory,
@@ -444,7 +430,8 @@ mod tests {
 
     #[test]
     fn test_mutate_relational_mutated_files_exist() {
-        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
             output_directory,
@@ -455,7 +442,8 @@ mod tests {
 
     #[test]
     fn test_mutate_relational_mutations_are_correct() {
-        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
             output_directory,
