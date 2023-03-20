@@ -97,11 +97,9 @@ impl MutationOperators {
     }
 
     pub fn find_mutation(&self, ast: tree_sitter::Tree) -> Vec<Mutation> {
-        tracing::debug!("Finding mutations for {:?}", self);
         let mut mutations = Vec::new();
         let mut cursor = ast.walk();
         let root = ast.root_node();
-        // tracing::debug!("Root node: {:?}", root);
         self.mutate(root, &mut cursor, None, &mut mutations);
         mutations
     }

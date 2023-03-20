@@ -32,7 +32,7 @@ struct Cli {
     verbose: bool,
 
     /// The path to the output directory
-    #[clap(short, long, default_value = "./mutations/")]
+    #[clap(short, long, default_value = "./kode-kraken-dist/")]
     output_directory: String,
 }
 
@@ -76,6 +76,7 @@ fn main() {
     }
     match args.command {
         Commands::Mutate(config) => {
+            // TODO: If an error occurs, remove the output directory
             mutate_tool_builder
                 .set_verbose(verbose)
                 .set_output_directory(args.output_directory)

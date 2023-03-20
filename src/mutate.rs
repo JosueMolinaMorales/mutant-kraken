@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{self, Path},
+    path::{self, Path}, process,
 };
 
 use clap::{error::ErrorKind, CommandFactory};
@@ -143,6 +143,18 @@ impl MutationTool {
                 )
                 .exit();
         }
+        // If output directory exists, clear it
+        if path::Path::new(output_directory.as_str()).exists() {
+            fs::remove_dir_all(output_directory.as_str()).unwrap(); // TODO: Remove unwrap
+        }
+        if !Path::new(output_directory.as_str()).join("mutations").exists() {
+            fs::create_dir_all(Path::new(output_directory.as_str()).join("mutations")).unwrap(); // TODO: Remove unwrap
+        }
+        let output_directory = Path::new(output_directory.as_str())
+            .join("mutations")
+            .to_str()
+            .unwrap()
+            .to_string();
 
         Self {
             verbose,
@@ -158,6 +170,31 @@ impl MutationTool {
         self.generate_mutations_per_file(file_mutations);
     }
 
+    fn build_and_test(&self, mutated_file_name: String, original_file_name: String) {
+        // Replace the original file with the mutated file, saving a copy of the original file
+        fs::copy(
+            Path::new(self.config.path.as_str()).join(&original_file_name),
+            Path::new(self.config.path.as_str()).join(&original_file_name).with_extension("bak"),
+        );
+        // Check to see if gradlew exists in the root of the directory
+        if !Path::new(self.config.path.as_str()).join("gradlew").exists() {
+            Cli::command()
+                .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
+                .exit();
+        }
+        let res = process::Command::new("./gradlew")
+            .arg("check")
+            .current_dir(&self.config.path)
+            .output()
+            .expect("Failed to run gradlew");
+        println!("RES: {:#?}", res);
+        if res.status.success() {
+            tracing::info!("Build and test successful");
+        } else {
+            tracing::info!("Build and test failed");
+        }
+    }
+
     fn generate_mutations_per_file(&self, file_mutations: HashMap<String, FileMutations>) {
         if self.verbose {
             tracing::info!("Generating mutations per file");
@@ -170,16 +207,19 @@ impl MutationTool {
 
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+                let file_name = Path::new(&file_name).file_name().unwrap().to_str().unwrap(); // TODO: Remove unwrap
                 // Create a file name for the mutated file
                 // Prepend 'mut' to the file name
                 let mutated_file_name = Path::new(&self.output_directory).join(format!(
                     "mut_{}_{}",
                     m.id,
-                    Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+                    file_name
                 ));
+                let mutated_file_name = mutated_file_name.file_name().unwrap().to_str().unwrap().to_string(); // TODO: Remove unwrap
                 // Write the mutated file to the output directory
                 fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                 // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
+                // self.build_and_test(mutated_file_name, file_name);
                 // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
                 // Read the original file again
                 file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
