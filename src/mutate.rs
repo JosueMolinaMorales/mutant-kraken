@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{self, Path}, process,
+    path::{self, Path, Component}, ffi::OsStr, process,
 };
 
 use clap::{error::ErrorKind, CommandFactory};
@@ -149,12 +149,8 @@ impl MutationTool {
         }
         if !Path::new(output_directory.as_str()).join("mutations").exists() {
             fs::create_dir_all(Path::new(output_directory.as_str()).join("mutations")).unwrap(); // TODO: Remove unwrap
+            fs::create_dir(Path::new(&output_directory).join("backups")).unwrap(); // TODO: Remove unwrap
         }
-        let output_directory = Path::new(output_directory.as_str())
-            .join("mutations")
-            .to_str()
-            .unwrap()
-            .to_string();
 
         Self {
             verbose,
@@ -170,13 +166,22 @@ impl MutationTool {
         self.generate_mutations_per_file(file_mutations);
     }
 
-    fn build_and_test(&self, mutated_file_name: String, original_file_name: String) {
-        // Replace the original file with the mutated file, saving a copy of the original file
+    fn build_and_test(&self, mutated_file_path: String, original_file_path: String) {
+        let original_file_name = Path::new(&original_file_path).file_name().unwrap().to_str().unwrap();
+        println!("Original file path: {}", original_file_path);
+        println!("Mutated file path: {}", mutated_file_path);
+        // Save a copy of the original file
         fs::copy(
-            Path::new(self.config.path.as_str()).join(&original_file_name),
-            Path::new(self.config.path.as_str()).join(&original_file_name).with_extension("bak"),
-        );
+            Path::new(&original_file_path),
+            Path::new(&self.output_directory).join("backups").join(&original_file_name),
+        ).unwrap();
+        // Copy the mutated file to the original file
+        fs::copy(
+            Path::new(&mutated_file_path),
+            Path::new(&original_file_path),
+        ).unwrap();
         // Check to see if gradlew exists in the root of the directory
+        // TODO: How will testing work for this?
         if !Path::new(self.config.path.as_str()).join("gradlew").exists() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
@@ -193,6 +198,11 @@ impl MutationTool {
         } else {
             tracing::info!("Build and test failed");
         }
+        // Restore the original file
+        fs::copy(
+            Path::new(&self.output_directory).join("backups").join(&original_file_name),
+            Path::new(&original_file_path),
+        ).unwrap();
     }
 
     fn generate_mutations_per_file(&self, file_mutations: HashMap<String, FileMutations>) {
@@ -207,19 +217,19 @@ impl MutationTool {
 
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
-                let file_name = Path::new(&file_name).file_name().unwrap().to_str().unwrap(); // TODO: Remove unwrap
                 // Create a file name for the mutated file
                 // Prepend 'mut' to the file name
-                let mutated_file_name = Path::new(&self.output_directory).join(format!(
-                    "mut_{}_{}",
-                    m.id,
-                    file_name
-                ));
-                let mutated_file_name = mutated_file_name.file_name().unwrap().to_str().unwrap().to_string(); // TODO: Remove unwrap
+                let mutated_file_name = Path::new(&self.output_directory)
+                    .join("mutations")
+                    .join(format!(
+                        "mut_{}_{}",
+                        m.id,
+                        Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+                    ));
                 // Write the mutated file to the output directory
-                fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+                fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                 // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
-                // self.build_and_test(mutated_file_name, file_name);
+                self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
                 // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
                 // Read the original file again
                 file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
@@ -275,6 +285,7 @@ impl MutationTool {
         path: String,
         existing_files: &mut Vec<String>,
     ) -> Result<(), CliError> {
+        // TODO: Consider adding src to this path.
         let directory = Path::new(path.as_str()).read_dir().map_err(|_| CliError {
             kind: ErrorKind::Io,
             message: "Could not read directory".into(),
@@ -298,6 +309,12 @@ impl MutationTool {
                 continue;
             }
             if path.extension() != Some("kt".as_ref()) {
+                continue;
+            }
+            if path
+                .components()
+                .any(|p| p == Component::Normal(OsStr::new("test")) || p == Component::Normal(OsStr::new("build"))) 
+            {
                 continue;
             }
             existing_files.push(path.to_str().unwrap().to_string());
