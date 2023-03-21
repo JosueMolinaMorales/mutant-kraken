@@ -1,12 +1,12 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{self, Path, Component}, ffi::OsStr, process,
+    path::{self, Path, Component}, ffi::OsStr, process::{self, Stdio}, time::Duration,
 };
 
 use clap::{error::ErrorKind, CommandFactory};
 use uuid::Uuid;
-
+use wait_timeout::ChildExt;
 use crate::{
     mutation_operators::{AllMutationOperators, MutationOperators},
     Cli, CliError, FileMutations, MutationCommandConfig,
@@ -167,9 +167,10 @@ impl MutationTool {
     }
 
     fn build_and_test(&self, mutated_file_path: String, original_file_path: String) {
+        if self.verbose {
+            tracing::info!("Building and testing {}...", mutated_file_path);
+        }
         let original_file_name = Path::new(&original_file_path).file_name().unwrap().to_str().unwrap();
-        println!("Original file path: {}", original_file_path);
-        println!("Mutated file path: {}", mutated_file_path);
         // Save a copy of the original file
         fs::copy(
             Path::new(&original_file_path),
@@ -187,16 +188,64 @@ impl MutationTool {
                 .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
                 .exit();
         }
+        // Compile the project first, skip if compilation fails
+        println!("Running build");
         let res = process::Command::new("./gradlew")
-            .arg("check")
+            .arg("assemble")
+            .arg("--parallel")
+            .arg("--build-cache")
             .current_dir(&self.config.path)
             .output()
             .expect("Failed to run gradlew");
-        println!("RES: {:#?}", res);
-        if res.status.success() {
-            tracing::info!("Build and test successful");
+        if !res.status.success() {
+            tracing::info!("Build failed");
+            // Restore the original file
+            fs::copy(
+                Path::new(&self.output_directory).join("backups").join(&original_file_name),
+                Path::new(&original_file_path),
+            ).unwrap();
+            return;
+        }
+        println!("Running tests");
+        let mut child_process = process::Command::new("./gradlew")
+            .arg("test")
+            .arg("--parallel")
+            .arg("--build-cache")
+            .arg("--quiet")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .current_dir(&self.config.path)
+            .spawn()
+            .expect("Failed to run gradlew");
+        // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
+        // can occur from the mutations.
+        let res = match child_process.wait_timeout(Duration::from_secs(10)) {
+                Ok(Some(status)) => status,
+                Ok(None) => {
+                    child_process.kill().unwrap();
+                    tracing::info!("Test timed out for: {}", mutated_file_path);
+                    // Restore the original file
+                    fs::copy(
+                        Path::new(&self.output_directory).join("backups").join(&original_file_name),
+                        Path::new(&original_file_path),
+                    ).unwrap();
+                    return;
+                },
+                Err(e) => {
+                    tracing::info!("Test failed: {}", e);
+                    child_process.kill().unwrap();
+                    // Restore the original file
+                    fs::copy(
+                        Path::new(&self.output_directory).join("backups").join(&original_file_name),
+                        Path::new(&original_file_path),
+                    ).unwrap();
+                    return;
+                }
+            };
+        if res.success() {
+            tracing::info!("Test successful for: {}", mutated_file_path);
         } else {
-            tracing::info!("Build and test failed");
+            tracing::info!("Test failed for: {}", mutated_file_path);
         }
         // Restore the original file
         fs::copy(
@@ -275,6 +324,7 @@ impl MutationTool {
             tracing::info!("Mutations made to all files");
             tracing::info!("Total mutations made: {}", mutation_count);
         }
+        tracing::info!("Mutations: {:#?}", file_mutations);
         file_mutations
     }
 
