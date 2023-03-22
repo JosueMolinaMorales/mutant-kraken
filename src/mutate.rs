@@ -1,12 +1,11 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{Path, Component, PathBuf}, ffi::OsStr, process::{self, Stdio}, time::Duration,
+    path::{Path, Component, PathBuf}, ffi::OsStr
 };
 
 use clap::{error::ErrorKind, CommandFactory};
 use uuid::Uuid;
-use wait_timeout::ChildExt;
 use crate::{
     mutation_operators::{AllMutationOperators, MutationOperators},
     Cli, CliError, FileMutations, MutationCommandConfig, gradle::Gradle,
