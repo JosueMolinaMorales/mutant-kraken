@@ -4,6 +4,8 @@ use mutate::{Mutation, MutationToolBuilder};
 pub mod kotlin_types;
 pub mod mutate;
 pub mod mutation_operators;
+pub mod gradle;
+
 #[cfg(test)]
 pub mod test_config;
 
@@ -11,11 +13,10 @@ pub mod test_config;
 enum Commands {
     /// Mutate the files in the given path
     Mutate(MutationCommandConfig),
-
-    /// Clear the output directory of all files
-    Clear,
 }
+
 const ABOUT: &str = include_str!("../assets/about.txt");
+
 #[derive(Parser, Debug)]
 #[command(
     author,
@@ -30,10 +31,6 @@ struct Cli {
     /// Print out verbose information
     #[clap(short, long, default_value = "false")]
     verbose: bool,
-
-    /// The path to the output directory
-    #[clap(short, long, default_value = "./kode-kraken-dist/")]
-    output_directory: String,
 }
 
 #[derive(Args, Debug, Clone)]
@@ -79,15 +76,10 @@ fn main() {
             // TODO: If an error occurs, remove the output directory
             mutate_tool_builder
                 .set_verbose(verbose)
-                .set_output_directory(args.output_directory)
                 .set_config(config)
                 .build()
                 .mutate();
         }
-        Commands::Clear => mutate_tool_builder
-            .set_verbose(args.verbose)
-            .build()
-            .clear_output_directory(args.output_directory),
     }
 }
 

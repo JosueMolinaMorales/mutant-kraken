@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{self, Path, Component, PathBuf}, ffi::OsStr, process::{self, Stdio}, time::Duration,
+    path::{Path, Component, PathBuf}, ffi::OsStr, process::{self, Stdio}, time::Duration,
 };
 
 use clap::{error::ErrorKind, CommandFactory};
@@ -9,7 +9,7 @@ use uuid::Uuid;
 use wait_timeout::ChildExt;
 use crate::{
     mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, FileMutations, MutationCommandConfig,
+    Cli, CliError, FileMutations, MutationCommandConfig, gradle::Gradle,
 };
 
 #[derive(Debug, Clone)]
@@ -47,7 +47,6 @@ impl Mutation {
 pub struct MutationToolBuilder {
     verbose: bool,
     config: Option<MutationCommandConfig>,
-    output_directory: Option<String>,
     mutation_operators: Option<Vec<MutationOperators>>,
 }
 
@@ -56,7 +55,6 @@ impl MutationToolBuilder {
         Self {
             verbose: false,
             config: None,
-            output_directory: None,
             mutation_operators: None,
         }
     }
@@ -68,27 +66,16 @@ impl MutationToolBuilder {
         self.config = Some(config);
         self
     }
-    pub fn set_output_directory(mut self, output_directory: String) -> Self {
-        self.output_directory = Some(output_directory);
-        if let Some(o_dir) = self.output_directory.as_ref() {
-            // If path does not exist, create it
-            if !path::Path::new(o_dir.as_str()).exists() {
-                fs::create_dir_all(o_dir).unwrap(); // TODO: Remove unwrap
-            }
-        }
-        self
-    }
     pub fn set_mutation_operators(mut self, mutation_operators: Vec<MutationOperators>) -> Self {
         self.mutation_operators = Some(mutation_operators);
         self
     }
     pub fn build(self) -> MutationTool {
         let config = self.config.unwrap_or_default();
-        let output_directory = self.output_directory.unwrap_or(".".into());
         let mutation_operators = self
             .mutation_operators
             .unwrap_or(AllMutationOperators::new().get_mutation_operators());
-        MutationTool::new(self.verbose, config, output_directory, mutation_operators)
+        MutationTool::new(self.verbose, config, "./kode-kraken-dist".into(), mutation_operators)
     }
 }
 
@@ -99,6 +86,7 @@ pub struct MutationTool {
     mutation_operators: Vec<MutationOperators>,
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
+    gradle: Gradle,
 }
 
 impl Default for MutationTool {
@@ -106,7 +94,7 @@ impl Default for MutationTool {
         Self::new(
             false,
             MutationCommandConfig::default(),
-            ".".into(),
+            "./kode-kraken-dist".into(),
             AllMutationOperators::new().get_mutation_operators(),
         )
     }
@@ -124,28 +112,20 @@ impl MutationTool {
 
         // Validate config path
         // Check if it exists
-        if !path::Path::new(&config.path).exists() {
+        let config_path = Path::new(&config.path);
+        if !config_path.exists() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "Path does not exist")
                 .exit();
         }
-        if !path::Path::new(&config.path).is_dir() {
+        if !config_path.is_dir() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "Path is not a directory")
                 .exit();
         }
 
-        // Validate output directory
-        if !path::Path::new(&output_directory).is_dir() {
-            Cli::command()
-                .error(
-                    ErrorKind::ArgumentConflict,
-                    "Output directory is not a directory",
-                )
-                .exit();
-        }
         // If output directory exists, clear it
-        if path::Path::new(&output_directory).exists() {
+        if Path::new(&output_directory).exists() {
             fs::remove_dir_all(&output_directory).unwrap(); // TODO: Remove unwrap
         }
         // Create directories
@@ -157,6 +137,10 @@ impl MutationTool {
         if !backup_dir.exists() {
             fs::create_dir(&backup_dir).unwrap(); // TODO: Remove unwrap
         }
+
+        // Create gradle struct
+        let gradle = Gradle::new(config_path.to_path_buf());
+
         Self {
             verbose,
             config,
@@ -164,6 +148,7 @@ impl MutationTool {
             mutation_operators,
             mutation_dir,
             backup_dir,
+            gradle,
         }
     }
 
@@ -176,103 +161,27 @@ impl MutationTool {
     }
 
     pub fn mutate(&mut self) {
+        // Phase 1: Gather mutations per file
         let file_mutations = self.gather_mutations_per_file();
+        // Phase 2: Generate mutations per file
         self.generate_mutations_per_file(&file_mutations);
+        // Phase 3: Build and test
         self.build_and_test(&file_mutations);
+        // Phase 4: Report results
     }
 
-    fn build_and_test(&self, file_mutations: &HashMap<String, FileMutations>) {
+    fn build_and_test(&mut self, file_mutations: &HashMap<String, FileMutations>) {
         for (file_name, fm) in file_mutations {
             for mutation in &fm.mutations {
-                let mutated_file_path = self.mutation_dir
-                    .join(self.create_mutated_file_name(&file_name, &mutation))
-                    .to_str()
-                    .unwrap()
-                    .to_string();
-                let original_file_path = Path::new(&self.config.path).join(&file_name).to_str().unwrap().to_string();
+                let mutated_file_path = self.mutation_dir.join(self.create_mutated_file_name(&file_name, &mutation));
+                let original_file_path = Path::new(&self.config.path).join(&file_name);
+                let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
+                let backup_path = self.backup_dir.join(&original_file_name);
                 if self.verbose {
-                    tracing::info!("Building and testing {}...", mutated_file_path);
+                    tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
-                let original_file_name = Path::new(&original_file_path).file_name().unwrap().to_str().unwrap();
-                // Save a copy of the original file
-                fs::copy(
-                    &original_file_path,
-                    self.backup_dir.join(&original_file_name),
-                ).unwrap();
-                // Copy the mutated file to the original file
-                fs::copy(
-                    &mutated_file_path,
-                    &original_file_path,
-                ).unwrap();
-                // Check to see if gradlew exists in the root of the directory
-                // TODO: How will testing work for this?
-                if !Path::new(self.config.path.as_str()).join("gradlew").exists() {
-                    Cli::command()
-                        .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
-                        .exit();
-                }
-                // Compile the project first, skip if compilation fails
-                let res = process::Command::new("./gradlew")
-                    .arg("assemble")
-                    .arg("--parallel")
-                    .arg("--build-cache")
-                    .current_dir(&self.config.path)
-                    .output()
-                    .expect("Failed to run gradlew");
-                if !res.status.success() {
-                    tracing::info!("Build failed");
-                    // Restore the original file
-                    fs::copy(
-                        self.backup_dir.join(&original_file_name),
-                        &original_file_path,
-                    ).unwrap();
-                    return;
-                }
-                let mut child_process = process::Command::new("./gradlew")
-                    .arg("test")
-                    .arg("--parallel")
-                    .arg("--build-cache")
-                    .arg("--quiet")
-                    .stdout(Stdio::null())
-                    .stderr(Stdio::null())
-                    .current_dir(&self.config.path)
-                    .spawn()
-                    .expect("Failed to run gradlew");
-                // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
-                // can occur from the mutations.
-                let res = match child_process.wait_timeout(Duration::from_secs(10)) {
-                        Ok(Some(status)) => status,
-                        Ok(None) => {
-                            child_process.kill().unwrap();
-                            tracing::info!("Test timed out for: {}", mutated_file_path);
-                            // Restore the original file
-                            fs::copy(
-                                self.backup_dir.join(&original_file_name),
-                                &original_file_path,
-                            ).unwrap();
-                            return;
-                        },
-                        Err(e) => {
-                            tracing::info!("Test failed: {}", e);
-                            child_process.kill().unwrap();
-                            // Restore the original file
-                            fs::copy(
-                                self.backup_dir.join(&original_file_name),
-                                &original_file_path,
-                            ).unwrap();
-                            return;
-                        }
-                    };
-                if res.success() {
-                    tracing::info!("Test successful for: {}", mutated_file_path);
-                } else {
-                    tracing::info!("Test failed for: {}", mutated_file_path);
-                }
-                // Restore the original file
-                fs::copy(
-                    self.backup_dir.join(&original_file_name),
-                    &original_file_path,
-                ).unwrap();
+                
+                self.gradle.run(mutated_file_path, original_file_path, backup_path);
             }
         }
     }
@@ -388,17 +297,6 @@ impl MutationTool {
         }
 
         Ok(())
-    }
-
-    pub fn clear_output_directory(&self, ouptut_directory: String) {
-        // TODO: Remove contents of directory instead of the entire directory
-        let dir = Path::new(ouptut_directory.as_str());
-        if self.verbose {
-            tracing::info!("Removing directory: {:#?}", dir);
-        }
-        if dir.exists() {
-            fs::remove_dir_all(dir).unwrap();
-        }
     }
 }
 
