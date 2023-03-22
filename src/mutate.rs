@@ -189,7 +189,6 @@ impl MutationTool {
                 .exit();
         }
         // Compile the project first, skip if compilation fails
-        println!("Running build");
         let res = process::Command::new("./gradlew")
             .arg("assemble")
             .arg("--parallel")
@@ -206,7 +205,6 @@ impl MutationTool {
             ).unwrap();
             return;
         }
-        println!("Running tests");
         let mut child_process = process::Command::new("./gradlew")
             .arg("test")
             .arg("--parallel")

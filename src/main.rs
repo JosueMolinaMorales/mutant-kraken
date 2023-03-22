@@ -13,7 +13,7 @@ enum Commands {
     Mutate(MutationCommandConfig),
 
     /// Clear the output directory of all files
-    ClearOutputDirectory,
+    Clear,
 }
 const ABOUT: &str = include_str!("../assets/about.txt");
 #[derive(Parser, Debug)]
@@ -84,7 +84,7 @@ fn main() {
                 .build()
                 .mutate();
         }
-        Commands::ClearOutputDirectory => mutate_tool_builder
+        Commands::Clear => mutate_tool_builder
             .set_verbose(args.verbose)
             .build()
             .clear_output_directory(args.output_directory),
