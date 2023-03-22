@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs,
-    path::{self, Path, Component}, ffi::OsStr, process::{self, Stdio}, time::Duration,
+    path::{self, Path, Component, PathBuf}, ffi::OsStr, process::{self, Stdio}, time::Duration,
 };
 
 use clap::{error::ErrorKind, CommandFactory};
@@ -96,8 +96,9 @@ pub struct MutationTool {
     parser: tree_sitter::Parser,
     verbose: bool,
     config: MutationCommandConfig,
-    output_directory: String,
     mutation_operators: Vec<MutationOperators>,
+    mutation_dir: PathBuf,
+    backup_dir: PathBuf,
 }
 
 impl Default for MutationTool {
@@ -123,19 +124,19 @@ impl MutationTool {
 
         // Validate config path
         // Check if it exists
-        if !path::Path::new(config.path.as_str()).exists() {
+        if !path::Path::new(&config.path).exists() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "Path does not exist")
                 .exit();
         }
-        if !path::Path::new(config.path.as_str()).is_dir() {
+        if !path::Path::new(&config.path).is_dir() {
             Cli::command()
                 .error(ErrorKind::ArgumentConflict, "Path is not a directory")
                 .exit();
         }
 
         // Validate output directory
-        if !path::Path::new(output_directory.as_str()).is_dir() {
+        if !path::Path::new(&output_directory).is_dir() {
             Cli::command()
                 .error(
                     ErrorKind::ArgumentConflict,
@@ -144,115 +145,139 @@ impl MutationTool {
                 .exit();
         }
         // If output directory exists, clear it
-        if path::Path::new(output_directory.as_str()).exists() {
-            fs::remove_dir_all(output_directory.as_str()).unwrap(); // TODO: Remove unwrap
+        if path::Path::new(&output_directory).exists() {
+            fs::remove_dir_all(&output_directory).unwrap(); // TODO: Remove unwrap
         }
-        if !Path::new(output_directory.as_str()).join("mutations").exists() {
-            fs::create_dir_all(Path::new(output_directory.as_str()).join("mutations")).unwrap(); // TODO: Remove unwrap
-            fs::create_dir(Path::new(&output_directory).join("backups")).unwrap(); // TODO: Remove unwrap
+        // Create directories
+        let mutation_dir = Path::new(&output_directory).join("mutations");
+        let backup_dir = Path::new(&output_directory).join("backups");
+        if !mutation_dir.exists() {
+            fs::create_dir_all(&mutation_dir).unwrap(); // TODO: Remove unwrap
         }
-
+        if !backup_dir.exists() {
+            fs::create_dir(&backup_dir).unwrap(); // TODO: Remove unwrap
+        }
         Self {
             verbose,
             config,
             parser,
-            output_directory,
             mutation_operators,
+            mutation_dir,
+            backup_dir,
         }
+    }
+
+    fn create_mutated_file_name(&self, file_name: &str, mutation: &Mutation) -> String {
+        format!(
+            "mut_{}_{}",
+            mutation.id,
+            Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+        )
     }
 
     pub fn mutate(&mut self) {
         let file_mutations = self.gather_mutations_per_file();
-        self.generate_mutations_per_file(file_mutations);
+        self.generate_mutations_per_file(&file_mutations);
+        self.build_and_test(&file_mutations);
     }
 
-    fn build_and_test(&self, mutated_file_path: String, original_file_path: String) {
-        if self.verbose {
-            tracing::info!("Building and testing {}...", mutated_file_path);
-        }
-        let original_file_name = Path::new(&original_file_path).file_name().unwrap().to_str().unwrap();
-        // Save a copy of the original file
-        fs::copy(
-            Path::new(&original_file_path),
-            Path::new(&self.output_directory).join("backups").join(&original_file_name),
-        ).unwrap();
-        // Copy the mutated file to the original file
-        fs::copy(
-            Path::new(&mutated_file_path),
-            Path::new(&original_file_path),
-        ).unwrap();
-        // Check to see if gradlew exists in the root of the directory
-        // TODO: How will testing work for this?
-        if !Path::new(self.config.path.as_str()).join("gradlew").exists() {
-            Cli::command()
-                .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
-                .exit();
-        }
-        // Compile the project first, skip if compilation fails
-        let res = process::Command::new("./gradlew")
-            .arg("assemble")
-            .arg("--parallel")
-            .arg("--build-cache")
-            .current_dir(&self.config.path)
-            .output()
-            .expect("Failed to run gradlew");
-        if !res.status.success() {
-            tracing::info!("Build failed");
-            // Restore the original file
-            fs::copy(
-                Path::new(&self.output_directory).join("backups").join(&original_file_name),
-                Path::new(&original_file_path),
-            ).unwrap();
-            return;
-        }
-        let mut child_process = process::Command::new("./gradlew")
-            .arg("test")
-            .arg("--parallel")
-            .arg("--build-cache")
-            .arg("--quiet")
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .current_dir(&self.config.path)
-            .spawn()
-            .expect("Failed to run gradlew");
-        // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
-        // can occur from the mutations.
-        let res = match child_process.wait_timeout(Duration::from_secs(10)) {
-                Ok(Some(status)) => status,
-                Ok(None) => {
-                    child_process.kill().unwrap();
-                    tracing::info!("Test timed out for: {}", mutated_file_path);
+    fn build_and_test(&self, file_mutations: &HashMap<String, FileMutations>) {
+        for (file_name, fm) in file_mutations {
+            for mutation in &fm.mutations {
+                let mutated_file_path = self.mutation_dir
+                    .join(self.create_mutated_file_name(&file_name, &mutation))
+                    .to_str()
+                    .unwrap()
+                    .to_string();
+                let original_file_path = Path::new(&self.config.path).join(&file_name).to_str().unwrap().to_string();
+                if self.verbose {
+                    tracing::info!("Building and testing {}...", mutated_file_path);
+                }
+                let original_file_name = Path::new(&original_file_path).file_name().unwrap().to_str().unwrap();
+                // Save a copy of the original file
+                fs::copy(
+                    &original_file_path,
+                    self.backup_dir.join(&original_file_name),
+                ).unwrap();
+                // Copy the mutated file to the original file
+                fs::copy(
+                    &mutated_file_path,
+                    &original_file_path,
+                ).unwrap();
+                // Check to see if gradlew exists in the root of the directory
+                // TODO: How will testing work for this?
+                if !Path::new(self.config.path.as_str()).join("gradlew").exists() {
+                    Cli::command()
+                        .error(ErrorKind::ArgumentConflict, "gradlew does not exist at the root of this project")
+                        .exit();
+                }
+                // Compile the project first, skip if compilation fails
+                let res = process::Command::new("./gradlew")
+                    .arg("assemble")
+                    .arg("--parallel")
+                    .arg("--build-cache")
+                    .current_dir(&self.config.path)
+                    .output()
+                    .expect("Failed to run gradlew");
+                if !res.status.success() {
+                    tracing::info!("Build failed");
                     // Restore the original file
                     fs::copy(
-                        Path::new(&self.output_directory).join("backups").join(&original_file_name),
-                        Path::new(&original_file_path),
-                    ).unwrap();
-                    return;
-                },
-                Err(e) => {
-                    tracing::info!("Test failed: {}", e);
-                    child_process.kill().unwrap();
-                    // Restore the original file
-                    fs::copy(
-                        Path::new(&self.output_directory).join("backups").join(&original_file_name),
-                        Path::new(&original_file_path),
+                        self.backup_dir.join(&original_file_name),
+                        &original_file_path,
                     ).unwrap();
                     return;
                 }
-            };
-        if res.success() {
-            tracing::info!("Test successful for: {}", mutated_file_path);
-        } else {
-            tracing::info!("Test failed for: {}", mutated_file_path);
+                let mut child_process = process::Command::new("./gradlew")
+                    .arg("test")
+                    .arg("--parallel")
+                    .arg("--build-cache")
+                    .arg("--quiet")
+                    .stdout(Stdio::null())
+                    .stderr(Stdio::null())
+                    .current_dir(&self.config.path)
+                    .spawn()
+                    .expect("Failed to run gradlew");
+                // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
+                // can occur from the mutations.
+                let res = match child_process.wait_timeout(Duration::from_secs(10)) {
+                        Ok(Some(status)) => status,
+                        Ok(None) => {
+                            child_process.kill().unwrap();
+                            tracing::info!("Test timed out for: {}", mutated_file_path);
+                            // Restore the original file
+                            fs::copy(
+                                self.backup_dir.join(&original_file_name),
+                                &original_file_path,
+                            ).unwrap();
+                            return;
+                        },
+                        Err(e) => {
+                            tracing::info!("Test failed: {}", e);
+                            child_process.kill().unwrap();
+                            // Restore the original file
+                            fs::copy(
+                                self.backup_dir.join(&original_file_name),
+                                &original_file_path,
+                            ).unwrap();
+                            return;
+                        }
+                    };
+                if res.success() {
+                    tracing::info!("Test successful for: {}", mutated_file_path);
+                } else {
+                    tracing::info!("Test failed for: {}", mutated_file_path);
+                }
+                // Restore the original file
+                fs::copy(
+                    self.backup_dir.join(&original_file_name),
+                    &original_file_path,
+                ).unwrap();
+            }
         }
-        // Restore the original file
-        fs::copy(
-            Path::new(&self.output_directory).join("backups").join(&original_file_name),
-            Path::new(&original_file_path),
-        ).unwrap();
     }
 
-    fn generate_mutations_per_file(&self, file_mutations: HashMap<String, FileMutations>) {
+    fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
@@ -266,17 +291,11 @@ impl MutationTool {
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
                 // Create a file name for the mutated file
                 // Prepend 'mut' to the file name
-                let mutated_file_name = Path::new(&self.output_directory)
-                    .join("mutations")
-                    .join(format!(
-                        "mut_{}_{}",
-                        m.id,
-                        Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
-                    ));
+                let mutated_file_name = self.mutation_dir.join(self.create_mutated_file_name(&file_name, &m));
                 // Write the mutated file to the output directory
                 fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                 // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
-                self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
+                // self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
                 // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
                 // Read the original file again
                 file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
@@ -421,21 +440,23 @@ mod tests {
         )
     }
 
-    fn get_mutated_file_name(mutator: &MutationTool, file_name: &str, m: &Mutation) -> PathBuf {
-        Path::new(&mutator.output_directory).join(format!(
-            "mut_{}_{}",
-            m.id,
-            Path::new(&file_name).file_name().unwrap().to_str().unwrap()
-        ))
+    fn get_mutated_file_name(file_name: &str, m: &Mutation, output_directory: String) -> PathBuf {
+        Path::new(&output_directory)
+            .join("mutations")
+            .join(format!(
+                "mut_{}_{}",
+                m.id,
+                Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+            ))
     }
 
-    fn assert_all_mutation_files_were_created(mutator: &mut MutationTool, mutation_test_id: Uuid) {
+    fn assert_all_mutation_files_were_created(mutator: &mut MutationTool, mutation_test_id: Uuid, output_directory: String) {
         let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
+        mutator.generate_mutations_per_file(&fm.clone());
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&file_name, &m, output_directory.clone());
                 assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
             }
         }
@@ -443,13 +464,13 @@ mod tests {
         remove_directory(mutation_test_id);
     }
 
-    fn assert_all_mutations_are_correct(mutator: &mut MutationTool, mutation_test_id: Uuid) {
+    fn assert_all_mutations_are_correct(mutator: &mut MutationTool, mutation_test_id: Uuid, output_directory: String) {
         let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(fm.clone());
+        mutator.generate_mutations_per_file(&fm.clone());
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(&mutator, &file_name, &m);
+                let mutated_file_name = get_mutated_file_name(&file_name, &m, output_directory.clone());
                 let mut_file = fs::read_to_string(mutated_file_name)
                     .unwrap()
                     .as_bytes()
@@ -470,10 +491,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::ArthimeticOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -481,10 +502,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::ArthimeticOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -493,10 +514,10 @@ mod tests {
             create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::AssignmentOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -505,10 +526,10 @@ mod tests {
             create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::AssignmentOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -516,10 +537,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::LogicalOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -527,10 +548,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::LogicalOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -539,10 +560,10 @@ mod tests {
             create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::RelationalOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -551,10 +572,10 @@ mod tests {
             create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::RelationalOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -562,10 +583,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::UnaryOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -573,10 +594,10 @@ mod tests {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::UnaryOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -585,10 +606,10 @@ mod tests {
             create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::UnaryRemovalOperator],
         );
-        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id);
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
 
     #[test]
@@ -597,9 +618,9 @@ mod tests {
             create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let mut mutator = create_mutator_with_specifc_operators(
             mutation_test_id,
-            output_directory,
+            output_directory.clone(),
             vec![MutationOperators::UnaryRemovalOperator],
         );
-        assert_all_mutations_are_correct(&mut mutator, mutation_test_id);
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 }
