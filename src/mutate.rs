@@ -1,15 +1,17 @@
 use std::{
     collections::HashMap,
+    ffi::OsStr,
     fs,
-    path::{Path, Component, PathBuf}, ffi::OsStr
+    path::{Component, Path, PathBuf},
 };
 
+use crate::{
+    gradle::Gradle,
+    mutation_operators::{AllMutationOperators, MutationOperators},
+    Cli, CliError, FileMutations, MutationCommandConfig,
+};
 use clap::{error::ErrorKind, CommandFactory};
 use uuid::Uuid;
-use crate::{
-    mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, FileMutations, MutationCommandConfig, gradle::Gradle,
-};
 
 #[derive(Debug, Clone)]
 pub struct Mutation {
@@ -74,7 +76,12 @@ impl MutationToolBuilder {
         let mutation_operators = self
             .mutation_operators
             .unwrap_or(AllMutationOperators::new().get_mutation_operators());
-        MutationTool::new(self.verbose, config, "./kode-kraken-dist".into(), mutation_operators)
+        MutationTool::new(
+            self.verbose,
+            config,
+            "./kode-kraken-dist".into(),
+            mutation_operators,
+        )
     }
 }
 
@@ -172,15 +179,18 @@ impl MutationTool {
     fn build_and_test(&mut self, file_mutations: &HashMap<String, FileMutations>) {
         for (file_name, fm) in file_mutations {
             for mutation in &fm.mutations {
-                let mutated_file_path = self.mutation_dir.join(self.create_mutated_file_name(&file_name, &mutation));
+                let mutated_file_path = self
+                    .mutation_dir
+                    .join(self.create_mutated_file_name(&file_name, &mutation));
                 let original_file_path = Path::new(&self.config.path).join(&file_name);
                 let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
                 let backup_path = self.backup_dir.join(&original_file_name);
                 if self.verbose {
                     tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
-                
-                self.gradle.run(mutated_file_path, original_file_path, backup_path);
+
+                self.gradle
+                    .run(mutated_file_path, original_file_path, backup_path);
             }
         }
     }
@@ -199,13 +209,15 @@ impl MutationTool {
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
                 // Create a file name for the mutated file
                 // Prepend 'mut' to the file name
-                let mutated_file_name = self.mutation_dir.join(self.create_mutated_file_name(&file_name, &m));
+                let mutated_file_name = self
+                    .mutation_dir
+                    .join(self.create_mutated_file_name(&file_name, &m));
                 // Write the mutated file to the output directory
                 fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
-                // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
-                // self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
-                // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
-                // Read the original file again
+                                                              // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
+                                                              // self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
+                                                              // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
+                                                              // Read the original file again
                 file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
             }
         }
@@ -286,10 +298,10 @@ impl MutationTool {
             if path.extension() != Some("kt".as_ref()) {
                 continue;
             }
-            if path
-                .components()
-                .any(|p| p == Component::Normal(OsStr::new("test")) || p == Component::Normal(OsStr::new("build"))) 
-            {
+            if path.components().any(|p| {
+                p == Component::Normal(OsStr::new("test"))
+                    || p == Component::Normal(OsStr::new("build"))
+            }) {
                 continue;
             }
             existing_files.push(path.to_str().unwrap().to_string());
@@ -338,22 +350,25 @@ mod tests {
     }
 
     fn get_mutated_file_name(file_name: &str, m: &Mutation, output_directory: String) -> PathBuf {
-        Path::new(&output_directory)
-            .join("mutations")
-            .join(format!(
-                "mut_{}_{}",
-                m.id,
-                Path::new(&file_name).file_name().unwrap().to_str().unwrap()
-            ))
+        Path::new(&output_directory).join("mutations").join(format!(
+            "mut_{}_{}",
+            m.id,
+            Path::new(&file_name).file_name().unwrap().to_str().unwrap()
+        ))
     }
 
-    fn assert_all_mutation_files_were_created(mutator: &mut MutationTool, mutation_test_id: Uuid, output_directory: String) {
+    fn assert_all_mutation_files_were_created(
+        mutator: &mut MutationTool,
+        mutation_test_id: Uuid,
+        output_directory: String,
+    ) {
         let fm = mutator.gather_mutations_per_file();
         mutator.generate_mutations_per_file(&fm.clone());
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
-                let mutated_file_name = get_mutated_file_name(&file_name, &m, output_directory.clone());
+                let mutated_file_name =
+                    get_mutated_file_name(&file_name, &m, output_directory.clone());
                 assert!(Path::new(mutated_file_name.to_str().unwrap()).exists());
             }
         }
@@ -361,13 +376,18 @@ mod tests {
         remove_directory(mutation_test_id);
     }
 
-    fn assert_all_mutations_are_correct(mutator: &mut MutationTool, mutation_test_id: Uuid, output_directory: String) {
+    fn assert_all_mutations_are_correct(
+        mutator: &mut MutationTool,
+        mutation_test_id: Uuid,
+        output_directory: String,
+    ) {
         let fm = mutator.gather_mutations_per_file();
         mutator.generate_mutations_per_file(&fm.clone());
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {
-                let mutated_file_name = get_mutated_file_name(&file_name, &m, output_directory.clone());
+                let mutated_file_name =
+                    get_mutated_file_name(&file_name, &m, output_directory.clone());
                 let mut_file = fs::read_to_string(mutated_file_name)
                     .unwrap()
                     .as_bytes()
