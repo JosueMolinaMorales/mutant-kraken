@@ -2,7 +2,7 @@ use std::{
     collections::HashMap,
     ffi::OsStr,
     fs,
-    path::{Component, Path, PathBuf}, fmt::Display,
+    path::{Component, Path, PathBuf}, fmt::Display, io::BufRead, borrow::BorrowMut,
 };
 
 use crate::{
@@ -50,16 +50,15 @@ impl Display for Mutation {
         write!(
             f,
             "/**
+            AUTO GENERATED COMMENT
             Mutation:
             {}
             Line number: {}
-            Start Byte: {}
-            End Byte: {}
             Id: {},
             Old Operator: {},
             New Operator: {}
             */",
-            self.mutation_type, (self.line_number+11), self.start_byte, self.end_byte, self.id, self.old_op, self.new_op
+            self.mutation_type, (self.line_number+9), self.id, self.old_op, self.new_op
         )
     }
 }
@@ -68,6 +67,7 @@ pub struct MutationToolBuilder {
     verbose: bool,
     config: Option<MutationCommandConfig>,
     mutation_operators: Option<Vec<MutationOperators>>,
+    enable_mutation_comment: bool
 }
 
 impl MutationToolBuilder {
@@ -76,6 +76,7 @@ impl MutationToolBuilder {
             verbose: false,
             config: None,
             mutation_operators: None,
+            enable_mutation_comment: false
         }
     }
     pub fn set_verbose(mut self, verbose: bool) -> Self {
@@ -90,6 +91,11 @@ impl MutationToolBuilder {
         self.mutation_operators = Some(mutation_operators);
         self
     }
+    pub fn set_mutation_comment(mut self, enable_mutation_comment: bool) -> Self {
+        self.enable_mutation_comment = enable_mutation_comment;
+        self
+    }
+
     pub fn build(self) -> MutationTool {
         let config = self.config.unwrap_or_default();
         let mutation_operators = self
@@ -100,6 +106,7 @@ impl MutationToolBuilder {
             config,
             "./kode-kraken-dist".into(),
             mutation_operators,
+            self.enable_mutation_comment
         )
     }
 }
@@ -112,6 +119,7 @@ pub struct MutationTool {
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
     gradle: Gradle,
+    enable_mutation_comment: bool
 }
 
 impl Default for MutationTool {
@@ -121,6 +129,7 @@ impl Default for MutationTool {
             MutationCommandConfig::default(),
             "./kode-kraken-dist".into(),
             AllMutationOperators::new().get_mutation_operators(),
+            false
         )
     }
 }
@@ -131,6 +140,7 @@ impl MutationTool {
         config: MutationCommandConfig,
         output_directory: String,
         mutation_operators: Vec<MutationOperators>,
+        enable_mutation_comment: bool
     ) -> Self {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
@@ -174,6 +184,7 @@ impl MutationTool {
             mutation_dir,
             backup_dir,
             gradle,
+            enable_mutation_comment
         }
     }
 
@@ -218,34 +229,30 @@ impl MutationTool {
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
-        for (file_name, fm) in file_mutations {
-            let mut file_str = fs::read_to_string(file_name.clone()).unwrap(); // TODO: Remove unwrap
-            for m in fm.mutations.iter() {
+        file_mutations.iter().for_each(|(file_name, fm)| {
+            let file_str = fs::read_to_string(file_name.clone()).unwrap(); // TODO: Remove unwrap
+            fm.mutations.iter().for_each(|m| {
                 let new_op_bytes = m.new_op.as_bytes();
-                let mut file = file_str.as_bytes().to_vec();
+                let mut file = file_str.clone().as_bytes().to_vec();
 
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+                let file = file.lines().enumerate().map(|(i, line)| {
+                    let mut line = line.expect("Failed to convert line to string");
+                    if i == m.line_number - 1 && self.enable_mutation_comment {
+                        line = format!("{}\n{}", m, line);
+                    }
+                    line
+                }).collect::<Vec<String>>().join("\n");
+                
                 // Create a file name for the mutated file
                 let mutated_file_name = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(&file_name, &m));
                 // Write the mutated file to the output directory
                 fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
-                let testing: Vec<String> = fs::read_to_string(mutated_file_name.clone()).unwrap().lines().enumerate().map(|(i, line)| {
-                    let mut line = line.to_string();
-                    if i == m.line_number-1 {
-                        line = format!("{}{}\n{}", " ".repeat(line.len()/2), m, line);
-                    }
-                    line
-                }).collect();
-                let testing = testing.join("\n");
-                fs::write(&mutated_file_name, testing).unwrap(); // TODO: Remove unwrap
-                
-                // Read the original file again
-                file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
-            }
-        }
+            });
+        });
     }
 
     fn gather_mutations_per_file(&mut self) -> HashMap<String, FileMutations> {
@@ -323,7 +330,7 @@ impl MutationTool {
             if path.extension() != Some("kt".as_ref()) {
                 continue;
             }
-            if path.components().any(|p| {
+            if path.components().any(|p| { // TODO: This will be where configuration file will be used
                 p == Component::Normal(OsStr::new("test"))
                     || p == Component::Normal(OsStr::new("build"))
             }) {
@@ -371,6 +378,7 @@ mod tests {
             },
             output_directory,
             operators,
+            false
         )
     }
 
@@ -388,7 +396,7 @@ mod tests {
         output_directory: String,
     ) {
         let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(&fm.clone());
+        mutator.generate_mutations_per_file(&fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
@@ -406,8 +414,8 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let fm = mutator.gather_mutations_per_file();
-        mutator.generate_mutations_per_file(&fm.clone());
+        let mut fm = mutator.gather_mutations_per_file();
+        mutator.generate_mutations_per_file(&mut fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {
