@@ -2,7 +2,7 @@ use std::{
     collections::HashMap,
     ffi::OsStr,
     fs,
-    path::{Component, Path, PathBuf},
+    path::{Component, Path, PathBuf}, fmt::Display,
 };
 
 use crate::{
@@ -42,6 +42,25 @@ impl Mutation {
             mutation_type,
             id: Uuid::new_v4(),
         }
+    }
+}
+
+impl Display for Mutation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "/**
+            Mutation:
+            {}
+            Line number: {}
+            Start Byte: {}
+            End Byte: {}
+            Id: {},
+            Old Operator: {},
+            New Operator: {}
+            */",
+            self.mutation_type, (self.line_number+11), self.start_byte, self.end_byte, self.id, self.old_op, self.new_op
+        )
     }
 }
 
@@ -208,16 +227,22 @@ impl MutationTool {
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
                 // Create a file name for the mutated file
-                // Prepend 'mut' to the file name
                 let mutated_file_name = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(&file_name, &m));
                 // Write the mutated file to the output directory
                 fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
-                                                              // THIS IS WHERE COMPILILNG AND TESTING HAPPENS
-                                                              // self.build_and_test(mutated_file_name.to_str().unwrap().to_string(), file_name.clone());
-                                                              // THIS WILL BE WHERE WE GET THE OUTCOMES OF THE COMPILATION AND TESTING
-                                                              // Read the original file again
+                let testing: Vec<String> = fs::read_to_string(mutated_file_name.clone()).unwrap().lines().enumerate().map(|(i, line)| {
+                    let mut line = line.to_string();
+                    if i == m.line_number-1 {
+                        line = format!("{}{}\n{}", " ".repeat(line.len()/2), m, line);
+                    }
+                    line
+                }).collect();
+                let testing = testing.join("\n");
+                fs::write(&mutated_file_name, testing).unwrap(); // TODO: Remove unwrap
+                
+                // Read the original file again
                 file_str = fs::read_to_string(&file_name).unwrap(); // TODO: Remove unwrap
             }
         }

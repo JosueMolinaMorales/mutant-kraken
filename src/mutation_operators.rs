@@ -1,6 +1,6 @@
 use crate::{kotlin_types::KotlinTypes, Mutation};
 use rand::seq::IteratorRandom;
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
 #[derive(Clone)]
 pub struct AllMutationOperators {
@@ -15,6 +15,23 @@ pub enum MutationOperators {
     RelationalOperator,
     AssignmentOperator,
     UnaryOperator,
+}
+
+impl Display for MutationOperators {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Mutation Operator: {}",
+            match self {
+                MutationOperators::ArthimeticOperator => "ArthimeticOperator",
+                MutationOperators::UnaryRemovalOperator => "UnaryRemovalOperator",
+                MutationOperators::LogicalOperator => "LogicalOperator",
+                MutationOperators::RelationalOperator => "RelationalOperator",
+                MutationOperators::AssignmentOperator => "AssignmentOperator",
+                MutationOperators::UnaryOperator => "UnaryOperator",
+            }
+        )
+    }
 }
 
 impl MutationOperators {
