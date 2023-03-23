@@ -1,10 +1,12 @@
 use clap::{error::ErrorKind, Args, Parser, Subcommand};
-use mutate::{Mutation, MutationToolBuilder};
+use mutation::Mutation;
+use mutation_tool::MutationToolBuilder;
 
 pub mod gradle;
 pub mod kotlin_types;
-pub mod mutate;
+pub mod mutation;
 pub mod mutation_operators;
+pub mod mutation_tool;
 
 #[cfg(test)]
 pub mod test_config;

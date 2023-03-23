@@ -2,72 +2,30 @@ use std::{
     collections::HashMap,
     ffi::OsStr,
     fs,
-    path::{Component, Path, PathBuf}, fmt::Display, io::BufRead, borrow::BorrowMut,
+    io::BufRead,
+    path::{Component, Path, PathBuf},
 };
+
+use clap::{error::ErrorKind, CommandFactory};
 
 use crate::{
     gradle::Gradle,
+    mutation::Mutation,
     mutation_operators::{AllMutationOperators, MutationOperators},
     Cli, CliError, FileMutations, MutationCommandConfig,
 };
-use clap::{error::ErrorKind, CommandFactory};
-use uuid::Uuid;
-
-#[derive(Debug, Clone)]
-pub struct Mutation {
-    pub start_byte: usize,
-    pub end_byte: usize,
-    pub line_number: usize,
-    pub new_op: String,
-    pub old_op: String,
-    pub mutation_type: MutationOperators,
-    pub id: Uuid,
-}
-
-impl Mutation {
-    pub fn new(
-        start_byte: usize,
-        end_byte: usize,
-        new_op: String,
-        old_op: String,
-        line_number: usize,
-        mutation_type: MutationOperators,
-    ) -> Self {
-        Self {
-            start_byte,
-            end_byte,
-            line_number,
-            new_op,
-            old_op,
-            mutation_type,
-            id: Uuid::new_v4(),
-        }
-    }
-}
-
-impl Display for Mutation {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "/**
-            AUTO GENERATED COMMENT
-            Mutation:
-            {}
-            Line number: {}
-            Id: {},
-            Old Operator: {},
-            New Operator: {}
-            */",
-            self.mutation_type, (self.line_number+9), self.id, self.old_op, self.new_op
-        )
-    }
-}
 
 pub struct MutationToolBuilder {
     verbose: bool,
     config: Option<MutationCommandConfig>,
     mutation_operators: Option<Vec<MutationOperators>>,
-    enable_mutation_comment: bool
+    enable_mutation_comment: bool,
+}
+
+impl Default for MutationToolBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MutationToolBuilder {
@@ -76,7 +34,7 @@ impl MutationToolBuilder {
             verbose: false,
             config: None,
             mutation_operators: None,
-            enable_mutation_comment: false
+            enable_mutation_comment: false,
         }
     }
     pub fn set_verbose(mut self, verbose: bool) -> Self {
@@ -106,7 +64,7 @@ impl MutationToolBuilder {
             config,
             "./kode-kraken-dist".into(),
             mutation_operators,
-            self.enable_mutation_comment
+            self.enable_mutation_comment,
         )
     }
 }
@@ -119,7 +77,7 @@ pub struct MutationTool {
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
     gradle: Gradle,
-    enable_mutation_comment: bool
+    enable_mutation_comment: bool,
 }
 
 impl Default for MutationTool {
@@ -129,7 +87,7 @@ impl Default for MutationTool {
             MutationCommandConfig::default(),
             "./kode-kraken-dist".into(),
             AllMutationOperators::new().get_mutation_operators(),
-            false
+            false,
         )
     }
 }
@@ -140,7 +98,7 @@ impl MutationTool {
         config: MutationCommandConfig,
         output_directory: String,
         mutation_operators: Vec<MutationOperators>,
-        enable_mutation_comment: bool
+        enable_mutation_comment: bool,
     ) -> Self {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
@@ -184,7 +142,7 @@ impl MutationTool {
             mutation_dir,
             backup_dir,
             gradle,
-            enable_mutation_comment
+            enable_mutation_comment,
         }
     }
 
@@ -211,10 +169,10 @@ impl MutationTool {
             for mutation in &fm.mutations {
                 let mutated_file_path = self
                     .mutation_dir
-                    .join(self.create_mutated_file_name(&file_name, &mutation));
-                let original_file_path = Path::new(&self.config.path).join(&file_name);
+                    .join(self.create_mutated_file_name(file_name, mutation));
+                let original_file_path = Path::new(&self.config.path).join(file_name);
                 let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
-                let backup_path = self.backup_dir.join(&original_file_name);
+                let backup_path = self.backup_dir.join(original_file_name);
                 if self.verbose {
                     tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
@@ -237,20 +195,25 @@ impl MutationTool {
 
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
-                let file = file.lines().enumerate().map(|(i, line)| {
-                    let mut line = line.expect("Failed to convert line to string");
-                    if i == m.line_number - 1 && self.enable_mutation_comment {
-                        line = format!("{}\n{}", m, line);
-                    }
-                    line
-                }).collect::<Vec<String>>().join("\n");
-                
+                let file = file
+                    .lines()
+                    .enumerate()
+                    .map(|(i, line)| {
+                        let mut line = line.expect("Failed to convert line to string");
+                        if i == m.line_number - 1 && self.enable_mutation_comment {
+                            line = format!("{}\n{}", m, line);
+                        }
+                        line
+                    })
+                    .collect::<Vec<String>>()
+                    .join("\n");
+
                 // Create a file name for the mutated file
                 let mutated_file_name = self
                     .mutation_dir
-                    .join(self.create_mutated_file_name(&file_name, &m));
+                    .join(self.create_mutated_file_name(file_name, m));
                 // Write the mutated file to the output directory
-                fs::write(&mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+                fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
             });
         });
     }
@@ -330,7 +293,8 @@ impl MutationTool {
             if path.extension() != Some("kt".as_ref()) {
                 continue;
             }
-            if path.components().any(|p| { // TODO: This will be where configuration file will be used
+            if path.components().any(|p| {
+                // TODO: This will be where configuration file will be used
                 p == Component::Normal(OsStr::new("test"))
                     || p == Component::Normal(OsStr::new("build"))
             }) {
@@ -346,6 +310,8 @@ impl MutationTool {
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
+
+    use uuid::Uuid;
 
     use super::*;
     use crate::test_config::*;
@@ -378,7 +344,7 @@ mod tests {
             },
             output_directory,
             operators,
-            false
+            false,
         )
     }
 
