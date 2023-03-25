@@ -1,12 +1,14 @@
 use crate::{kotlin_types::KotlinTypes, Mutation};
 use rand::seq::IteratorRandom;
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
+// Struct that stores all the mutations operators by default
 #[derive(Clone)]
 pub struct AllMutationOperators {
     mutation_operators: Vec<MutationOperators>,
 }
 
+// The different types of mutation operators that can be performed on a file
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MutationOperators {
     ArthimeticOperator,
@@ -17,7 +19,25 @@ pub enum MutationOperators {
     UnaryOperator,
 }
 
+impl Display for MutationOperators {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Mutation Operator: {}",
+            match self {
+                MutationOperators::ArthimeticOperator => "ArthimeticOperator",
+                MutationOperators::UnaryRemovalOperator => "UnaryRemovalOperator",
+                MutationOperators::LogicalOperator => "LogicalOperator",
+                MutationOperators::RelationalOperator => "RelationalOperator",
+                MutationOperators::AssignmentOperator => "AssignmentOperator",
+                MutationOperators::UnaryOperator => "UnaryOperator",
+            }
+        )
+    }
+}
+
 impl MutationOperators {
+    /// Get the operators that correspond to the mutation operator
     fn get_operators(&self) -> HashSet<KotlinTypes> {
         match self {
             MutationOperators::ArthimeticOperator => vec![
@@ -73,6 +93,7 @@ impl MutationOperators {
         }
     }
 
+    /// Get the parent types that are necessary for the mutation operator
     fn get_parent_necessary_types(&self) -> Vec<KotlinTypes> {
         match self {
             MutationOperators::ArthimeticOperator => vec![
@@ -96,6 +117,7 @@ impl MutationOperators {
         }
     }
 
+    /// Gets all the muatations that can be made to the file based on the the mutation operator
     pub fn find_mutation(&self, ast: tree_sitter::Tree) -> Vec<Mutation> {
         let mut mutations = Vec::new();
         let mut cursor = ast.walk();
@@ -104,6 +126,7 @@ impl MutationOperators {
         mutations
     }
 
+    /// Recursive function that finds all the mutations that can be made to the file
     fn mutate(
         &self,
         root: tree_sitter::Node,
@@ -127,6 +150,7 @@ impl MutationOperators {
         });
     }
 
+    /// Checks to see if the mutation operator can be applied to the node
     fn mutate_operator(
         &self,
         root_node: &tree_sitter::Node,

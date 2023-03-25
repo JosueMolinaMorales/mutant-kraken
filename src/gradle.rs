@@ -10,15 +10,21 @@ use wait_timeout::ChildExt;
 
 use crate::Cli;
 
+/// Gradle is a struct that will run gradle commands
 pub struct Gradle {
     config_path: PathBuf,
 }
 
 impl Gradle {
+
+    /// Create a new instance of Gradle
+    /// This will be used to run gradle commands
     pub fn new(config_path: PathBuf) -> Self {
         Self { config_path }
     }
 
+    /// Run the gradle commands, assemble and test
+    /// This will check to see if there is a gradlew file in the root of the directory
     pub fn run(
         &mut self,
         mutated_file_path: PathBuf,
@@ -76,6 +82,7 @@ impl Gradle {
         self.restore_original_file(&backup_path, &original_file_path)
     }
 
+    // Builds the gradle command to be ran
     fn build_gradle_command(&mut self, command: &str) -> Child {
         Command::new("./gradlew")
             .arg(command)
@@ -89,6 +96,7 @@ impl Gradle {
             .unwrap()
     }
 
+    // Restores a file to its original state
     fn restore_original_file(&self, backup_path: &PathBuf, original_file_path: &PathBuf) {
         fs::copy(backup_path, original_file_path).unwrap();
     }
