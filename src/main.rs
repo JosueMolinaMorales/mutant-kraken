@@ -50,11 +50,6 @@ impl Default for MutationCommandConfig {
     }
 }
 
-#[derive(Debug, Clone)]
-struct FileMutations {
-    mutations: Vec<Mutation>,
-}
-
 #[derive(Debug)]
 pub struct CliError {
     kind: ErrorKind,

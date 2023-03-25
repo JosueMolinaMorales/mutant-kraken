@@ -10,9 +10,9 @@ use clap::{error::ErrorKind, CommandFactory};
 
 use crate::{
     gradle::Gradle,
-    mutation::Mutation,
+    mutation::{Mutation, FileMutations},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, FileMutations, MutationCommandConfig,
+    Cli, CliError, MutationCommandConfig,
 };
 
 pub struct MutationToolBuilder {
@@ -188,13 +188,14 @@ impl MutationTool {
             tracing::info!("Generating mutations per file");
         }
         file_mutations.iter().for_each(|(file_name, fm)| {
-            let file_str = fs::read_to_string(file_name.clone()).unwrap(); // TODO: Remove unwrap
+            let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
             fm.mutations.iter().for_each(|m| {
                 let new_op_bytes = m.new_op.as_bytes();
-                let mut file = file_str.clone().as_bytes().to_vec();
+                let mut file = file_str.as_bytes().to_vec();
 
                 // Add the mutation to the vector of bytes
                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+                // Add comment above mutation about the mutation
                 let file = file
                     .lines()
                     .enumerate()
@@ -238,7 +239,7 @@ impl MutationTool {
                 let ast = self
                     .parser
                     .parse(
-                        fs::read_to_string(file.clone()).expect("File Not Found!"),
+                        fs::read_to_string(&file).expect("File Not Found!"),
                         None,
                     )
                     .unwrap(); // TODO: Remove this unwrap

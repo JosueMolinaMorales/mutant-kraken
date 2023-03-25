@@ -57,3 +57,8 @@ impl Display for Mutation {
         )
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct FileMutations {
+    pub mutations: Vec<Mutation>,
+}

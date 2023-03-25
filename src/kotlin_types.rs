@@ -1,4 +1,6 @@
 use std::fmt;
+
+/// Holds all characters that are not named in kotlin
 const NON_NAMED_TYPES: [&str; 128] = [
     "!",
     "!!",
@@ -129,6 +131,8 @@ const NON_NAMED_TYPES: [&str; 128] = [
     "||",
     "}",
 ];
+
+/// An enum for all the types that exist within kotlin
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum KotlinTypes {
     AdditiveExpression,
