@@ -74,6 +74,7 @@ fn main() {
             mutate_tool_builder
                 .set_verbose(verbose)
                 .set_config(config)
+                .set_mutation_comment(true)
                 .build()
                 .mutate();
         }

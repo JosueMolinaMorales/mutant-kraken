@@ -1,2 +1,16 @@
 /target
 /kode-kraken-dist
+
+*.iml
+.gradle
+local.properties
+.idea/
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+shelf/
+workspace.xml

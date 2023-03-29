@@ -101,3 +101,16 @@ impl Gradle {
         fs::copy(backup_path, original_file_path).unwrap();
     }
 }
+
+
+// #[cfg(test)]
+// mod test {
+//     use super::*;
+
+//     #[test]
+//     #[should_panic(expected = "gradlew does not exist at the root of this project")]
+//     fn test() {
+//         let mut gradle = Gradle::new(PathBuf::from("."));
+//         gradle.run(PathBuf::from("."), PathBuf::from("."), PathBuf::from("."),);
+//     }
+// }
