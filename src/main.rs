@@ -39,6 +39,7 @@ struct Cli {
 pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
+    #[clap(default_value = ".")]
     path: String,
 }
 

@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 clap =  { version = "4.1.6", features = ["derive"] }
+cli-table = "0.4.7"
 rand = "0.8.5"
 serde_json = "1.0.93"
 tracing = "0.1.37"

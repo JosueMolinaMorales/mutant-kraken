@@ -15,6 +15,8 @@ use crate::{
     Cli, CliError, MutationCommandConfig,
 };
 
+use cli_table::WithTitle;
+
 pub struct MutationToolBuilder {
     verbose: bool,
     config: Option<MutationCommandConfig>,
@@ -156,17 +158,24 @@ impl MutationTool {
 
     pub fn mutate(&mut self) {
         // Phase 1: Gather mutations per file
-        let file_mutations = self.gather_mutations_per_file();
+        let mut file_mutations = self.gather_mutations_per_file();
         // Phase 2: Generate mutations per file
         self.generate_mutations_per_file(&file_mutations);
         // Phase 3: Build and test
-        self.build_and_test(&file_mutations);
+        self.build_and_test(&mut file_mutations);
         // Phase 4: Report results
+        self.report_results(&file_mutations);
     }
 
-    fn build_and_test(&mut self, file_mutations: &HashMap<String, FileMutations>) {
-        for (file_name, fm) in file_mutations {
-            for mutation in &fm.mutations {
+    fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
+        file_mutations.iter().for_each(|(_, fm)| {
+            cli_table::print_stdout(fm.mutations.with_title()).unwrap();
+        });
+    }
+
+    fn build_and_test(&mut self, file_mutations: &mut HashMap<String, FileMutations>) {
+        for (file_name, fm) in file_mutations.iter_mut() {
+            for mutation in fm.mutations.iter_mut() {
                 let mutated_file_path = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(file_name, mutation));
@@ -177,8 +186,7 @@ impl MutationTool {
                     tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
 
-                self.gradle
-                    .run(mutated_file_path, original_file_path, backup_path);
+                self.gradle.run(mutated_file_path, original_file_path, backup_path, mutation);
             }
         }
     }

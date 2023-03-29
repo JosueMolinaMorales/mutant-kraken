@@ -8,7 +8,7 @@ use std::{
 use clap::{error::ErrorKind, CommandFactory};
 use wait_timeout::ChildExt;
 
-use crate::Cli;
+use crate::{Cli, mutation::{Mutation, MutationResult}};
 
 /// Gradle is a struct that will run gradle commands
 pub struct Gradle {
@@ -30,6 +30,7 @@ impl Gradle {
         mutated_file_path: PathBuf,
         original_file_path: PathBuf,
         backup_path: PathBuf,
+        mutation: &mut Mutation
     ) {
         // Check to see if gradlew exists in the root of the directory
         // TODO: How will testing work for this?
@@ -51,6 +52,7 @@ impl Gradle {
             tracing::info!("Build failed");
             // Restore the original file
             self.restore_original_file(&backup_path, &original_file_path);
+            mutation.result = MutationResult::BuildFailed;
             return;
         }
         let mut child_process = self.build_gradle_command("test");
@@ -63,6 +65,7 @@ impl Gradle {
                 tracing::info!("Test timed out for: {}", mutated_file_path.display());
                 // Restore the original file
                 self.restore_original_file(&backup_path, &original_file_path);
+                mutation.result = MutationResult::Timeout;
                 return;
             }
             Err(e) => {
@@ -70,6 +73,7 @@ impl Gradle {
                 child_process.kill().unwrap();
                 // Restore the original file
                 self.restore_original_file(&backup_path, &original_file_path);
+                mutation.result = MutationResult::TestFailed;
                 return;
             }
         };
@@ -79,12 +83,20 @@ impl Gradle {
             tracing::info!("Test failed for: {}", mutated_file_path.display());
         }
         // Restore the original file
-        self.restore_original_file(&backup_path, &original_file_path)
+        self.restore_original_file(&backup_path, &original_file_path);
+        mutation.result = MutationResult::Success;
     }
 
     // Builds the gradle command to be ran
     fn build_gradle_command(&mut self, command: &str) -> Child {
-        Command::new("./gradlew")
+        let mut cmd = if cfg!(unix) {
+            Command::new("./gradlew")
+        } else if cfg!(windows) {
+            Command::new("gradlew.bat")
+        } else {
+            panic!("Unsupported OS");
+        };
+        cmd
             .arg(command)
             .arg("--parallel")
             .arg("--build-cache")
