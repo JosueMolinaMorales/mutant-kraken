@@ -170,7 +170,7 @@ impl MutationTool {
                 let mutated_file_path = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(file_name, mutation));
-                let original_file_path = Path::new(&self.config.path).join(file_name);
+                let original_file_path = Path::new(file_name).to_path_buf();
                 let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
                 let backup_path = self.backup_dir.join(original_file_name);
                 if self.verbose {
