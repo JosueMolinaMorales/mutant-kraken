@@ -10,12 +10,12 @@ use clap::{error::ErrorKind, CommandFactory};
 
 use crate::{
     gradle::Gradle,
-    mutation::{Mutation, FileMutations},
+    mutation::{Mutation, FileMutations, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
     Cli, CliError, MutationCommandConfig,
 };
 
-use cli_table::WithTitle;
+use cli_table::{WithTitle, Table};
 
 pub struct MutationToolBuilder {
     verbose: bool,
@@ -157,10 +157,12 @@ impl MutationTool {
     }
 
     pub fn mutate(&mut self) {
+        tracing::info!("Mutation tool started...");
         // Phase 1: Gather mutations per file
         let mut file_mutations = self.gather_mutations_per_file();
         // Phase 2: Generate mutations per file
         self.generate_mutations_per_file(&file_mutations);
+        tracing::info!("Building and testing mutations...");
         // Phase 3: Build and test
         self.build_and_test(&mut file_mutations);
         // Phase 4: Report results
@@ -168,9 +170,51 @@ impl MutationTool {
     }
 
     fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
+        let mut mutations = vec![];
+        let mut total_mutations = 0;
+        let mut total_killed_mutants = 0;
+        let mut total_survived_mutants = 0;
+        let mut total_timeouts_or_build_fails = 0;
         file_mutations.iter().for_each(|(_, fm)| {
-            cli_table::print_stdout(fm.mutations.with_title()).unwrap();
+            if !fm.mutations.is_empty() {
+                mutations.push(fm.mutations.clone());
+            }
+            total_mutations += fm.mutations.len();
+            fm.mutations.iter().for_each(|m| {
+                match m.result {
+                    MutationResult::Killed => total_killed_mutants += 1,
+                    MutationResult::Survived => total_survived_mutants += 1,
+                    _ => total_timeouts_or_build_fails += 1,
+                }
+            })
         });
+        cli_table::print_stdout(mutations.concat().with_title()).unwrap();
+        let table = vec![
+            vec![
+                "Total mutations".to_string(),
+                total_mutations.to_string(),
+            ],
+            vec![
+                "Total killed mutants".to_string(),
+                total_killed_mutants.to_string(),
+            ],
+            vec![
+                "Total survived mutants".to_string(),
+                total_survived_mutants.to_string(),
+            ],
+            vec![
+                "Total timeouts or build fails".to_string(),
+                total_timeouts_or_build_fails.to_string(),
+            ],
+            vec![
+                "Mutation score".to_string(),
+                format!(
+                    "{}%",
+                    (total_killed_mutants as f32 / total_mutations as f32) * 100.0
+                ),
+            ]
+        ].table();
+        cli_table::print_stdout(table).unwrap();
     }
 
     fn build_and_test(&mut self, file_mutations: &mut HashMap<String, FileMutations>) {
@@ -186,7 +230,7 @@ impl MutationTool {
                     tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
 
-                self.gradle.run(mutated_file_path, original_file_path, backup_path, mutation);
+                self.gradle.run(mutated_file_path, original_file_path, backup_path, mutation, self.verbose);
             }
         }
     }
@@ -242,6 +286,7 @@ impl MutationTool {
         let mut file_mutations: HashMap<String, FileMutations> = HashMap::new();
         let mut mutation_count = 0;
         for file in existing_files.clone() {
+            let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
             for mut_op in self.mutation_operators.clone() {
                 // Get a list of mutations that can be made
                 let ast = self
@@ -251,7 +296,7 @@ impl MutationTool {
                         None,
                     )
                     .unwrap(); // TODO: Remove this unwrap
-                let mutations = mut_op.find_mutation(ast);
+                let mutations = mut_op.find_mutation(ast, file_name.clone());
                 mutation_count += mutations.len();
                 file_mutations
                     .entry(file.clone())
@@ -265,7 +310,6 @@ impl MutationTool {
             tracing::info!("Mutations made to all files");
             tracing::info!("Total mutations made: {}", mutation_count);
         }
-        tracing::info!("Mutations: {:#?}", file_mutations);
         file_mutations
     }
 

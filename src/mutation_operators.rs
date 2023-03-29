@@ -23,7 +23,7 @@ impl Display for MutationOperators {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Mutation Operator: {}",
+            "{}",
             match self {
                 MutationOperators::ArthimeticOperator => "ArthimeticOperator",
                 MutationOperators::UnaryRemovalOperator => "UnaryRemovalOperator",
@@ -118,11 +118,11 @@ impl MutationOperators {
     }
 
     /// Gets all the muatations that can be made to the file based on the the mutation operator
-    pub fn find_mutation(&self, ast: tree_sitter::Tree) -> Vec<Mutation> {
+    pub fn find_mutation(&self, ast: tree_sitter::Tree, file_name: String) -> Vec<Mutation> {
         let mut mutations = Vec::new();
         let mut cursor = ast.walk();
         let root = ast.root_node();
-        self.mutate(root, &mut cursor, None, &mut mutations);
+        self.mutate(root, &mut cursor, None, &mut mutations, file_name);
         mutations
     }
 
@@ -133,6 +133,7 @@ impl MutationOperators {
         cursor: &mut tree_sitter::TreeCursor,
         parent: Option<tree_sitter::Node>,
         mutations_made: &mut Vec<Mutation>,
+        file_name: String
     ) {
         root.children(&mut cursor.clone()).for_each(|node| {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
@@ -145,8 +146,9 @@ impl MutationOperators {
                 mutations_made,
                 self.get_operators(),
                 self.get_parent_necessary_types(),
+                file_name.clone(),
             );
-            self.mutate(node, cursor, Some(node), mutations_made);
+            self.mutate(node, cursor, Some(node), mutations_made, file_name.clone());
         });
     }
 
@@ -159,6 +161,7 @@ impl MutationOperators {
         mutations_made: &mut Vec<Mutation>,
         mutation_operators: HashSet<KotlinTypes>,
         parent_types: Vec<KotlinTypes>,
+        file_name: String,
     ) {
         // Check to see if root type is in the mutation_operators
         if !mutation_operators.contains(root) {
@@ -198,6 +201,7 @@ impl MutationOperators {
             root.as_str(),
             root_node.start_position().row + 1,
             self.clone(),
+            file_name,
         );
         mutations_made.push(mutation)
     }
@@ -259,6 +263,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 5);
@@ -277,6 +282,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
 
         assert_eq!(mutations_made.len(), 6);
@@ -296,6 +302,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 2);
@@ -315,6 +322,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 5);
@@ -329,7 +337,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::UnaryOperator.mutate(root, &mut root.walk(), None, &mut mutations_made);
+        MutationOperators::UnaryOperator.mutate(root, &mut root.walk(), None, &mut mutations_made, "".into());
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 4);
         // Assert that the old operator is not the same as the new operator
@@ -348,6 +356,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         dbg!(&mutations_made);
         assert_eq!(mutations_made.len(), 3);
@@ -368,6 +377,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         assert_eq!(mutations_made.len(), 0);
     }
@@ -382,6 +392,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         assert_eq!(mutations_made.len(), 0);
     }
@@ -396,6 +407,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         assert_eq!(mutations_made.len(), 0);
     }
@@ -410,6 +422,7 @@ mod tests {
             &mut root.walk(),
             None,
             &mut mutations_made,
+            "".into()
         );
         assert_eq!(mutations_made.len(), 0);
     }

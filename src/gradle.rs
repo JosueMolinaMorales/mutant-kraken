@@ -30,7 +30,8 @@ impl Gradle {
         mutated_file_path: PathBuf,
         original_file_path: PathBuf,
         backup_path: PathBuf,
-        mutation: &mut Mutation
+        mutation: &mut Mutation,
+        verbose: bool,
     ) {
         // Check to see if gradlew exists in the root of the directory
         // TODO: How will testing work for this?
@@ -49,7 +50,9 @@ impl Gradle {
         // Compile the project first, skip if compilation fails
         let res = self.build_gradle_command("assemble").wait().unwrap();
         if !res.success() {
-            tracing::info!("Build failed");
+            if verbose {
+                tracing::info!("Build failed for: {}", mutated_file_path.display());
+            }
             // Restore the original file
             self.restore_original_file(&backup_path, &original_file_path);
             mutation.result = MutationResult::BuildFailed;
@@ -62,29 +65,38 @@ impl Gradle {
             Ok(Some(status)) => status,
             Ok(None) => {
                 child_process.kill().unwrap();
-                tracing::info!("Test timed out for: {}", mutated_file_path.display());
+                if verbose {
+                    tracing::info!("Test timed out for: {}", mutated_file_path.display());
+                }
                 // Restore the original file
                 self.restore_original_file(&backup_path, &original_file_path);
                 mutation.result = MutationResult::Timeout;
                 return;
             }
             Err(e) => {
-                tracing::info!("Test failed: {}", e);
+                if verbose { 
+                    tracing::info!("Test failed: {}", e);
+                }
                 child_process.kill().unwrap();
                 // Restore the original file
                 self.restore_original_file(&backup_path, &original_file_path);
-                mutation.result = MutationResult::TestFailed;
+                mutation.result = MutationResult::Failed;
                 return;
             }
         };
         if res.success() {
-            tracing::info!("Test successful for: {}", mutated_file_path.display());
+            if verbose {
+                tracing::info!("Mutant survived for file: {}", mutated_file_path.display());
+            }
+            mutation.result = MutationResult::Survived;
         } else {
-            tracing::info!("Test failed for: {}", mutated_file_path.display());
+            if verbose {
+                tracing::info!("Mutant killed for file: {}", mutated_file_path.display());
+            }
+            mutation.result = MutationResult::Killed;
         }
         // Restore the original file
         self.restore_original_file(&backup_path, &original_file_path);
-        mutation.result = MutationResult::Success;
     }
 
     // Builds the gradle command to be ran

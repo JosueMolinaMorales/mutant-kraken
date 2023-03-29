@@ -8,20 +8,22 @@ use crate::mutation_operators::MutationOperators;
 #[derive(Debug, Clone)]
 pub enum MutationResult {
     InProgress,
-    Success,
-    TestFailed,
+    Survived,
+    Killed,
     BuildFailed,
     Timeout,
+    Failed,
 }
 
 impl Display for MutationResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             MutationResult::InProgress => write!(f, "In Progress"),
-            MutationResult::Success => write!(f, "Mutant Survived"),
-            MutationResult::TestFailed => write!(f, "Mutatan Killed"),
+            MutationResult::Survived => write!(f, "Mutant Survived"),
+            MutationResult::Killed => write!(f, "Mutant Killed"),
             MutationResult::BuildFailed => write!(f, "Build Failed"),
             MutationResult::Timeout => write!(f, "Timeout"),
+            MutationResult::Failed => write!(f, "Failed"),
         }
     }
 }
@@ -38,6 +40,8 @@ pub struct Mutation {
     pub id: Uuid,
     #[table(skip)] pub start_byte: usize,
     #[table(skip)] pub end_byte: usize,
+    #[table(title = "File Name")]
+    pub file_name: String,
     #[table(title = "Line Number")]
     pub line_number: usize,
     #[table(title = "New Operator")]
@@ -47,7 +51,7 @@ pub struct Mutation {
     #[table(title = "Mutation Type")]
     pub mutation_type: MutationOperators,
     #[table(title = "Result")]
-    pub result: MutationResult
+    pub result: MutationResult,
 }
 
 impl Mutation {
@@ -58,6 +62,7 @@ impl Mutation {
         old_op: String,
         line_number: usize,
         mutation_type: MutationOperators,
+        file_name: String,
     ) -> Self {
         Self {
             start_byte,
@@ -67,7 +72,8 @@ impl Mutation {
             old_op,
             mutation_type,
             id: Uuid::new_v4(),
-            result: MutationResult::default()
+            result: MutationResult::default(),
+            file_name,
         }
     }
 }
@@ -80,7 +86,7 @@ impl Display for Mutation {
             /**
             AUTO GENERATED COMMENT
             Mutation:
-            {}
+            Mutation Operator: {}
             Line number: {}
             Id: {},
             Old Operator: {},
