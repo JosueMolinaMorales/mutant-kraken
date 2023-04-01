@@ -17,6 +17,8 @@ use crate::{
 
 use cli_table::{WithTitle, Table};
 
+const OUT_DIRECTORY: &str = "./kode-kraken-dist";
+
 pub struct MutationToolBuilder {
     verbose: bool,
     config: Option<MutationCommandConfig>,
@@ -64,7 +66,7 @@ impl MutationToolBuilder {
         MutationTool::new(
             self.verbose,
             config,
-            "./kode-kraken-dist".into(),
+            OUT_DIRECTORY.into(),
             mutation_operators,
             self.enable_mutation_comment,
         )
@@ -87,7 +89,7 @@ impl Default for MutationTool {
         Self::new(
             false,
             MutationCommandConfig::default(),
-            "./kode-kraken-dist".into(),
+            OUT_DIRECTORY.into(),
             AllMutationOperators::new().get_mutation_operators(),
             false,
         )
@@ -134,7 +136,7 @@ impl MutationTool {
         }
 
         // Create gradle struct
-        let gradle = Gradle::new(config_path.to_path_buf());
+        let gradle = Gradle::new(config_path.to_path_buf(), verbose);
 
         Self {
             verbose,
@@ -150,7 +152,7 @@ impl MutationTool {
 
     fn create_mutated_file_name(&self, file_name: &str, mutation: &Mutation) -> String {
         format!(
-            "mut_{}_{}",
+            "{}_{}",
             mutation.id,
             Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
         )
@@ -219,18 +221,21 @@ impl MutationTool {
 
     fn build_and_test(&mut self, file_mutations: &mut HashMap<String, FileMutations>) {
         for (file_name, fm) in file_mutations.iter_mut() {
+            let original_file_path = Path::new(file_name).to_path_buf();
+            let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
+            let backup_path = self.backup_dir.join(original_file_name);
+            // Save a copy of the original file
+            fs::copy(&original_file_path, &backup_path).unwrap();
+
             for mutation in fm.mutations.iter_mut() {
                 let mutated_file_path = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(file_name, mutation));
-                let original_file_path = Path::new(file_name).to_path_buf();
-                let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
-                let backup_path = self.backup_dir.join(original_file_name);
                 if self.verbose {
                     tracing::info!("Building and testing {}", mutated_file_path.display());
                 }
 
-                self.gradle.run(mutated_file_path, original_file_path, backup_path, mutation, self.verbose);
+                self.gradle.run(&mutated_file_path, &original_file_path, &backup_path, mutation);
             }
         }
     }
@@ -287,16 +292,16 @@ impl MutationTool {
         let mut mutation_count = 0;
         for file in existing_files.clone() {
             let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
+            let ast = self
+                .parser
+                .parse(
+                    fs::read_to_string(&file).expect("File Not Found!"),
+                    None,
+                )
+                .unwrap(); // TODO: Remove this unwrap
             for mut_op in self.mutation_operators.clone() {
                 // Get a list of mutations that can be made
-                let ast = self
-                    .parser
-                    .parse(
-                        fs::read_to_string(&file).expect("File Not Found!"),
-                        None,
-                    )
-                    .unwrap(); // TODO: Remove this unwrap
-                let mutations = mut_op.find_mutation(ast, file_name.clone());
+                let mutations = mut_op.find_mutation(&ast, &file_name);
                 mutation_count += mutations.len();
                 file_mutations
                     .entry(file.clone())
@@ -403,7 +408,7 @@ mod tests {
 
     fn get_mutated_file_name(file_name: &str, m: &Mutation, output_directory: String) -> PathBuf {
         Path::new(&output_directory).join("mutations").join(format!(
-            "mut_{}_{}",
+            "{}_{}",
             m.id,
             Path::new(&file_name).file_name().unwrap().to_str().unwrap()
         ))

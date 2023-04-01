@@ -13,25 +13,25 @@ use crate::{Cli, mutation::{Mutation, MutationResult}};
 /// Gradle is a struct that will run gradle commands
 pub struct Gradle {
     config_path: PathBuf,
+    verbose: bool,
 }
 
 impl Gradle {
 
     /// Create a new instance of Gradle
     /// This will be used to run gradle commands
-    pub fn new(config_path: PathBuf) -> Self {
-        Self { config_path }
+    pub fn new(config_path: PathBuf, verbose: bool) -> Self {
+        Self { config_path, verbose }
     }
 
     /// Run the gradle commands, assemble and test
     /// This will check to see if there is a gradlew file in the root of the directory
     pub fn run(
         &mut self,
-        mutated_file_path: PathBuf,
-        original_file_path: PathBuf,
-        backup_path: PathBuf,
+        mutated_file_path: &PathBuf,
+        original_file_path: &PathBuf,
+        backup_path: &PathBuf,
         mutation: &mut Mutation,
-        verbose: bool,
     ) {
         // Check to see if gradlew exists in the root of the directory
         // TODO: How will testing work for this?
@@ -43,14 +43,12 @@ impl Gradle {
                 )
                 .exit();
         }
-        // Save a copy of the original file
-        fs::copy(&original_file_path, &backup_path).unwrap();
         // Copy the mutated file to the original file
         fs::copy(&mutated_file_path, &original_file_path).unwrap();
         // Compile the project first, skip if compilation fails
         let res = self.build_gradle_command("assemble").wait().unwrap();
         if !res.success() {
-            if verbose {
+            if self.verbose {
                 tracing::info!("Build failed for: {}", mutated_file_path.display());
             }
             // Restore the original file
@@ -65,7 +63,7 @@ impl Gradle {
             Ok(Some(status)) => status,
             Ok(None) => {
                 child_process.kill().unwrap();
-                if verbose {
+                if self.verbose {
                     tracing::info!("Test timed out for: {}", mutated_file_path.display());
                 }
                 // Restore the original file
@@ -74,7 +72,7 @@ impl Gradle {
                 return;
             }
             Err(e) => {
-                if verbose { 
+                if self.verbose { 
                     tracing::info!("Test failed: {}", e);
                 }
                 child_process.kill().unwrap();
@@ -85,12 +83,12 @@ impl Gradle {
             }
         };
         if res.success() {
-            if verbose {
+            if self.verbose {
                 tracing::info!("Mutant survived for file: {}", mutated_file_path.display());
             }
             mutation.result = MutationResult::Survived;
         } else {
-            if verbose {
+            if self.verbose {
                 tracing::info!("Mutant killed for file: {}", mutated_file_path.display());
             }
             mutation.result = MutationResult::Killed;
@@ -102,11 +100,21 @@ impl Gradle {
     // Builds the gradle command to be ran
     fn build_gradle_command(&mut self, command: &str) -> Child {
         let mut cmd = if cfg!(unix) {
-            Command::new(format!("{}/gradlew", self.config_path.display()))
+            Command::new("./gradlew")
         } else if cfg!(windows) {
-            Command::new(format!("{}/gradlew.bat", self.config_path.display()))
+            Command::new("./gradlew.bat")
         } else {
             panic!("Unsupported OS");
+        };
+        let std_out = if self.verbose {
+            Stdio::inherit()
+        } else {
+            Stdio::null()
+        };
+        let std_err = if self.verbose {
+            Stdio::inherit()
+        } else {
+            Stdio::null()
         };
         cmd
             .arg(command)
@@ -114,8 +122,8 @@ impl Gradle {
             .arg("--build-cache")
             .arg("--quiet")
             .current_dir(&self.config_path)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
+            .stdout(std_out)
+            .stderr(std_err)
             .spawn()
             .unwrap()
     }

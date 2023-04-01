@@ -39,14 +39,13 @@ struct Cli {
 pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
-    #[clap(default_value = ".")]
     path: String,
 }
 
 impl Default for MutationCommandConfig {
     fn default() -> Self {
         Self {
-            path: ".".to_string(),
+            path: std::env::current_dir().unwrap().display().to_string(),
         }
     }
 }
@@ -71,7 +70,6 @@ fn main() {
     }
     match args.command {
         Commands::Mutate(config) => {
-            // TODO: If an error occurs, remove the output directory
             mutate_tool_builder
                 .set_verbose(verbose)
                 .set_config(config)
