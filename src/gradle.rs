@@ -102,9 +102,9 @@ impl Gradle {
     // Builds the gradle command to be ran
     fn build_gradle_command(&mut self, command: &str) -> Child {
         let mut cmd = if cfg!(unix) {
-            Command::new("./gradlew")
+            Command::new(format!("{}/gradlew", self.config_path.display()))
         } else if cfg!(windows) {
-            Command::new("gradlew.bat")
+            Command::new(format!("{}/gradlew.bat", self.config_path.display()))
         } else {
             panic!("Unsupported OS");
         };
