@@ -1,24 +1,26 @@
 package src.test.kotlin
 import MyMath
 import kotlin.test.Test
+import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 import kotlin.test.assertEquals
 
 class MyMathTest {
-    
+
     @Test
     fun testIsEven() {
         val myMath = MyMath()
         assertTrue(myMath.isEven(2))
         assertFalse(myMath.isEven(3))
     }
-    
+
     @Test
     fun testIsOdd() {
         val myMath = MyMath()
         assertTrue(myMath.isOdd(3))
         assertFalse(myMath.isOdd(2))
     }
-    
+
     @Test
     fun testFactorial() {
         val myMath = MyMath()
@@ -26,7 +28,7 @@ class MyMathTest {
         assertEquals(1, myMath.factorial(1))
         assertEquals(120, myMath.factorial(5))
     }
-    
+
     @Test
     fun testGcd() {
         val myMath = MyMath()

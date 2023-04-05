@@ -358,6 +358,10 @@ impl MutationTool {
             }) {
                 continue;
             }
+            let file_name = entry.file_name();
+            if file_name.to_str().unwrap().ends_with("Test.kt") {
+                continue;
+            }
             existing_files.push(path.to_str().unwrap().to_string());
         }
 
@@ -379,9 +383,9 @@ mod tests {
         let file_id = format!("./{}/{}.kt", mutation_test_id, mutation_test_id);
         let output_directory = format!("./{}/mutations/", mutation_test_id);
         // Create temp output directory
-        std::fs::create_dir_all(&output_directory).unwrap();
+        fs::create_dir_all(&output_directory).unwrap();
         // Add test files to directory
-        std::fs::write(&file_id, file_contents).unwrap();
+        fs::write(&file_id, file_contents).unwrap();
 
         (mutation_test_id, output_directory)
     }
@@ -390,7 +394,7 @@ mod tests {
         fs::remove_dir_all(format!("./{}", mutation_test_id)).unwrap()
     }
 
-    fn create_mutator_with_specifc_operators(
+    fn create_mutator_with_specific_operators(
         mutation_test_id: Uuid,
         output_directory: String,
         operators: Vec<MutationOperators>,
@@ -463,7 +467,7 @@ mod tests {
     #[test]
     fn test_mutate_arithmetic_mutated_files_exist() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::ArthimeticOperator],
@@ -474,7 +478,7 @@ mod tests {
     #[test]
     fn test_arithmetic_mutations_are_correct() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::ArthimeticOperator],
@@ -486,7 +490,7 @@ mod tests {
     fn test_mutate_assignment_mutated_files_exist() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::AssignmentOperator],
@@ -498,7 +502,7 @@ mod tests {
     fn test_mutate_assignment_mutations_are_correct() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_ASSIGNMENT_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::AssignmentOperator],
@@ -509,7 +513,7 @@ mod tests {
     #[test]
     fn test_mutate_logical_mutated_files_exist() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::LogicalOperator],
@@ -520,7 +524,7 @@ mod tests {
     #[test]
     fn test_mutate_logical_mutations_are_correct() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LOGICAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::LogicalOperator],
@@ -532,7 +536,7 @@ mod tests {
     fn test_mutate_relational_mutated_files_exist() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::RelationalOperator],
@@ -544,7 +548,7 @@ mod tests {
     fn test_mutate_relational_mutations_are_correct() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_RELATIONAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::RelationalOperator],
@@ -555,7 +559,7 @@ mod tests {
     #[test]
     fn test_mutate_unary_mutated_files_exist() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::UnaryOperator],
@@ -566,7 +570,7 @@ mod tests {
     #[test]
     fn test_mutate_unary_mutations_are_correct() {
         let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_UNARY_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::UnaryOperator],
@@ -578,7 +582,7 @@ mod tests {
     fn test_mutate_unary_removal_mutated_files_exist() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::UnaryRemovalOperator],
@@ -590,7 +594,7 @@ mod tests {
     fn test_mutate_unary_removal_mutations_are_correct() {
         let (mutation_test_id, output_directory) =
             create_temp_directory(KOTLIN_UNARY_REMOVAL_TEST_CODE);
-        let mut mutator = create_mutator_with_specifc_operators(
+        let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
             vec![MutationOperators::UnaryRemovalOperator],
