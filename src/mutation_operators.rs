@@ -1,5 +1,4 @@
 use crate::{kotlin_types::KotlinTypes, Mutation};
-use rand::seq::IteratorRandom;
 use std::{collections::HashSet, fmt::Display};
 
 // Struct that stores all the mutations operators by default
@@ -177,33 +176,38 @@ impl MutationOperators {
         if !parent_types.contains(parent) {
             return;
         }
-        let mut random_operator;
-        loop {
-            if *self == MutationOperators::UnaryRemovalOperator {
-                // If the operator is a unary removal operator, we just remove the operator
-                random_operator = &KotlinTypes::RemoveOperator;
-                break;
-            }
-            // Get a random opertor from mutation_operators
-            random_operator = mutation_operators
-                .iter()
-                .choose(&mut rand::thread_rng())
-                .unwrap();
-            if random_operator != root {
-                break;
-            }
+        
+        if *self == MutationOperators::UnaryRemovalOperator {
+            // If the operator is a unary removal operator, we just remove the operator
+            // random_operator = &KotlinTypes::RemoveOperator;
+            let mutation = Mutation::new(
+                root_node.start_byte(),
+                root_node.end_byte(),
+                KotlinTypes::RemoveOperator.to_string(),
+                root.as_str(),
+                root_node.start_position().row + 1,
+                self.clone(),
+                file_name.clone(),
+            );
+            mutations_made.push(mutation);
+            return;
         }
-        // Parent was a comparison operator, so we can mutate the root
-        let mutation = Mutation::new(
-            root_node.start_byte(),
-            root_node.end_byte(),
-            random_operator.to_string(),
-            root.as_str(),
-            root_node.start_position().row + 1,
-            self.clone(),
-            file_name.clone(),
-        );
-        mutations_made.push(mutation)
+
+        // Create a mutant for all mutation operators
+        mutation_operators.iter().for_each(|operator| {
+            if operator != root {
+                let mutation = Mutation::new(
+                    root_node.start_byte(),
+                    root_node.end_byte(),
+                    operator.to_string(),
+                    root.as_str(),
+                    root_node.start_position().row + 1,
+                    self.clone(),
+                    file_name.clone(),
+                );
+                mutations_made.push(mutation)
+            }
+        });
     }
 }
 
@@ -266,7 +270,7 @@ mod tests {
             &"".into()
         );
         dbg!(&mutations_made);
-        assert_eq!(mutations_made.len(), 5);
+        assert_eq!(mutations_made.len(), 20);
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
@@ -285,7 +289,7 @@ mod tests {
             &"".into()
         );
 
-        assert_eq!(mutations_made.len(), 6);
+        assert_eq!(mutations_made.len(), 30);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
@@ -325,7 +329,7 @@ mod tests {
             &"".into()
         );
         dbg!(&mutations_made);
-        assert_eq!(mutations_made.len(), 5);
+        assert_eq!(mutations_made.len(), 25);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
@@ -339,7 +343,7 @@ mod tests {
         let mut mutations_made = Vec::new();
         MutationOperators::UnaryOperator.mutate(root, &mut root.walk(), None, &mut mutations_made, &"".into());
         dbg!(&mutations_made);
-        assert_eq!(mutations_made.len(), 4);
+        assert_eq!(mutations_made.len(), 12);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);

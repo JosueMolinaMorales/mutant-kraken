@@ -85,7 +85,6 @@ impl Display for Mutation {
             "
             /**
             AUTO GENERATED COMMENT
-            Mutation:
             Mutation Operator: {}
             Line number: {}
             Id: {},
