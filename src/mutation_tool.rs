@@ -161,14 +161,18 @@ impl MutationTool {
     pub fn mutate(&mut self) {
         tracing::info!("Mutation tool started...");
         // Phase 1: Gather mutations per file
+        let start_time = std::time::Instant::now();
         let mut file_mutations = self.gather_mutations_per_file();
-        // Phase 2: Generate mutations per file
-        self.generate_mutations_per_file(&file_mutations);
-        tracing::info!("Building and testing mutations...");
-        // Phase 3: Build and test
-        self.build_and_test(&mut file_mutations);
-        // Phase 4: Report results
-        self.report_results(&file_mutations);
+        let end_time = std::time::Instant::now();
+        let duration = (end_time - start_time).as_millis();
+        tracing::info!("Gathered mutations in {} ms", duration);
+        // // Phase 2: Generate mutations per file
+        // self.generate_mutations_per_file(&file_mutations);
+        // tracing::info!("Building and testing mutations...");
+        // // Phase 3: Build and test
+        // self.build_and_test(&mut file_mutations);
+        // // Phase 4: Report results
+        // self.report_results(&file_mutations);
     }
 
     fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
