@@ -164,10 +164,14 @@ impl MutationTool {
         let start_time = std::time::Instant::now();
         let mut file_mutations = self.gather_mutations_per_file();
         let end_time = std::time::Instant::now();
-        let duration = (end_time - start_time).as_millis();
-        tracing::info!("Gathered mutations in {} ms", duration);
-        // // Phase 2: Generate mutations per file
-        // self.generate_mutations_per_file(&file_mutations);
+        let duration = end_time.duration_since(start_time).as_millis();
+        tracing::info!("Gathered mutations in {} ms for {} files", duration, file_mutations.len());
+        // Phase 2: Generate mutations per file
+        let start_time = std::time::Instant::now();
+        self.generate_mutations_per_file(&file_mutations);
+        let end_time = std::time::Instant::now();
+        let duration = end_time.duration_since(start_time).as_millis();
+        tracing::info!("Generated mutations in {} ms", duration);
         // tracing::info!("Building and testing mutations...");
         // // Phase 3: Build and test
         // self.build_and_test(&mut file_mutations);
