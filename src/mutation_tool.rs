@@ -3,7 +3,7 @@ use std::{
     ffi::OsStr,
     fs,
     io::BufRead,
-    path::{Component, Path, PathBuf},
+    path::{Component, Path, PathBuf}, sync::{Arc, Mutex},
 };
 
 use clap::{error::ErrorKind, CommandFactory};
@@ -11,7 +11,7 @@ use clap::{error::ErrorKind, CommandFactory};
 use crate::{
     gradle::Gradle,
     mutation::{Mutation, FileMutations, MutationResult},
-    mutation_operators::{AllMutationOperators, MutationOperators},
+    mutation_operators::{AllMutationOperators, MutationOperators, self},
     Cli, CliError, MutationCommandConfig,
 };
 
@@ -74,10 +74,10 @@ impl MutationToolBuilder {
 }
 
 pub struct MutationTool {
-    parser: tree_sitter::Parser,
+    parser: Arc<Mutex<tree_sitter::Parser>>,
     verbose: bool,
     config: MutationCommandConfig,
-    mutation_operators: Vec<MutationOperators>,
+    mutation_operators: Arc<Vec<MutationOperators>>,
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
     gradle: Gradle,
@@ -141,8 +141,8 @@ impl MutationTool {
         Self {
             verbose,
             config,
-            parser,
-            mutation_operators,
+            parser: Arc::new(Mutex::new(parser)),
+            mutation_operators: Arc::new(mutation_operators),
             mutation_dir,
             backup_dir,
             gradle,
@@ -161,14 +161,21 @@ impl MutationTool {
     pub fn mutate(&mut self) {
         tracing::info!("Mutation tool started...");
         // Phase 1: Gather mutations per file
+        let start_time = std::time::Instant::now();
         let mut file_mutations = self.gather_mutations_per_file();
+        let end_time = std::time::Instant::now();
+        let duration = end_time.duration_since(start_time).as_millis();
+        tracing::info!(
+            "Gathered mutations per file in {} milliseconds",
+            duration
+        );
         // Phase 2: Generate mutations per file
-        self.generate_mutations_per_file(&file_mutations);
-        tracing::info!("Building and testing mutations...");
-        // Phase 3: Build and test
-        self.build_and_test(&mut file_mutations);
-        // Phase 4: Report results
-        self.report_results(&file_mutations);
+        // self.generate_mutations_per_file(&file_mutations);
+        // tracing::info!("Building and testing mutations...");
+        // // Phase 3: Build and test
+        // self.build_and_test(&mut file_mutations);
+        // // Phase 4: Report results
+        // self.report_results(&file_mutations);
     }
 
     fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
@@ -288,34 +295,50 @@ impl MutationTool {
             tracing::info!("Gathering all mutations for files...");
         }
 
-        let mut file_mutations: HashMap<String, FileMutations> = HashMap::new();
-        let mut mutation_count = 0;
-        for file in existing_files.clone() {
-            let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
-            let ast = self
-                .parser
-                .parse(
-                    fs::read_to_string(&file).expect("File Not Found!"),
-                    None,
-                )
-                .unwrap(); // TODO: Remove this unwrap
-            for mut_op in self.mutation_operators.clone() {
-                // Get a list of mutations that can be made
-                let mutations = mut_op.find_mutation(&ast, &file_name);
-                mutation_count += mutations.len();
-                file_mutations
-                    .entry(file.clone())
-                    .and_modify(|fm| fm.mutations.extend(mutations.clone()))
-                    .or_insert(FileMutations {
-                        mutations: mutations.clone(),
-                    });
+        let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> = Arc::new(Mutex::new(HashMap::new()));
+        let mutation_count: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
+        std::thread::scope(|s| {
+            for file in existing_files.clone() {
+                let mutation_count = mutation_count.clone();
+                let file_mutations = file_mutations.clone();
+                let parser = self.parser.clone();
+                let mutation_operators = self.mutation_operators.clone();
+                let mut threads = vec![];
+                threads.push(s.spawn(move || {
+                    let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
+                    let ast = parser
+                        .lock()
+                        .unwrap()
+                        .parse(
+                            fs::read_to_string(&file).expect("File Not Found!"),
+                            None,
+                        )
+                        .unwrap(); // TODO: Remove this unwrap
+                    for mut_op in mutation_operators.iter() {
+                        // Get a list of mutations that can be made
+                        let mutations = mut_op.find_mutation(&ast, &file_name);
+                        *mutation_count.lock().unwrap() += mutations.len();
+                        file_mutations
+                            .lock()
+                            .unwrap()
+                            .entry(file.clone())
+                            .and_modify(|fm| fm.mutations.extend(mutations.clone()))
+                            .or_insert(FileMutations {
+                                mutations: mutations.clone(),
+                            });
+                    }
+                }));
+                for t in threads {
+                    t.join().unwrap();
+                }
             }
-        }
+        });
         if self.verbose {
+            let mutation_count = Arc::try_unwrap(mutation_count).unwrap().into_inner().unwrap();
             tracing::info!("Mutations made to all files");
             tracing::info!("Total mutations made: {}", mutation_count);
         }
-        file_mutations
+        Arc::try_unwrap(file_mutations).unwrap().into_inner().unwrap()
     }
 
     /*
