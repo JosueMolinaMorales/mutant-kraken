@@ -292,6 +292,7 @@ impl MutationTool {
             Cli::command().error(error.kind, error.message).exit();
         }
         if self.verbose {
+            tracing::debug!("Number of files found: {}", existing_files.len());
             tracing::debug!("Files found from path: {:#?}", existing_files);
             tracing::info!("Gathering all mutations for files...");
         }
