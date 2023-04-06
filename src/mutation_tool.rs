@@ -170,11 +170,18 @@ impl MutationTool {
             duration
         );
         // Phase 2: Generate mutations per file
-        // self.generate_mutations_per_file(&file_mutations);
+        let start_time = std::time::Instant::now();
+        self.generate_mutations_per_file(&file_mutations);
+        let end_time = std::time::Instant::now();
+        let duration = end_time.duration_since(start_time).as_millis();
+        tracing::info!(
+            "Generated mutations per file in {} milliseconds",
+            duration
+        );
         // tracing::info!("Building and testing mutations...");
-        // // Phase 3: Build and test
+        // Phase 3: Build and test
         // self.build_and_test(&mut file_mutations);
-        // // Phase 4: Report results
+        // Phase 4: Report results
         // self.report_results(&file_mutations);
     }
 
@@ -251,35 +258,43 @@ impl MutationTool {
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
-        file_mutations.iter().for_each(|(file_name, fm)| {
-            let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
-            fm.mutations.iter().for_each(|m| {
-                let new_op_bytes = m.new_op.as_bytes();
-                let mut file = file_str.as_bytes().to_vec();
-
-                // Add the mutation to the vector of bytes
-                file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
-                // Add comment above mutation about the mutation
-                let file = file
-                    .lines()
-                    .enumerate()
-                    .map(|(i, line)| {
-                        let mut line = line.expect("Failed to convert line to string");
-                        if i == m.line_number - 1 && self.enable_mutation_comment {
-                            line = format!("{}\n{}", m, line);
-                        }
-                        line
-                    })
-                    .collect::<Vec<String>>()
-                    .join("\n");
-
-                // Create a file name for the mutated file
-                let mutated_file_name = self
-                    .mutation_dir
-                    .join(self.create_mutated_file_name(file_name, m));
-                // Write the mutated file to the output directory
-                fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+        std::thread::scope(|s| {
+            let mut threads = vec![];
+            file_mutations.iter().for_each(|(file_name, fm)| {   
+                let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
+                threads.push(s.spawn(move || {
+                    fm.mutations.iter().for_each(|m| {
+                        let new_op_bytes = m.new_op.as_bytes();
+                        let mut file = file_str.as_bytes().to_vec();
+        
+                        // Add the mutation to the vector of bytes
+                        file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+                        // Add comment above mutation about the mutation
+                        let file = file
+                            .lines()
+                            .enumerate()
+                            .map(|(i, line)| {
+                                let mut line = line.expect("Failed to convert line to string");
+                                if i == m.line_number - 1 && self.enable_mutation_comment {
+                                    line = format!("{}\n{}", m, line);
+                                }
+                                line
+                            })
+                            .collect::<Vec<String>>()
+                            .join("\n");
+        
+                        // Create a file name for the mutated file
+                        let mutated_file_name = self
+                            .mutation_dir
+                            .join(self.create_mutated_file_name(file_name, m));
+                        // Write the mutated file to the output directory
+                        fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+                    });
+                }));
             });
+            for t in threads {
+                t.join().unwrap();
+            }
         });
     }
 
