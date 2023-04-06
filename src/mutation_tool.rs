@@ -298,12 +298,12 @@ impl MutationTool {
         let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> = Arc::new(Mutex::new(HashMap::new()));
         let mutation_count: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
         std::thread::scope(|s| {
+            let mut threads = vec![];
             for file in existing_files.clone() {
                 let mutation_count = mutation_count.clone();
                 let file_mutations = file_mutations.clone();
                 let parser = self.parser.clone();
                 let mutation_operators = self.mutation_operators.clone();
-                let mut threads = vec![];
                 threads.push(s.spawn(move || {
                     let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
                     let ast = parser
@@ -328,9 +328,9 @@ impl MutationTool {
                             });
                     }
                 }));
-                for t in threads {
-                    t.join().unwrap();
-                }
+            }
+            for t in threads {
+                t.join().unwrap();
             }
         });
         if self.verbose {
