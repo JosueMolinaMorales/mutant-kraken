@@ -8,7 +8,7 @@ pub struct AllMutationOperators {
 }
 
 // The different types of mutation operators that can be performed on a file
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub enum MutationOperators {
     ArthimeticOperator,
     UnaryRemovalOperator,
@@ -179,7 +179,6 @@ impl MutationOperators {
         
         if *self == MutationOperators::UnaryRemovalOperator {
             // If the operator is a unary removal operator, we just remove the operator
-            // random_operator = &KotlinTypes::RemoveOperator;
             let mutation = Mutation::new(
                 root_node.start_byte(),
                 root_node.end_byte(),

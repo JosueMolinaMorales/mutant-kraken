@@ -7,6 +7,7 @@ use std::{
 };
 
 use clap::{error::ErrorKind, CommandFactory};
+use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::{
     gradle::Gradle,
@@ -186,6 +187,20 @@ impl MutationTool {
         self.build_and_test(&mut file_mutations);
         // Phase 5: Report results
         self.report_results(&file_mutations);
+        // Phase 6: Save Results in csv
+        self.save_results(&file_mutations);
+    }
+
+    fn save_results(&self, file_mutations: &HashMap<String, FileMutations>) {
+        let mut writer = csv::WriterBuilder::new()
+            .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
+            .unwrap();
+        file_mutations.iter().for_each(|(_, fm)| {
+            for mutation in &fm.mutations {
+                writer.serialize(mutation).unwrap();
+            }
+        });
+        writer.flush().unwrap();
     }
 
     fn get_files_from_project(&self) -> Vec<String> {
@@ -251,6 +266,14 @@ impl MutationTool {
     }
 
     fn build_and_test(&mut self, file_mutations: &mut HashMap<String, FileMutations>) {
+        let num_mutations = file_mutations.iter().fold(0, |acc, (_, fm)| acc + fm.mutations.len());
+        let progress_bar = ProgressBar::new(num_mutations as u64);
+        progress_bar.set_style(
+            ProgressStyle::default_bar()
+                .template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg} - Running tests...")
+                .unwrap()
+                .progress_chars("=> "),
+        );
         for (file_name, fm) in file_mutations.iter_mut() {
             let original_file_path = Path::new(file_name).to_path_buf();
             let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
@@ -259,6 +282,7 @@ impl MutationTool {
             fs::copy(&original_file_path, &backup_path).unwrap();
 
             for mutation in fm.mutations.iter_mut() {
+                progress_bar.inc(1);
                 let mutated_file_path = self
                     .mutation_dir
                     .join(self.create_mutated_file_name(file_name, mutation));
@@ -269,6 +293,7 @@ impl MutationTool {
                 self.gradle.run(&mutated_file_path, &original_file_path, &backup_path, mutation);
             }
         }
+        progress_bar.finish();
     }
 
     fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
