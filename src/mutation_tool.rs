@@ -160,9 +160,11 @@ impl MutationTool {
 
     pub fn mutate(&mut self) {
         tracing::info!("Mutation tool started...");
-        // Phase 1: Gather mutations per file
+        // Phase 1: Get files from project
+        let mut existing_files = self.get_files_from_project();
+        // Phase 2: Gather mutations per file
         let start_time = std::time::Instant::now();
-        let mut file_mutations = self.gather_mutations_per_file();
+        let mut file_mutations = self.gather_mutations_per_file(&mut existing_files);
         let end_time = std::time::Instant::now();
         let duration = end_time.duration_since(start_time).as_millis();
         tracing::info!(
@@ -179,10 +181,24 @@ impl MutationTool {
             duration
         );
         // tracing::info!("Building and testing mutations...");
-        // Phase 3: Build and test
+        // // Phase 4: Build and test
         // self.build_and_test(&mut file_mutations);
-        // Phase 4: Report results
+        // // Phase 5: Report results
         // self.report_results(&file_mutations);
+    }
+
+    fn get_files_from_project(&self) -> Vec<String> {
+        let mut existing_files: Vec<String> = vec![];
+        if let Some(error) =
+            Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err()
+        {
+            Cli::command().error(error.kind, error.message).exit();
+        }
+        if self.verbose {
+            tracing::debug!("Files found from path: {:#?}", existing_files);
+            tracing::info!("Gathering all mutations for files...");
+        }
+        existing_files
     }
 
     fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
@@ -298,18 +314,7 @@ impl MutationTool {
         });
     }
 
-    fn gather_mutations_per_file(&mut self) -> HashMap<String, FileMutations> {
-        let mut existing_files: Vec<String> = vec![];
-        if let Some(error) =
-            Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err()
-        {
-            Cli::command().error(error.kind, error.message).exit();
-        }
-        if self.verbose {
-            tracing::debug!("Files found from path: {:#?}", existing_files);
-            tracing::info!("Gathering all mutations for files...");
-        }
-
+    fn gather_mutations_per_file(&mut self, existing_files: &mut Vec<String>) -> HashMap<String, FileMutations> {
         let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> = Arc::new(Mutex::new(HashMap::new()));
         let mutation_count: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
         std::thread::scope(|s| {
@@ -461,7 +466,7 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let fm = mutator.gather_mutations_per_file();
+        let fm = mutator.gather_mutations_per_file(&mut mutator.get_files_from_project());
         mutator.generate_mutations_per_file(&fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {
@@ -480,7 +485,7 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let mut fm = mutator.gather_mutations_per_file();
+        let mut fm = mutator.gather_mutations_per_file(&mut mutator.get_files_from_project());
         mutator.generate_mutations_per_file(&mut fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {
