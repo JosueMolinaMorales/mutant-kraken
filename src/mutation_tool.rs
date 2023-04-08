@@ -11,7 +11,7 @@ use clap::{error::ErrorKind, CommandFactory};
 use crate::{
     gradle::Gradle,
     mutation::{Mutation, FileMutations, MutationResult},
-    mutation_operators::{AllMutationOperators, MutationOperators, self},
+    mutation_operators::{AllMutationOperators, MutationOperators},
     Cli, CliError, MutationCommandConfig,
 };
 
@@ -24,6 +24,7 @@ pub struct MutationToolBuilder {
     config: Option<MutationCommandConfig>,
     mutation_operators: Option<Vec<MutationOperators>>,
     enable_mutation_comment: bool,
+    thread_count: Option<usize>
 }
 
 impl Default for MutationToolBuilder {
@@ -39,6 +40,7 @@ impl MutationToolBuilder {
             config: None,
             mutation_operators: None,
             enable_mutation_comment: false,
+            thread_count: None
         }
     }
     pub fn set_verbose(mut self, verbose: bool) -> Self {
@@ -57,18 +59,24 @@ impl MutationToolBuilder {
         self.enable_mutation_comment = enable_mutation_comment;
         self
     }
+    pub fn set_thread_count(mut self, thread_count: usize) -> Self {
+        self.thread_count = Some(thread_count);
+        self
+    }
 
     pub fn build(self) -> MutationTool {
         let config = self.config.unwrap_or_default();
         let mutation_operators = self
             .mutation_operators
             .unwrap_or(AllMutationOperators::new().get_mutation_operators());
+        let thread_count = self.thread_count.unwrap_or(30);
         MutationTool::new(
             self.verbose,
             config,
             OUT_DIRECTORY.into(),
             mutation_operators,
             self.enable_mutation_comment,
+            thread_count,
         )
     }
 }
@@ -82,6 +90,7 @@ pub struct MutationTool {
     backup_dir: PathBuf,
     gradle: Gradle,
     enable_mutation_comment: bool,
+    thread_pool: rayon::ThreadPool
 }
 
 impl Default for MutationTool {
@@ -92,6 +101,7 @@ impl Default for MutationTool {
             OUT_DIRECTORY.into(),
             AllMutationOperators::new().get_mutation_operators(),
             false,
+            30
         )
     }
 }
@@ -103,6 +113,7 @@ impl MutationTool {
         output_directory: String,
         mutation_operators: Vec<MutationOperators>,
         enable_mutation_comment: bool,
+        thread_count: usize
     ) -> Self {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
@@ -138,6 +149,9 @@ impl MutationTool {
         // Create gradle struct
         let gradle = Gradle::new(config_path.to_path_buf(), verbose);
 
+        // Create thread pool
+        let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(thread_count).build().unwrap();
+
         Self {
             verbose,
             config,
@@ -147,6 +161,7 @@ impl MutationTool {
             backup_dir,
             gradle,
             enable_mutation_comment,
+            thread_pool
         }
     }
 
@@ -163,28 +178,14 @@ impl MutationTool {
         // Phase 1: Get files from project
         let mut existing_files = self.get_files_from_project();
         // Phase 2: Gather mutations per file
-        let start_time = std::time::Instant::now();
         let mut file_mutations = self.gather_mutations_per_file(&mut existing_files);
-        let end_time = std::time::Instant::now();
-        let duration = end_time.duration_since(start_time).as_millis();
-        tracing::info!(
-            "Gathered mutations per file in {} milliseconds",
-            duration
-        );
-        // Phase 2: Generate mutations per file
-        let start_time = std::time::Instant::now();
+        // Phase 3: Generate mutations per file
         self.generate_mutations_per_file(&file_mutations);
-        let end_time = std::time::Instant::now();
-        let duration = end_time.duration_since(start_time).as_millis();
-        tracing::info!(
-            "Generated mutations per file in {} milliseconds",
-            duration
-        );
-        // tracing::info!("Building and testing mutations...");
-        // // Phase 4: Build and test
-        // self.build_and_test(&mut file_mutations);
-        // // Phase 5: Report results
-        // self.report_results(&file_mutations);
+        tracing::info!("Building and testing mutations...");
+        // Phase 4: Build and test
+        self.build_and_test(&mut file_mutations);
+        // Phase 5: Report results
+        self.report_results(&file_mutations);
     }
 
     fn get_files_from_project(&self) -> Vec<String> {
@@ -271,14 +272,10 @@ impl MutationTool {
     }
 
     fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
-        let pool = rayon::ThreadPoolBuilder::new()
-            .num_threads(30)
-            .build()
-            .unwrap();
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
-        pool.scope(|s| {
+        self.thread_pool.scope(|s| {
             file_mutations.iter().for_each(|(file_name, fm)| {   
                 let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
                 s.spawn(move |_| {
@@ -310,60 +307,20 @@ impl MutationTool {
                         fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                     });
                 });
-            });
-            println!("Num of threads: {}", pool.current_num_threads());
+            });            
         })
-        // std::thread::scope(|s| {
-        //     let mut threads = vec![];
-        //     file_mutations.iter().for_each(|(file_name, fm)| {   
-        //         let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
-        //         threads.push(s.spawn(move || {
-        //             fm.mutations.iter().for_each(|m| {
-        //                 let new_op_bytes = m.new_op.as_bytes();
-        //                 let mut file = file_str.as_bytes().to_vec();
-        
-        //                 // Add the mutation to the vector of bytes
-        //                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
-        //                 // Add comment above mutation about the mutation
-        //                 let file = file
-        //                     .lines()
-        //                     .enumerate()
-        //                     .map(|(i, line)| {
-        //                         let mut line = line.expect("Failed to convert line to string");
-        //                         if i == m.line_number - 1 && self.enable_mutation_comment {
-        //                             line = format!("{}\n{}", m, line);
-        //                         }
-        //                         line
-        //                     })
-        //                     .collect::<Vec<String>>()
-        //                     .join("\n");
-        
-        //                 // Create a file name for the mutated file
-        //                 let mutated_file_name = self
-        //                     .mutation_dir
-        //                     .join(self.create_mutated_file_name(file_name, m));
-        //                 // Write the mutated file to the output directory
-        //                 fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
-        //             });
-        //         }));
-        //     });
-        //     for t in threads {
-        //         t.join().unwrap();
-        //     }
-        // });
     }
 
     fn gather_mutations_per_file(&mut self, existing_files: &mut Vec<String>) -> HashMap<String, FileMutations> {
         let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> = Arc::new(Mutex::new(HashMap::new()));
-        let mutation_count: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
-        std::thread::scope(|s| {
-            let mut threads = vec![];
+        let mutation_count = Arc::new(Mutex::new(0));
+        self.thread_pool.scope(|s| {
             for file in existing_files.clone() {
                 let mutation_count = mutation_count.clone();
                 let file_mutations = file_mutations.clone();
                 let parser = self.parser.clone();
                 let mutation_operators = self.mutation_operators.clone();
-                threads.push(s.spawn(move || {
+                s.spawn(move |_| {
                     let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
                     let ast = parser
                         .lock()
@@ -386,10 +343,7 @@ impl MutationTool {
                                 mutations: mutations.clone(),
                             });
                     }
-                }));
-            }
-            for t in threads {
-                t.join().unwrap();
+                });
             }
         });
         if self.verbose {
@@ -489,6 +443,7 @@ mod tests {
             output_directory,
             operators,
             false,
+            30
         )
     }
 
