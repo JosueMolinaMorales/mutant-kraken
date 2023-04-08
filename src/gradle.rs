@@ -52,7 +52,7 @@ impl Gradle {
                 tracing::info!("Build failed for: {}", mutated_file_path.display());
             }
             // Restore the original file
-            self.restore_original_file(&backup_path, &original_file_path);
+            // self.restore_original_file(&backup_path, &original_file_path);
             mutation.result = MutationResult::BuildFailed;
             return;
         }
@@ -67,7 +67,7 @@ impl Gradle {
                     tracing::info!("Test timed out for: {}", mutated_file_path.display());
                 }
                 // Restore the original file
-                self.restore_original_file(&backup_path, &original_file_path);
+                // self.restore_original_file(&backup_path, &original_file_path);
                 mutation.result = MutationResult::Timeout;
                 return;
             }
@@ -77,7 +77,7 @@ impl Gradle {
                 }
                 child_process.kill().unwrap();
                 // Restore the original file
-                self.restore_original_file(&backup_path, &original_file_path);
+                // self.restore_original_file(&backup_path, &original_file_path);
                 mutation.result = MutationResult::Failed;
                 return;
             }
@@ -94,7 +94,7 @@ impl Gradle {
             mutation.result = MutationResult::Killed;
         }
         // Restore the original file
-        self.restore_original_file(&backup_path, &original_file_path);
+        // self.restore_original_file(&backup_path, &original_file_path);
     }
 
     // Builds the gradle command to be ran
@@ -129,7 +129,7 @@ impl Gradle {
     }
 
     // Restores a file to its original state
-    fn restore_original_file(&self, backup_path: &PathBuf, original_file_path: &PathBuf) {
+    pub fn restore_original_file(&self, backup_path: &PathBuf, original_file_path: &PathBuf) {
         fs::copy(backup_path, original_file_path).unwrap();
     }
 }

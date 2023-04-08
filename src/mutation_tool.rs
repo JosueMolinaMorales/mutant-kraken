@@ -182,7 +182,6 @@ impl MutationTool {
         let mut file_mutations = self.gather_mutations_per_file(&mut existing_files);
         // Phase 3: Generate mutations per file
         self.generate_mutations_per_file(&file_mutations);
-        tracing::info!("Building and testing mutations...");
         // Phase 4: Build and test
         self.build_and_test(&mut file_mutations);
         // Phase 5: Report results
@@ -292,6 +291,9 @@ impl MutationTool {
 
                 self.gradle.run(&mutated_file_path, &original_file_path, &backup_path, mutation);
             }
+
+            // Restore original file
+            fs::copy(&backup_path, &original_file_path).unwrap();
         }
         progress_bar.finish();
     }
