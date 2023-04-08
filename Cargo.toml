@@ -9,6 +9,7 @@ edition = "2021"
 clap =  { version = "4.1.6", features = ["derive"] }
 cli-table = "0.4.7"
 rand = "0.8.5"
+rayon = "1.7.0"
 serde_json = "1.0.93"
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"

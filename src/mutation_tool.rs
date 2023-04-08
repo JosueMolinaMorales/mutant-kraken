@@ -271,14 +271,17 @@ impl MutationTool {
     }
 
     fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
+        let pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(30)
+            .build()
+            .unwrap();
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
-        std::thread::scope(|s| {
-            let mut threads = vec![];
+        pool.scope(|s| {
             file_mutations.iter().for_each(|(file_name, fm)| {   
                 let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
-                threads.push(s.spawn(move || {
+                s.spawn(move |_| {
                     fm.mutations.iter().for_each(|m| {
                         let new_op_bytes = m.new_op.as_bytes();
                         let mut file = file_str.as_bytes().to_vec();
@@ -306,12 +309,48 @@ impl MutationTool {
                         // Write the mutated file to the output directory
                         fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                     });
-                }));
+                });
             });
-            for t in threads {
-                t.join().unwrap();
-            }
-        });
+            println!("Num of threads: {}", pool.current_num_threads());
+        })
+        // std::thread::scope(|s| {
+        //     let mut threads = vec![];
+        //     file_mutations.iter().for_each(|(file_name, fm)| {   
+        //         let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
+        //         threads.push(s.spawn(move || {
+        //             fm.mutations.iter().for_each(|m| {
+        //                 let new_op_bytes = m.new_op.as_bytes();
+        //                 let mut file = file_str.as_bytes().to_vec();
+        
+        //                 // Add the mutation to the vector of bytes
+        //                 file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
+        //                 // Add comment above mutation about the mutation
+        //                 let file = file
+        //                     .lines()
+        //                     .enumerate()
+        //                     .map(|(i, line)| {
+        //                         let mut line = line.expect("Failed to convert line to string");
+        //                         if i == m.line_number - 1 && self.enable_mutation_comment {
+        //                             line = format!("{}\n{}", m, line);
+        //                         }
+        //                         line
+        //                     })
+        //                     .collect::<Vec<String>>()
+        //                     .join("\n");
+        
+        //                 // Create a file name for the mutated file
+        //                 let mutated_file_name = self
+        //                     .mutation_dir
+        //                     .join(self.create_mutated_file_name(file_name, m));
+        //                 // Write the mutated file to the output directory
+        //                 fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+        //             });
+        //         }));
+        //     });
+        //     for t in threads {
+        //         t.join().unwrap();
+        //     }
+        // });
     }
 
     fn gather_mutations_per_file(&mut self, existing_files: &mut Vec<String>) -> HashMap<String, FileMutations> {
