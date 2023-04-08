@@ -172,11 +172,11 @@ impl MutationTool {
         let end_time = std::time::Instant::now();
         let duration = end_time.duration_since(start_time).as_millis();
         tracing::info!("Generated mutations in {} ms", duration);
-        // tracing::info!("Building and testing mutations...");
-        // // Phase 3: Build and test
-        // self.build_and_test(&mut file_mutations);
-        // // Phase 4: Report results
-        // self.report_results(&file_mutations);
+        tracing::info!("Building and testing mutations...");
+        // Phase 3: Build and test
+        self.build_and_test(&mut file_mutations);
+        // Phase 4: Report results
+        self.report_results(&file_mutations);
     }
 
     fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
@@ -245,6 +245,9 @@ impl MutationTool {
 
                 self.gradle.run(&mutated_file_path, &original_file_path, &backup_path, mutation);
             }
+
+            // Restore original file
+            fs::copy(&backup_path, &original_file_path).unwrap();
         }
     }
 
