@@ -90,7 +90,6 @@ pub struct MutationTool {
     mutation_operators: Arc<Vec<MutationOperators>>,
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
-    gradle: Gradle,
     enable_mutation_comment: bool,
     thread_pool: rayon::ThreadPool
 }
@@ -148,9 +147,6 @@ impl MutationTool {
             fs::create_dir(&backup_dir).unwrap(); // TODO: Remove unwrap
         }
 
-        // Create gradle struct
-        let gradle = Gradle::new(config_path.to_path_buf(), verbose);
-
         // Create thread pool
         let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(thread_count).build().unwrap();
 
@@ -161,7 +157,6 @@ impl MutationTool {
             mutation_operators: Arc::new(mutation_operators),
             mutation_dir,
             backup_dir,
-            gradle,
             enable_mutation_comment,
             thread_pool
         }
@@ -194,7 +189,7 @@ impl MutationTool {
         self.report_results(&mutations);
         // Phase 6: Save Results in csv
         println!("{} {} Saving results...", "[6/6]", "💾");
-        // self.save_results(&mutations);
+        self.save_results(&mutations);
     }
 
     fn save_results(&self, mutations: &Vec<Mutation>) {
@@ -341,6 +336,8 @@ impl MutationTool {
             }
         });
         progress_bar.finish();
+        // Delete temp directory
+        fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")).unwrap();
         chunks.into_iter().flatten().collect()
     }
 
