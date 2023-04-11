@@ -4,11 +4,9 @@ use std::{
     process::{Child, Command, Stdio},
     time::Duration,
 };
-
-use clap::{error::ErrorKind, CommandFactory};
 use wait_timeout::ChildExt;
 
-use crate::{Cli, mutation::{Mutation, MutationResult}};
+use crate::mutation::{Mutation, MutationResult};
 
 /// Gradle is a struct that will run gradle commands
 pub struct Gradle {
@@ -30,18 +28,13 @@ impl Gradle {
         &mut self,
         mutated_file_path: &PathBuf,
         original_file_path: &PathBuf,
-        backup_path: &PathBuf,
         mutation: &mut Mutation,
     ) {
         // Check to see if gradlew exists in the root of the directory
         // TODO: How will testing work for this?
         if !self.config_path.join("gradlew").exists() {
-            Cli::command()
-                .error(
-                    ErrorKind::ArgumentConflict,
-                    "gradlew does not exist at the root of this project",
-                )
-                .exit();
+            // TODO: Convert this panic to a result? 
+            panic!("gradlew does not exist at the root of this project");
         }
         // Copy the mutated file to the original file
         fs::copy(&mutated_file_path, &original_file_path).unwrap();
@@ -51,23 +44,19 @@ impl Gradle {
             if self.verbose {
                 tracing::info!("Build failed for: {}", mutated_file_path.display());
             }
-            // Restore the original file
-            // self.restore_original_file(&backup_path, &original_file_path);
             mutation.result = MutationResult::BuildFailed;
             return;
         }
         let mut child_process = self.build_gradle_command("test");
         // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
         // can occur from the mutations.
-        let res = match child_process.wait_timeout(Duration::from_secs(10)) {
+        let res = match child_process.wait_timeout(Duration::from_secs(20)) {
             Ok(Some(status)) => status,
             Ok(None) => {
                 child_process.kill().unwrap();
                 if self.verbose {
                     tracing::info!("Test timed out for: {}", mutated_file_path.display());
                 }
-                // Restore the original file
-                // self.restore_original_file(&backup_path, &original_file_path);
                 mutation.result = MutationResult::Timeout;
                 return;
             }
@@ -76,8 +65,6 @@ impl Gradle {
                     tracing::info!("Test failed: {}", e);
                 }
                 child_process.kill().unwrap();
-                // Restore the original file
-                // self.restore_original_file(&backup_path, &original_file_path);
                 mutation.result = MutationResult::Failed;
                 return;
             }
@@ -93,8 +80,6 @@ impl Gradle {
             }
             mutation.result = MutationResult::Killed;
         }
-        // Restore the original file
-        // self.restore_original_file(&backup_path, &original_file_path);
     }
 
     // Builds the gradle command to be ran
@@ -135,14 +120,17 @@ impl Gradle {
 }
 
 
-// #[cfg(test)]
-// mod test {
-//     use super::*;
+#[cfg(test)]
+mod test {
+    use super::*;
 
-//     #[test]
-//     #[should_panic(expected = "gradlew does not exist at the root of this project")]
-//     fn test() {
-//         let mut gradle = Gradle::new(PathBuf::from("."));
-//         gradle.run(PathBuf::from("."), PathBuf::from("."), PathBuf::from("."),);
-//     }
-// }
+    #[test]
+    #[should_panic(expected = "gradlew does not exist at the root of this project")]
+    fn test() {
+        let mut gradle = Gradle::new(PathBuf::from("./kotlin-test-projects/no-gradle-project"), false);
+        gradle.run(
+        &PathBuf::new(), 
+        &PathBuf::new(), 
+        &mut Mutation::new(0, 0, "new_op".into(), "old_op".into(), 0, crate::mutation_operators::MutationOperators::ArthimeticOperator, "file_name".into()))
+    }
+}

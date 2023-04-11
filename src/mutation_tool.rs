@@ -19,6 +19,7 @@ use crate::{
 use cli_table::{WithTitle, Table};
 
 const OUT_DIRECTORY: &str = "./kode-kraken-dist";
+const MAX_BUILD_THREADS: f32 = 5f32;
 
 pub struct MutationToolBuilder {
     verbose: bool,
@@ -177,28 +178,32 @@ impl MutationTool {
     pub fn mutate(&mut self) {
         tracing::info!("Mutation tool started...");
         // Phase 1: Get files from project
+        println!("{} {} Gathering files...", "[1/6]", "📂");
         let mut existing_files = self.get_files_from_project();
         // Phase 2: Gather mutations per file
+        println!("{} {} Gathering mutations...", "[2/6]", "🔎");
         let mut file_mutations = self.gather_mutations_per_file(&mut existing_files);
         // Phase 3: Generate mutations per file
+        println!("{} {} Generating mutations...", "[3/6]", "🔨");
         self.generate_mutations_per_file(&file_mutations);
         // Phase 4: Build and test
-        self.build_and_test(&mut file_mutations);
+        println!("{} {} Building and testing...", "[4/6]", "🏗");
+        let mutations = self.build_and_test(&mut file_mutations);
         // Phase 5: Report results
-        self.report_results(&file_mutations);
+        println!("{} {} Reporting results...", "[5/6]", "📊");
+        self.report_results(&mutations);
         // Phase 6: Save Results in csv
-        self.save_results(&file_mutations);
+        println!("{} {} Saving results...", "[6/6]", "💾");
+        // self.save_results(&mutations);
     }
 
-    fn save_results(&self, file_mutations: &HashMap<String, FileMutations>) {
+    fn save_results(&self, mutations: &Vec<Mutation>) {
         let mut writer = csv::WriterBuilder::new()
             .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
             .unwrap();
-        file_mutations.iter().for_each(|(_, fm)| {
-            for mutation in &fm.mutations {
-                writer.serialize(mutation).unwrap();
-            }
-        });
+        for mutation in mutations {
+            writer.serialize(mutation).unwrap();
+        }
         writer.flush().unwrap();
     }
 
@@ -216,26 +221,21 @@ impl MutationTool {
         existing_files
     }
 
-    fn report_results(&self, file_mutations: &HashMap<String, FileMutations>) {
-        let mut mutations = vec![];
+    fn report_results(&self, mutations: &Vec<Mutation>) {
+        // let mut mutations = vec![];
         let mut total_mutations = 0;
         let mut total_killed_mutants = 0;
         let mut total_survived_mutants = 0;
         let mut total_timeouts_or_build_fails = 0;
-        file_mutations.iter().for_each(|(_, fm)| {
-            if !fm.mutations.is_empty() {
-                mutations.push(fm.mutations.clone());
+        total_mutations += mutations.len();
+        mutations.iter().for_each(|m| {
+            match m.result {
+                MutationResult::Killed => total_killed_mutants += 1,
+                MutationResult::Survived => total_survived_mutants += 1,
+                _ => total_timeouts_or_build_fails += 1,
             }
-            total_mutations += fm.mutations.len();
-            fm.mutations.iter().for_each(|m| {
-                match m.result {
-                    MutationResult::Killed => total_killed_mutants += 1,
-                    MutationResult::Survived => total_survived_mutants += 1,
-                    _ => total_timeouts_or_build_fails += 1,
-                }
-            })
         });
-        cli_table::print_stdout(mutations.concat().with_title()).unwrap();
+        cli_table::print_stdout(mutations.with_title()).unwrap();
         let table = vec![
             vec![
                 "Total mutations".to_string(),
@@ -257,45 +257,116 @@ impl MutationTool {
                 "Mutation score".to_string(),
                 format!(
                     "{}%",
-                    (total_killed_mutants as f32 / total_mutations as f32) * 100.0
+                    (total_killed_mutants as f32 / (total_killed_mutants + total_survived_mutants) as f32) * 100.0
                 ),
             ]
         ].table();
         cli_table::print_stdout(table).unwrap();
     }
 
-    fn build_and_test(&mut self, file_mutations: &mut HashMap<String, FileMutations>) {
+    fn copy_files(&self, file_mutations: &HashMap<String, FileMutations>) {
+        // Make Copies of all files
+        for (file_name, _) in file_mutations.iter() {
+            let original_file_path = Path::new(file_name).to_path_buf();
+            let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
+            let backup_path = self.backup_dir.join(original_file_name);
+            // Save a copy of the original file
+            fs::copy(&original_file_path, &backup_path).unwrap();
+        }
+    }
+
+    fn build_and_test(&mut self, file_mutations: &HashMap<String, FileMutations>) -> Vec<Mutation> {
         let num_mutations = file_mutations.iter().fold(0, |acc, (_, fm)| acc + fm.mutations.len());
-        let progress_bar = ProgressBar::new(num_mutations as u64);
+        let progress_bar = Arc::new(ProgressBar::new(num_mutations as u64));
         progress_bar.set_style(
             ProgressStyle::default_bar()
                 .template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg} - Running tests...")
                 .unwrap()
                 .progress_chars("=> "),
         );
-        for (file_name, fm) in file_mutations.iter_mut() {
-            let original_file_path = Path::new(file_name).to_path_buf();
-            let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
-            let backup_path = self.backup_dir.join(original_file_name);
-            // Save a copy of the original file
-            fs::copy(&original_file_path, &backup_path).unwrap();
 
-            for mutation in fm.mutations.iter_mut() {
-                progress_bar.inc(1);
-                let mutated_file_path = self
-                    .mutation_dir
-                    .join(self.create_mutated_file_name(file_name, mutation));
-                if self.verbose {
-                    tracing::info!("Building and testing {}", mutated_file_path.display());
-                }
-
-                self.gradle.run(&mutated_file_path, &original_file_path, &backup_path, mutation);
+        self.copy_files(file_mutations);
+        
+        // Merge all mutants into one vector
+        let mut all_mutations: Vec<Mutation> = vec![];
+        for (_, fm) in file_mutations.iter() {
+            for mutation in fm.mutations.iter() {
+                all_mutations.push(mutation.clone());
             }
-
-            // Restore original file
-            fs::copy(&backup_path, &original_file_path).unwrap();
         }
+        // Partition the mutations into chunks
+        let chunk_size = ((all_mutations.len() as f32) / MAX_BUILD_THREADS) as usize;
+        let mut chunks: Vec<Vec<Mutation>> = all_mutations.chunks(chunk_size).map(|c| c.to_vec()).collect();
+        // Set up threading
+        let path = Arc::new(self.config.path.clone());
+        let mutation_dir = Arc::new(self.mutation_dir.clone());
+        let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(chunks.len()).build().unwrap();
+        thread_pool.scope(|s| {
+            for chunck in chunks.iter_mut() {
+                // Create unique temp directory
+                let uuid = uuid::Uuid::new_v4();
+                let mut td = Path::new(OUT_DIRECTORY).join(format!("temp/{}", uuid));
+                fs::create_dir_all(&td).unwrap();
+                // Create directory structure inside temp directory that matches the original project
+                let dir = PathBuf::from(&self.config.path);
+                let mut config_prefix = PathBuf::new();
+                for c in dir.components() {
+                    if let Component::Normal(dir) = c {
+                        td = td.join(dir);
+                        config_prefix = config_prefix.join(dir);
+                    }
+                }
+                fs::create_dir_all(&td).unwrap();
+                self.create_temp_directory(dir, &td);
+                // Run gradle build and tests in parallel
+                let path = path.clone();
+                let mutation_dir = mutation_dir.clone();
+                let progress_bar = progress_bar.clone();
+                s.spawn(move |_| {
+                    chunck.iter_mut().for_each(|mutation| {
+                        let file_name = Path::new(&mutation.file_name).strip_prefix(path.as_ref()).unwrap();
+                        let original_file_path = PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
+
+                        progress_bar.inc(1);
+                        let mutated_file_path = mutation_dir
+                            .join(format!(
+                                "{}_{}",
+                                mutation.id,
+                                Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+                            ));
+
+                        Gradle::new(PathBuf::from(&td), false).run(&mutated_file_path, &original_file_path, mutation);
+                    });
+                });
+            }
+        });
         progress_bar.finish();
+        chunks.into_iter().flatten().collect()
+    }
+
+    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &PathBuf) {
+        for entry in dir.read_dir().unwrap() {
+            let path = entry.unwrap().path();
+            let file_name = path.file_name().unwrap().to_str().unwrap();
+            // Ignore the kode-kraken-dist folder
+            // We can add to this to ignore more things.
+            if file_name == "kode-kraken-dist" {
+                continue;
+            }
+            if path.is_dir() {
+                let temp_dir = temp_dir.join(&file_name);
+                fs::create_dir(&temp_dir).unwrap();
+                self.create_temp_directory(path, &temp_dir);
+            } else {
+                let file_contents = fs::read(&path).unwrap();
+                if file_name == "gradlew" || file_name == "gradlew.bat" {
+                    // We copy here so that we keep the same permissions
+                    fs::copy(&path, temp_dir.join(file_name)).unwrap();
+                } else {
+                    fs::write(temp_dir.join(file_name),file_contents).unwrap();
+                }
+            }
+        }
     }
 
     fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
@@ -348,7 +419,6 @@ impl MutationTool {
                 let parser = self.parser.clone();
                 let mutation_operators = self.mutation_operators.clone();
                 s.spawn(move |_| {
-                    let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap().to_string();
                     let ast = parser
                         .lock()
                         .unwrap()
@@ -359,7 +429,7 @@ impl MutationTool {
                         .unwrap(); // TODO: Remove this unwrap
                     for mut_op in mutation_operators.iter() {
                         // Get a list of mutations that can be made
-                        let mutations = mut_op.find_mutation(&ast, &file_name);
+                        let mutations = mut_op.find_mutation(&ast, &file);
                         *mutation_count.lock().unwrap() += mutations.len();
                         file_mutations
                             .lock()
@@ -399,6 +469,9 @@ impl MutationTool {
                 message: "Could not read directory".into(),
             })?;
             let path = entry.path();
+            if path.file_name().unwrap().to_str().unwrap() == "kode-kraken-dist" {
+                continue;
+            }
             if path.is_dir() {
                 Self::get_files_from_directory(
                     path.to_str()
