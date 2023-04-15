@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::mutation_operators::MutationOperators;
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, PartialEq, Eq)]
 pub enum MutationResult {
     InProgress,
     Survived,

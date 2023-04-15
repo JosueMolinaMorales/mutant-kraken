@@ -10,10 +10,9 @@ use clap::{error::ErrorKind, CommandFactory};
 use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::{
-    gradle::Gradle,
     mutation::{Mutation, FileMutations, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, MutationCommandConfig,
+    Cli, CliError, MutationCommandConfig, gradle,
 };
 
 use cli_table::{WithTitle, Table};
@@ -217,7 +216,6 @@ impl MutationTool {
     }
 
     fn report_results(&self, mutations: &Vec<Mutation>) {
-        // let mut mutations = vec![];
         let mut total_mutations = 0;
         let mut total_killed_mutants = 0;
         let mut total_survived_mutants = 0;
@@ -295,6 +293,7 @@ impl MutationTool {
         // Set up threading
         let path = Arc::new(self.config.path.clone());
         let mutation_dir = Arc::new(self.mutation_dir.clone());
+        let backup_dir = Arc::new(self.backup_dir.clone());
         let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(chunks.len()).build().unwrap();
         thread_pool.scope(|s| {
             for chunck in chunks.iter_mut() {
@@ -316,10 +315,12 @@ impl MutationTool {
                 // Run gradle build and tests in parallel
                 let path = path.clone();
                 let mutation_dir = mutation_dir.clone();
+                let backup_dir = backup_dir.clone();
                 let progress_bar = progress_bar.clone();
                 s.spawn(move |_| {
                     chunck.iter_mut().for_each(|mutation| {
-                        let file_name = Path::new(&mutation.file_name).strip_prefix(path.as_ref()).unwrap();
+                        let original_file_name = mutation.file_name.clone();
+                        let file_name = Path::new(&original_file_name).strip_prefix(path.as_ref()).unwrap();
                         let original_file_path = PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
 
                         progress_bar.inc(1);
@@ -330,7 +331,10 @@ impl MutationTool {
                                 Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
                             ));
 
-                        Gradle::new(PathBuf::from(&td), false).run(&mutated_file_path, &original_file_path, mutation);
+                        gradle::run(&PathBuf::from(&td), false, &mutated_file_path, &original_file_path, mutation);
+                        let backup_path = backup_dir.join(Path::new(&file_name).file_name().unwrap().to_str().unwrap());
+                        // Restore original file
+                        fs::copy(&backup_path, &original_file_path).unwrap();
                     });
                 });
             }
@@ -488,6 +492,7 @@ impl MutationTool {
                 // TODO: This will be where configuration file will be used
                 p == Component::Normal(OsStr::new("test"))
                     || p == Component::Normal(OsStr::new("build"))
+                    || p == Component::Normal(OsStr::new("bin"))
             }) {
                 continue;
             }
