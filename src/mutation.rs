@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::mutation_operators::MutationOperators;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, PartialEq, Eq)]
 pub enum MutationResult {
     InProgress,
     Survived,
@@ -34,12 +34,13 @@ impl Default for MutationResult {
     }
 }
 
-#[derive(Debug, Clone, Table)]
+#[derive(Debug, Clone, Table, serde::Serialize)]
 pub struct Mutation {
     #[table(title = "Id")]
+    #[serde(skip)]
     pub id: Uuid,
-    #[table(skip)] pub start_byte: usize,
-    #[table(skip)] pub end_byte: usize,
+    #[table(skip)] #[serde(skip)] pub start_byte: usize,
+    #[table(skip)] #[serde(skip)] pub end_byte: usize,
     #[table(title = "File Name")]
     pub file_name: String,
     #[table(title = "Line Number")]
