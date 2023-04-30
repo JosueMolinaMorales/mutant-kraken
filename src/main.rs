@@ -2,6 +2,7 @@ use clap::{error::ErrorKind, Args, Parser, Subcommand};
 use mutation::Mutation;
 use mutation_tool::MutationToolBuilder;
 
+pub mod error;
 pub mod gradle;
 pub mod kotlin_types;
 pub mod mutation;

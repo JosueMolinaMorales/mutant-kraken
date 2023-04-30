@@ -3,19 +3,22 @@ use std::{
     ffi::OsStr,
     fs,
     io::BufRead,
-    path::{Component, Path, PathBuf}, sync::{Arc, Mutex},
+    path::{Component, Path, PathBuf},
+    sync::{Arc, Mutex},
 };
 
 use clap::{error::ErrorKind, CommandFactory};
 use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::{
-    mutation::{Mutation, FileMutations, MutationResult},
+    error::{KodeKrakenError, Result},
+    gradle,
+    mutation::{FileMutations, Mutation, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, MutationCommandConfig, gradle,
+    Cli, CliError, MutationCommandConfig,
 };
 
-use cli_table::{WithTitle, Table};
+use cli_table::{Table, WithTitle};
 
 const OUT_DIRECTORY: &str = "./kode-kraken-dist";
 const MAX_BUILD_THREADS: f32 = 5f32;
@@ -25,7 +28,7 @@ pub struct MutationToolBuilder {
     config: Option<MutationCommandConfig>,
     mutation_operators: Option<Vec<MutationOperators>>,
     enable_mutation_comment: bool,
-    thread_count: Option<usize>
+    thread_count: Option<usize>,
 }
 
 impl Default for MutationToolBuilder {
@@ -41,7 +44,7 @@ impl MutationToolBuilder {
             config: None,
             mutation_operators: None,
             enable_mutation_comment: false,
-            thread_count: None
+            thread_count: None,
         }
     }
     pub fn set_verbose(mut self, verbose: bool) -> Self {
@@ -79,6 +82,7 @@ impl MutationToolBuilder {
             self.enable_mutation_comment,
             thread_count,
         )
+        .unwrap()
     }
 }
 
@@ -90,7 +94,7 @@ pub struct MutationTool {
     mutation_dir: PathBuf,
     backup_dir: PathBuf,
     enable_mutation_comment: bool,
-    thread_pool: rayon::ThreadPool
+    thread_pool: rayon::ThreadPool,
 }
 
 impl Default for MutationTool {
@@ -101,8 +105,9 @@ impl Default for MutationTool {
             OUT_DIRECTORY.into(),
             AllMutationOperators::new().get_mutation_operators(),
             false,
-            30
+            30,
         )
+        .unwrap()
     }
 }
 
@@ -113,43 +118,44 @@ impl MutationTool {
         output_directory: String,
         mutation_operators: Vec<MutationOperators>,
         enable_mutation_comment: bool,
-        thread_count: usize
-    ) -> Self {
+        thread_count: usize,
+    ) -> Result<Self> {
         let mut parser = tree_sitter::Parser::new();
-        parser.set_language(tree_sitter_kotlin::language()).unwrap();
+        parser
+            .set_language(tree_sitter_kotlin::language())
+            .map_err(|e| KodeKrakenError::Error(format!("Error while setting language: {}", e)))?;
 
         // Validate config path
         // Check if it exists
         let config_path = Path::new(&config.path);
         if !config_path.exists() {
-            Cli::command()
-                .error(ErrorKind::ArgumentConflict, "Path does not exist")
-                .exit();
+            return Err(KodeKrakenError::Error("Path does not exist".into()));
         }
         if !config_path.is_dir() {
-            Cli::command()
-                .error(ErrorKind::ArgumentConflict, "Path is not a directory")
-                .exit();
+            return Err(KodeKrakenError::Error("Path is not a directory".into()));
         }
 
         // If output directory exists, clear it
         if Path::new(&output_directory).exists() {
-            fs::remove_dir_all(&output_directory).unwrap(); // TODO: Remove unwrap
+            fs::remove_dir_all(&output_directory)?; // TODO: Remove unwrap
         }
         // Create directories
         let mutation_dir = Path::new(&output_directory).join("mutations");
         let backup_dir = Path::new(&output_directory).join("backups");
         if !mutation_dir.exists() {
-            fs::create_dir_all(&mutation_dir).unwrap(); // TODO: Remove unwrap
+            fs::create_dir_all(&mutation_dir)?; // TODO: Remove unwrap
         }
         if !backup_dir.exists() {
-            fs::create_dir(&backup_dir).unwrap(); // TODO: Remove unwrap
+            fs::create_dir(&backup_dir)?; // TODO: Remove unwrap
         }
 
         // Create thread pool
-        let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(thread_count).build().unwrap();
+        let thread_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(thread_count)
+            .build()
+            .unwrap();
 
-        Self {
+        Ok(Self {
             verbose,
             config,
             parser: Arc::new(Mutex::new(parser)),
@@ -157,38 +163,48 @@ impl MutationTool {
             mutation_dir,
             backup_dir,
             enable_mutation_comment,
-            thread_pool
-        }
+            thread_pool,
+        })
     }
 
-    fn create_mutated_file_name(&self, file_name: &str, mutation: &Mutation) -> String {
-        format!(
+    fn create_mutated_file_name(&self, file_name: &str, mutation: &Mutation) -> Result<String> {
+        Ok(format!(
             "{}_{}",
             mutation.id,
-            Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
-        )
+            Path::new(&file_name)
+                .file_name()
+                .ok_or(KodeKrakenError::Error(
+                    "Error Creating Mutated File Name".into()
+                ))?
+                .to_str()
+                .ok_or(KodeKrakenError::Error(
+                    "Eror Creating Mutated File Name".into()
+                ))? // TODO: Remove unwrap
+        ))
     }
 
-    pub fn mutate(&mut self) {
+    pub fn mutate(&mut self) -> Result<()> {
         tracing::info!("Mutation tool started...");
         // Phase 1: Get files from project
         println!("{} {} Gathering files...", "[1/6]", "📂");
         let mut existing_files = self.get_files_from_project();
         // Phase 2: Gather mutations per file
         println!("{} {} Gathering mutations...", "[2/6]", "🔎");
-        let mut file_mutations = self.gather_mutations_per_file(&mut existing_files);
+        let mut file_mutations = self.gather_mutations_per_file(&mut existing_files).unwrap();
         // Phase 3: Generate mutations per file
         println!("{} {} Generating mutations...", "[3/6]", "🔨");
         self.generate_mutations_per_file(&file_mutations);
         // Phase 4: Build and test
         println!("{} {} Building and testing...", "[4/6]", "🏗");
-        let mutations = self.build_and_test(&mut file_mutations);
+        let mutations = self.build_and_test(&mut file_mutations).unwrap();
         // Phase 5: Report results
         println!("{} {} Reporting results...", "[5/6]", "📊");
         self.report_results(&mutations);
         // Phase 6: Save Results in csv
         println!("{} {} Saving results...", "[6/6]", "💾");
         self.save_results(&mutations);
+
+        Ok(())
     }
 
     fn save_results(&self, mutations: &Vec<Mutation>) {
@@ -203,11 +219,7 @@ impl MutationTool {
 
     fn get_files_from_project(&self) -> Vec<String> {
         let mut existing_files: Vec<String> = vec![];
-        if let Some(error) =
-            Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).err()
-        {
-            Cli::command().error(error.kind, error.message).exit();
-        }
+        Self::get_files_from_directory(self.config.path.clone(), &mut existing_files).unwrap();
         if self.verbose {
             tracing::debug!("Files found from path: {:#?}", existing_files);
             tracing::info!("Gathering all mutations for files...");
@@ -215,25 +227,20 @@ impl MutationTool {
         existing_files
     }
 
-    fn report_results(&self, mutations: &Vec<Mutation>) {
+    fn report_results(&self, mutations: &Vec<Mutation>) -> Result<()> {
         let mut total_mutations = 0;
         let mut total_killed_mutants = 0;
         let mut total_survived_mutants = 0;
         let mut total_timeouts_or_build_fails = 0;
         total_mutations += mutations.len();
-        mutations.iter().for_each(|m| {
-            match m.result {
-                MutationResult::Killed => total_killed_mutants += 1,
-                MutationResult::Survived => total_survived_mutants += 1,
-                _ => total_timeouts_or_build_fails += 1,
-            }
+        mutations.iter().for_each(|m| match m.result {
+            MutationResult::Killed => total_killed_mutants += 1,
+            MutationResult::Survived => total_survived_mutants += 1,
+            _ => total_timeouts_or_build_fails += 1,
         });
         cli_table::print_stdout(mutations.with_title()).unwrap();
         let table = vec![
-            vec![
-                "Total mutations".to_string(),
-                total_mutations.to_string(),
-            ],
+            vec!["Total mutations".to_string(), total_mutations.to_string()],
             vec![
                 "Total killed mutants".to_string(),
                 total_killed_mutants.to_string(),
@@ -250,36 +257,50 @@ impl MutationTool {
                 "Mutation score".to_string(),
                 format!(
                     "{}%",
-                    (total_killed_mutants as f32 / (total_killed_mutants + total_survived_mutants) as f32) * 100.0
+                    (total_killed_mutants as f32
+                        / (total_killed_mutants + total_survived_mutants) as f32)
+                        * 100.0
                 ),
-            ]
-        ].table();
-        cli_table::print_stdout(table).unwrap();
+            ],
+        ]
+        .table();
+        cli_table::print_stdout(table)?;
+        Ok(())
     }
 
-    fn copy_files(&self, file_mutations: &HashMap<String, FileMutations>) {
+    fn copy_files(&self, file_mutations: &HashMap<String, FileMutations>) -> Result<()> {
         // Make Copies of all files
         for (file_name, _) in file_mutations.iter() {
             let original_file_path = Path::new(file_name).to_path_buf();
-            let original_file_name = original_file_path.file_name().unwrap().to_str().unwrap();
+            let original_file_name = original_file_path
+                .file_name()
+                .ok_or(KodeKrakenError::MutationBuildTestError)?
+                .to_str()
+                .ok_or(KodeKrakenError::MutationBuildTestError)?;
             let backup_path = self.backup_dir.join(original_file_name);
             // Save a copy of the original file
             fs::copy(&original_file_path, &backup_path).unwrap();
         }
+        Ok(())
     }
 
-    fn build_and_test(&mut self, file_mutations: &HashMap<String, FileMutations>) -> Vec<Mutation> {
-        let num_mutations = file_mutations.iter().fold(0, |acc, (_, fm)| acc + fm.mutations.len());
+    fn build_and_test(
+        &mut self,
+        file_mutations: &HashMap<String, FileMutations>,
+    ) -> Result<Vec<Mutation>> {
+        let num_mutations = file_mutations
+            .iter()
+            .fold(0, |acc, (_, fm)| acc + fm.mutations.len());
         let progress_bar = Arc::new(ProgressBar::new(num_mutations as u64));
         progress_bar.set_style(
             ProgressStyle::default_bar()
                 .template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg} - Running tests...")
-                .unwrap()
+                .map_err(|e| KodeKrakenError::Error(e.to_string()))?
                 .progress_chars("=> "),
         );
 
         self.copy_files(file_mutations);
-        
+
         // Merge all mutants into one vector
         let mut all_mutations: Vec<Mutation> = vec![];
         for (_, fm) in file_mutations.iter() {
@@ -289,12 +310,18 @@ impl MutationTool {
         }
         // Partition the mutations into chunks
         let chunk_size = ((all_mutations.len() as f32) / MAX_BUILD_THREADS) as usize;
-        let mut chunks: Vec<Vec<Mutation>> = all_mutations.chunks(chunk_size).map(|c| c.to_vec()).collect();
+        let mut chunks: Vec<Vec<Mutation>> = all_mutations
+            .chunks(chunk_size)
+            .map(|c| c.to_vec())
+            .collect();
         // Set up threading
         let path = Arc::new(self.config.path.clone());
         let mutation_dir = Arc::new(self.mutation_dir.clone());
         let backup_dir = Arc::new(self.backup_dir.clone());
-        let thread_pool = rayon::ThreadPoolBuilder::new().num_threads(chunks.len()).build().unwrap();
+        let thread_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(chunks.len())
+            .build()
+            .map_err(|e| KodeKrakenError::Error(e.to_string()))?;
         thread_pool.scope(|s| {
             for chunck in chunks.iter_mut() {
                 // Create unique temp directory
@@ -320,19 +347,28 @@ impl MutationTool {
                 s.spawn(move |_| {
                     chunck.iter_mut().for_each(|mutation| {
                         let original_file_name = mutation.file_name.clone();
-                        let file_name = Path::new(&original_file_name).strip_prefix(path.as_ref()).unwrap();
-                        let original_file_path = PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
+                        let file_name = Path::new(&original_file_name)
+                            .strip_prefix(path.as_ref())
+                            .unwrap();
+                        let original_file_path =
+                            PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
 
                         progress_bar.inc(1);
-                        let mutated_file_path = mutation_dir
-                            .join(format!(
-                                "{}_{}",
-                                mutation.id,
-                                Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
-                            ));
+                        let mutated_file_path = mutation_dir.join(format!(
+                            "{}_{}",
+                            mutation.id,
+                            Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+                        ));
 
-                        gradle::run(&PathBuf::from(&td), false, &mutated_file_path, &original_file_path, mutation);
-                        let backup_path = backup_dir.join(Path::new(&file_name).file_name().unwrap().to_str().unwrap());
+                        gradle::run(
+                            &PathBuf::from(&td),
+                            false,
+                            &mutated_file_path,
+                            &original_file_path,
+                            mutation,
+                        );
+                        let backup_path = backup_dir
+                            .join(Path::new(&file_name).file_name().unwrap().to_str().unwrap());
                         // Restore original file
                         fs::copy(&backup_path, &original_file_path).unwrap();
                     });
@@ -342,11 +378,11 @@ impl MutationTool {
         progress_bar.finish();
         // Delete temp directory
         fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")).unwrap();
-        chunks.into_iter().flatten().collect()
+        Ok(chunks.into_iter().flatten().collect())
     }
 
-    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &PathBuf) {
-        for entry in dir.read_dir().unwrap() {
+    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &PathBuf) -> Result<()> {
+        for entry in dir.read_dir()? {
             let path = entry.unwrap().path();
             let file_name = path.file_name().unwrap().to_str().unwrap();
             // Ignore the kode-kraken-dist folder
@@ -364,24 +400,28 @@ impl MutationTool {
                     // We copy here so that we keep the same permissions
                     fs::copy(&path, temp_dir.join(file_name)).unwrap();
                 } else {
-                    fs::write(temp_dir.join(file_name),file_contents).unwrap();
+                    fs::write(temp_dir.join(file_name), file_contents).unwrap();
                 }
             }
         }
+        Ok(())
     }
 
-    fn generate_mutations_per_file(&self, file_mutations: &HashMap<String, FileMutations>) {
+    fn generate_mutations_per_file(
+        &self,
+        file_mutations: &HashMap<String, FileMutations>,
+    ) -> Result<()> {
         if self.verbose {
             tracing::info!("Generating mutations per file");
         }
         self.thread_pool.scope(|s| {
-            file_mutations.iter().for_each(|(file_name, fm)| {   
+            file_mutations.iter().for_each(|(file_name, fm)| {
                 let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
                 s.spawn(move |_| {
                     fm.mutations.iter().for_each(|m| {
                         let new_op_bytes = m.new_op.as_bytes();
                         let mut file = file_str.as_bytes().to_vec();
-        
+
                         // Add the mutation to the vector of bytes
                         file.splice(m.start_byte..m.end_byte, new_op_bytes.iter().cloned());
                         // Add comment above mutation about the mutation
@@ -397,21 +437,27 @@ impl MutationTool {
                             })
                             .collect::<Vec<String>>()
                             .join("\n");
-        
+
                         // Create a file name for the mutated file
                         let mutated_file_name = self
                             .mutation_dir
-                            .join(self.create_mutated_file_name(file_name, m));
+                            .join(self.create_mutated_file_name(file_name, m).unwrap());
                         // Write the mutated file to the output directory
                         fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
                     });
                 });
-            });            
-        })
+            });
+        });
+
+        Ok(())
     }
 
-    fn gather_mutations_per_file(&mut self, existing_files: &mut Vec<String>) -> HashMap<String, FileMutations> {
-        let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> = Arc::new(Mutex::new(HashMap::new()));
+    fn gather_mutations_per_file(
+        &mut self,
+        existing_files: &mut Vec<String>,
+    ) -> Result<HashMap<String, FileMutations>> {
+        let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> =
+            Arc::new(Mutex::new(HashMap::new()));
         let mutation_count = Arc::new(Mutex::new(0));
         self.thread_pool.scope(|s| {
             for file in existing_files.clone() {
@@ -423,10 +469,7 @@ impl MutationTool {
                     let ast = parser
                         .lock()
                         .unwrap()
-                        .parse(
-                            fs::read_to_string(&file).expect("File Not Found!"),
-                            None,
-                        )
+                        .parse(fs::read_to_string(&file).expect("File Not Found!"), None)
                         .unwrap(); // TODO: Remove this unwrap
                     for mut_op in mutation_operators.iter() {
                         // Get a list of mutations that can be made
@@ -445,29 +488,36 @@ impl MutationTool {
             }
         });
         if self.verbose {
-            let mutation_count = Arc::try_unwrap(mutation_count).unwrap().into_inner().unwrap();
+            let mutation_count = Arc::try_unwrap(mutation_count)
+                .unwrap()
+                .into_inner()
+                .unwrap();
             tracing::info!("Mutations made to all files");
             tracing::info!("Total mutations made: {}", mutation_count);
         }
-        Arc::try_unwrap(file_mutations).unwrap().into_inner().unwrap()
+        Ok(Arc::try_unwrap(file_mutations)
+            .unwrap()
+            .into_inner()
+            .unwrap())
     }
 
     /*
         Take in path to directory and get all files that end with .kt
     */
-    fn get_files_from_directory(
-        path: String,
-        existing_files: &mut Vec<String>,
-    ) -> Result<(), CliError> {
+    fn get_files_from_directory(path: String, existing_files: &mut Vec<String>) -> Result<()> {
         // TODO: Consider adding src to this path.
-        let directory = Path::new(path.as_str()).read_dir().map_err(|_| CliError {
-            kind: ErrorKind::Io,
-            message: "Could not read directory".into(),
+        let directory = Path::new(path.as_str()).read_dir().map_err(|e| {
+            KodeKrakenError::MutationGatheringError(format!(
+                "Could not read directory: {}",
+                e.to_string()
+            ))
         })?;
         for entry in directory {
-            let entry = entry.map_err(|_| CliError {
-                kind: ErrorKind::Io,
-                message: "Could not read directory".into(),
+            let entry = entry.map_err(|e| {
+                KodeKrakenError::MutationGatheringError(format!(
+                    "Could not read directory entry: {}",
+                    e.to_string()
+                ))
             })?;
             let path = entry.path();
             if path.file_name().unwrap().to_str().unwrap() == "kode-kraken-dist" {
@@ -476,9 +526,11 @@ impl MutationTool {
             if path.is_dir() {
                 Self::get_files_from_directory(
                     path.to_str()
-                        .ok_or_else(|| CliError {
-                            kind: ErrorKind::Io,
-                            message: "Could not read directory".into(),
+                        .ok_or_else(|| {
+                            KodeKrakenError::MutationGatheringError(format!(
+                                "Could not convert path to string: {}",
+                                path.display()
+                            ))
                         })?
                         .to_string(),
                     existing_files,
@@ -497,10 +549,22 @@ impl MutationTool {
                 continue;
             }
             let file_name = entry.file_name();
-            if file_name.to_str().unwrap().ends_with("Test.kt") {
+            if file_name
+                .to_str()
+                .ok_or(KodeKrakenError::Error(
+                    "Failed to convert os str to string".into(),
+                ))?
+                .ends_with("Test.kt")
+            {
                 continue;
             }
-            existing_files.push(path.to_str().unwrap().to_string());
+            existing_files.push(
+                path.to_str()
+                    .ok_or(KodeKrakenError::Error(
+                        "Failed to convert os str to string".into(),
+                    ))?
+                    .to_string(),
+            );
         }
 
         Ok(())
@@ -545,8 +609,9 @@ mod tests {
             output_directory,
             operators,
             false,
-            30
+            30,
         )
+        .unwrap()
     }
 
     fn get_mutated_file_name(file_name: &str, m: &Mutation, output_directory: String) -> PathBuf {
@@ -562,7 +627,9 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let fm = mutator.gather_mutations_per_file(&mut mutator.get_files_from_project());
+        let fm = mutator
+            .gather_mutations_per_file(&mut mutator.get_files_from_project())
+            .unwrap();
         mutator.generate_mutations_per_file(&fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {
@@ -581,7 +648,9 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let mut fm = mutator.gather_mutations_per_file(&mut mutator.get_files_from_project());
+        let mut fm = mutator
+            .gather_mutations_per_file(&mut mutator.get_files_from_project())
+            .unwrap();
         mutator.generate_mutations_per_file(&mut fm);
         // Check that the mutated files were created
         for (file_name, fm) in fm {

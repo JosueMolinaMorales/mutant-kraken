@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::error::Result;
+
 /// Holds all characters that are not named in kotlin
 const NON_NAMED_TYPES: [&str; 128] = [
     "!",
@@ -404,7 +406,7 @@ impl fmt::Display for KotlinTypes {
 }
 
 impl KotlinTypes {
-    pub fn new(s: &str) -> Result<KotlinTypes, String> {
+    pub fn new(s: &str) -> Result<KotlinTypes> {
         let binding: String = s
             .split('_')
             .map(|p| {

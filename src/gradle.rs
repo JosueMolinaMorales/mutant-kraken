@@ -115,7 +115,6 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Child 
         .unwrap()
 }
 
-
 #[cfg(test)]
 mod test {
     use std::io::read_to_string;
@@ -161,3 +160,4 @@ mod test {
         }
     }
 }
+
