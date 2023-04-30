@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::error::Result;
+use crate::error::{KodeKrakenError, Result};
 
 /// Holds all characters that are not named in kotlin
 const NON_NAMED_TYPES: [&str; 128] = [
@@ -552,7 +552,7 @@ impl KotlinTypes {
             "REMOVE" => KotlinTypes::RemoveOperator,
             unnamed => {
                 if !NON_NAMED_TYPES.contains(&unnamed) {
-                    return Err(format!("{unnamed} is not a valid Kotlin type",));
+                    return Err(KodeKrakenError::ConversionError);
                 }
                 KotlinTypes::NonNamedType(unnamed.to_string())
             }
@@ -611,6 +611,6 @@ mod tests {
     fn should_successfully_convert_non_named_type_to_string() {
         let non_named_type = NON_NAMED_TYPES[0];
         let res = KotlinTypes::NonNamedType(non_named_type.to_string()).as_str();
-        assert!(res == non_named_type.to_string());
+        assert!(res == *non_named_type);
     }
 }

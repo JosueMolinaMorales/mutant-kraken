@@ -1,8 +1,4 @@
-use crate::{
-    error::{KodeKrakenError, Result},
-    kotlin_types::KotlinTypes,
-    Mutation,
-};
+use crate::{error::Result, kotlin_types::KotlinTypes, Mutation};
 use std::{collections::HashSet, fmt::Display};
 
 // Struct that stores all the mutations operators by default
@@ -142,16 +138,19 @@ impl MutationOperators {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
             let parent_type = parent
                 .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
-            self.mutate_operator(
-                &node,
-                &root_type,
-                &parent_type,
-                mutations_made,
-                self.get_operators(),
-                self.get_parent_necessary_types(),
-                &file_name,
+            mutations_made.append(
+                &mut self
+                    .mutate_operator(
+                        &node,
+                        &root_type,
+                        &parent_type,
+                        self.get_operators(),
+                        self.get_parent_necessary_types(),
+                        file_name,
+                    )
+                    .unwrap(),
             );
-            self.mutate(node, cursor, Some(node), mutations_made, &file_name);
+            self.mutate(node, cursor, Some(node), mutations_made, file_name);
         });
     }
 
@@ -161,28 +160,19 @@ impl MutationOperators {
         root_node: &tree_sitter::Node,
         root: &KotlinTypes,
         parent: &Option<KotlinTypes>,
-        mutations_made: &mut Vec<Mutation>,
         mutation_operators: HashSet<KotlinTypes>,
         parent_types: Vec<KotlinTypes>,
-        file_name: &String,
-    ) -> Result<()> {
+        file_name: &str,
+    ) -> Result<Vec<Mutation>> {
+        let mut mutations_made = Vec::new();
         // Check to see if root type is in the mutation_operators
-        if !mutation_operators.contains(root) {
-            return Ok(());
-        }
         // Check to see if the parent exists
-        if parent.is_none() {
-            return Ok(());
-        }
-
         // Checks to see if the parent is the necessary kotlin type
-        let parent = parent
-            .as_ref()
-            .ok_or(KodeKrakenError::MutationGatheringError(
-                "Failed to get parent type".to_string(),
-            ))?; // TODO: Fix this
-        if !parent_types.contains(parent) {
-            return Ok(());
+        if !mutation_operators.contains(root)
+            || parent.is_none()
+            || !parent_types.contains(parent.as_ref().unwrap())
+        {
+            return Ok(mutations_made);
         }
 
         if *self == MutationOperators::UnaryRemovalOperator {
@@ -194,10 +184,10 @@ impl MutationOperators {
                 root.as_str(),
                 root_node.start_position().row + 1,
                 self.clone(),
-                file_name.clone(),
+                file_name.to_string(),
             );
             mutations_made.push(mutation);
-            return Ok(());
+            return Ok(mutations_made);
         }
 
         // Create a mutant for all mutation operators
@@ -210,12 +200,12 @@ impl MutationOperators {
                     root.as_str(),
                     root_node.start_position().row + 1,
                     self.clone(),
-                    file_name.clone(),
+                    file_name.to_string(),
                 );
                 mutations_made.push(mutation)
             }
         });
-        Ok(())
+        Ok(mutations_made)
     }
 }
 
@@ -261,8 +251,7 @@ mod tests {
     fn get_ast(text: &str) -> tree_sitter::Tree {
         let mut parser = Parser::new();
         parser.set_language(tree_sitter_kotlin::language()).unwrap();
-        let tree = parser.parse(text, None).unwrap();
-        tree
+        parser.parse(text, None).unwrap()
     }
 
     #[test]

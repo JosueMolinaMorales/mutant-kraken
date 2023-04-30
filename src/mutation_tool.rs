@@ -7,7 +7,6 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use clap::{error::ErrorKind, CommandFactory};
 use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::{
@@ -15,7 +14,7 @@ use crate::{
     gradle,
     mutation::{FileMutations, Mutation, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    Cli, CliError, MutationCommandConfig,
+    MutationCommandConfig,
 };
 
 use cli_table::{Table, WithTitle};
@@ -186,22 +185,22 @@ impl MutationTool {
     pub fn mutate(&mut self) -> Result<()> {
         tracing::info!("Mutation tool started...");
         // Phase 1: Get files from project
-        println!("{} {} Gathering files...", "[1/6]", "📂");
+        println!("[1/6] 📂 Gathering files...");
         let mut existing_files = self.get_files_from_project();
         // Phase 2: Gather mutations per file
-        println!("{} {} Gathering mutations...", "[2/6]", "🔎");
-        let mut file_mutations = self.gather_mutations_per_file(&mut existing_files).unwrap();
+        println!("[2/6] 🔎 Gathering mutations...");
+        let file_mutations = self.gather_mutations_per_file(&mut existing_files).unwrap();
         // Phase 3: Generate mutations per file
-        println!("{} {} Generating mutations...", "[3/6]", "🔨");
-        self.generate_mutations_per_file(&file_mutations);
+        println!("[3/6] 🔨 Generating mutations...");
+        self.generate_mutations_per_file(&file_mutations).unwrap();
         // Phase 4: Build and test
-        println!("{} {} Building and testing...", "[4/6]", "🏗");
-        let mutations = self.build_and_test(&mut file_mutations).unwrap();
+        println!("[4/6] 🏗 Building and testing...");
+        let mutations = self.build_and_test(&file_mutations).unwrap();
         // Phase 5: Report results
-        println!("{} {} Reporting results...", "[5/6]", "📊");
-        self.report_results(&mutations);
+        println!("[5/6] 📊 Reporting results...");
+        self.report_results(&mutations).unwrap();
         // Phase 6: Save Results in csv
-        println!("{} {} Saving results...", "[6/6]", "💾");
+        println!("[6/6] 💾 Saving results...");
         self.save_results(&mutations);
 
         Ok(())
@@ -299,7 +298,7 @@ impl MutationTool {
                 .progress_chars("=> "),
         );
 
-        self.copy_files(file_mutations);
+        self.copy_files(file_mutations).unwrap();
 
         // Merge all mutants into one vector
         let mut all_mutations: Vec<Mutation> = vec![];
@@ -338,7 +337,7 @@ impl MutationTool {
                     }
                 }
                 fs::create_dir_all(&td).unwrap();
-                self.create_temp_directory(dir, &td);
+                self.create_temp_directory(dir, &td).unwrap();
                 // Run gradle build and tests in parallel
                 let path = path.clone();
                 let mutation_dir = mutation_dir.clone();
@@ -370,7 +369,7 @@ impl MutationTool {
                         let backup_path = backup_dir
                             .join(Path::new(&file_name).file_name().unwrap().to_str().unwrap());
                         // Restore original file
-                        fs::copy(&backup_path, &original_file_path).unwrap();
+                        fs::copy(backup_path, &original_file_path).unwrap();
                     });
                 });
             }
@@ -381,7 +380,7 @@ impl MutationTool {
         Ok(chunks.into_iter().flatten().collect())
     }
 
-    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &PathBuf) -> Result<()> {
+    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &Path) -> Result<()> {
         for entry in dir.read_dir()? {
             let path = entry.unwrap().path();
             let file_name = path.file_name().unwrap().to_str().unwrap();
@@ -391,9 +390,9 @@ impl MutationTool {
                 continue;
             }
             if path.is_dir() {
-                let temp_dir = temp_dir.join(&file_name);
+                let temp_dir = temp_dir.join(file_name);
                 fs::create_dir(&temp_dir).unwrap();
-                self.create_temp_directory(path, &temp_dir);
+                self.create_temp_directory(path, &temp_dir)?;
             } else {
                 let file_contents = fs::read(&path).unwrap();
                 if file_name == "gradlew" || file_name == "gradlew.bat" {
@@ -506,19 +505,11 @@ impl MutationTool {
     */
     fn get_files_from_directory(path: String, existing_files: &mut Vec<String>) -> Result<()> {
         // TODO: Consider adding src to this path.
-        let directory = Path::new(path.as_str()).read_dir().map_err(|e| {
-            KodeKrakenError::MutationGatheringError(format!(
-                "Could not read directory: {}",
-                e.to_string()
-            ))
-        })?;
+        let directory = Path::new(path.as_str())
+            .read_dir()
+            .map_err(|_| KodeKrakenError::MutationGatheringError)?;
         for entry in directory {
-            let entry = entry.map_err(|e| {
-                KodeKrakenError::MutationGatheringError(format!(
-                    "Could not read directory entry: {}",
-                    e.to_string()
-                ))
-            })?;
+            let entry = entry.map_err(|_| KodeKrakenError::MutationGatheringError)?;
             let path = entry.path();
             if path.file_name().unwrap().to_str().unwrap() == "kode-kraken-dist" {
                 continue;
@@ -526,12 +517,7 @@ impl MutationTool {
             if path.is_dir() {
                 Self::get_files_from_directory(
                     path.to_str()
-                        .ok_or_else(|| {
-                            KodeKrakenError::MutationGatheringError(format!(
-                                "Could not convert path to string: {}",
-                                path.display()
-                            ))
-                        })?
+                        .ok_or(KodeKrakenError::MutationGatheringError)?
                         .to_string(),
                     existing_files,
                 )?;
@@ -587,7 +573,7 @@ mod tests {
         // Create temp output directory
         fs::create_dir_all(&output_directory).unwrap();
         // Add test files to directory
-        fs::write(&file_id, file_contents).unwrap();
+        fs::write(file_id, file_contents).unwrap();
 
         (mutation_test_id, output_directory)
     }
@@ -630,7 +616,7 @@ mod tests {
         let fm = mutator
             .gather_mutations_per_file(&mut mutator.get_files_from_project())
             .unwrap();
-        mutator.generate_mutations_per_file(&fm);
+        mutator.generate_mutations_per_file(&fm).unwrap();
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations.clone() {
@@ -648,10 +634,10 @@ mod tests {
         mutation_test_id: Uuid,
         output_directory: String,
     ) {
-        let mut fm = mutator
+        let fm = mutator
             .gather_mutations_per_file(&mut mutator.get_files_from_project())
             .unwrap();
-        mutator.generate_mutations_per_file(&mut fm);
+        mutator.generate_mutations_per_file(&fm).unwrap();
         // Check that the mutated files were created
         for (file_name, fm) in fm {
             for m in fm.mutations {

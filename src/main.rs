@@ -1,4 +1,4 @@
-use clap::{error::ErrorKind, Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use mutation::Mutation;
 use mutation_tool::MutationToolBuilder;
 
@@ -52,12 +52,6 @@ impl Default for MutationCommandConfig {
     }
 }
 
-#[derive(Debug)]
-pub struct CliError {
-    kind: ErrorKind,
-    message: String,
-}
-
 fn main() {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
@@ -77,7 +71,8 @@ fn main() {
                 .set_config(config)
                 .set_mutation_comment(true)
                 .build()
-                .mutate();
+                .mutate()
+                .unwrap();
         }
     }
 }
