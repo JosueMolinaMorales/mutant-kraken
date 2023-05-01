@@ -6,7 +6,10 @@ use std::{
 };
 use wait_timeout::ChildExt;
 
-use crate::mutation::{Mutation, MutationResult};
+use crate::{
+    error::{KodeKrakenError, Result},
+    mutation::{Mutation, MutationResult},
+};
 
 #[derive(PartialEq, Eq)]
 pub enum GradleCommand<'a> {
@@ -33,57 +36,62 @@ pub fn run(
     mutated_file_path: &PathBuf,
     original_file_path: &PathBuf,
     mutation: &mut Mutation,
-) {
+) -> Result<()> {
     // Check to see if gradlew exists in the root of the directory
-    // TODO: How will testing work for this?
     if !config_path.join("gradlew").exists() {
-        // TODO: Convert this panic to a result?
-        panic!("gradlew does not exist at the root of this project");
+        return Err(KodeKrakenError::Error(
+            "gradlew does not exist at the root of this project".into(),
+        ));
     }
     // Run Clean Build
-    build_gradle_command(config_path, GradleCommand::Clean)
+    build_gradle_command(config_path, GradleCommand::Clean)?
         .wait()
-        .unwrap();
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     // Copy the mutated file to the original file
     fs::copy(mutated_file_path, original_file_path).unwrap();
     // Compile the project first, skip if compilation fails
-    let res = build_gradle_command(config_path, GradleCommand::Assemble)
+    let res = build_gradle_command(config_path, GradleCommand::Assemble)?
         .wait()
-        .unwrap();
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     if !res.success() {
         if verbose {
             tracing::info!("Build failed for: {}", mutated_file_path.display());
         }
         mutation.result = MutationResult::BuildFailed;
-        return;
+        return Ok(());
     }
     let filter = original_file_path
         .file_name()
-        .unwrap()
+        .ok_or(KodeKrakenError::ConversionError)?
         .to_str()
-        .unwrap()
+        .ok_or(KodeKrakenError::ConversionError)?
         .strip_suffix(".kt")
-        .unwrap();
-    let mut child_process = build_gradle_command(config_path, GradleCommand::Test(filter));
+        .ok_or(KodeKrakenError::ConversionError)?;
+
+    let mut child_process = build_gradle_command(config_path, GradleCommand::Test(filter))?;
     // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
     // can occur from the mutations.
     let res = match child_process.wait_timeout(Duration::from_secs(30)) {
         Ok(Some(status)) => status,
         Ok(None) => {
-            child_process.kill().unwrap();
+            child_process.kill().map_err(|e| {
+                KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
+            })?;
             if verbose {
                 tracing::info!("Test timed out for: {}", mutated_file_path.display());
             }
             mutation.result = MutationResult::Timeout;
-            return;
+            return Ok(());
         }
         Err(e) => {
             if verbose {
                 tracing::info!("Test failed: {}", e);
             }
-            child_process.kill().unwrap();
+            child_process.kill().map_err(|e| {
+                KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
+            })?;
             mutation.result = MutationResult::Failed;
-            return;
+            return Ok(());
         }
     };
     if res.success() {
@@ -97,10 +105,11 @@ pub fn run(
         }
         mutation.result = MutationResult::Killed;
     }
+    Ok(())
 }
 
 // Builds the gradle command to be ran
-fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Child {
+fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result<Child> {
     let mut cmd = if cfg!(unix) {
         Command::new("./gradlew")
     } else if cfg!(windows) {
@@ -121,7 +130,7 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Child 
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
-        .unwrap()
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))
 }
 
 #[cfg(test)]
@@ -146,6 +155,7 @@ mod test {
                 "file_name".into(),
             ),
         )
+        .unwrap()
     }
 
     #[test]
@@ -174,7 +184,8 @@ mod test {
                     "./kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
                 ),
                 &mut mutation,
-            );
+            )
+            .unwrap();
             // Reset File
             fs::write(
                 &PathBuf::from(

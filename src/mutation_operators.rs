@@ -148,7 +148,7 @@ impl MutationOperators {
                         self.get_parent_necessary_types(),
                         file_name,
                     )
-                    .unwrap(),
+                    .expect("Failed to mutate an operator"),
             );
             self.mutate(node, cursor, Some(node), mutations_made, file_name);
         });

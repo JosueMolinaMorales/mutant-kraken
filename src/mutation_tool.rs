@@ -348,7 +348,7 @@ impl MutationTool {
                         let original_file_name = mutation.file_name.clone();
                         let file_name = Path::new(&original_file_name)
                             .strip_prefix(path.as_ref())
-                            .unwrap();
+                            .expect("Failed to strip prefix");
                         let original_file_path =
                             PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
 
@@ -356,27 +356,41 @@ impl MutationTool {
                         let mutated_file_path = mutation_dir.join(format!(
                             "{}_{}",
                             mutation.id,
-                            Path::new(&file_name).file_name().unwrap().to_str().unwrap() // TODO: Remove unwrap
+                            Path::new(&file_name)
+                                .file_name()
+                                .expect("Failed to get the filename")
+                                .to_str()
+                                .expect("Failed to convert file name to string") // TODO: Remove unwrap
                         ));
 
-                        gradle::run(
+                        if let Err(_err) = gradle::run(
                             &PathBuf::from(&td),
                             false,
                             &mutated_file_path,
                             &original_file_path,
                             mutation,
+                        ) {
+                            // Log here something?
+                            mutation.result = MutationResult::BuildFailed;
+                        }
+                        let backup_path = backup_dir.join(
+                            Path::new(&file_name)
+                                .file_name()
+                                .expect("Failed to convert file name to string")
+                                .to_str()
+                                .expect("Failed to convert file name to string"),
                         );
-                        let backup_path = backup_dir
-                            .join(Path::new(&file_name).file_name().unwrap().to_str().unwrap());
                         // Restore original file
-                        fs::copy(backup_path, &original_file_path).unwrap();
+                        fs::copy(backup_path, &original_file_path)
+                            .expect("Failed to restore original file");
                     });
                 });
             }
         });
         progress_bar.finish();
         // Delete temp directory
-        fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")).unwrap();
+        fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp"))
+            .expect("Failed to remove temp directory");
         Ok(chunks.into_iter().flatten().collect())
     }
 
