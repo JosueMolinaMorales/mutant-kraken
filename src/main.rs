@@ -1,7 +1,12 @@
-use clap::{Args, Parser, Subcommand};
-use mutation::Mutation;
-use mutation_tool::MutationToolBuilder;
+use std::path::Path;
 
+use clap::{Args, Command, CommandFactory, Parser, Subcommand};
+use mutation::Mutation;
+use mutation_tool::{MutationToolBuilder, OUT_DIRECTORY};
+use tracing_appender::non_blocking::WorkerGuard;
+use tracing_subscriber::fmt::format;
+
+pub mod config;
 pub mod error;
 pub mod gradle;
 pub mod kotlin_types;
@@ -30,17 +35,13 @@ const ABOUT: &str = include_str!("../assets/about.txt");
 struct Cli {
     #[command(subcommand)]
     command: Commands,
-
-    /// Print out verbose information
-    #[clap(short, long, default_value = "false")]
-    verbose: bool,
 }
 
 #[derive(Args, Debug, Clone)]
 pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
-    // TODO: Add Default value
+    #[clap(default_value = ".")]
     path: String,
 }
 
@@ -53,28 +54,57 @@ impl Default for MutationCommandConfig {
 }
 
 fn main() {
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
-        .with_target(false)
-        .init();
+    let guard = setup_logging();
+    tracing::info!("Starting Kode Kraken");
     let args = Cli::parse();
-    let verbose = args.verbose;
     let mutate_tool_builder = MutationToolBuilder::new();
-    if verbose {
-        tracing::info!("Verbose Mode Enabled");
-        tracing::info!("Starting Mutation Testing Tool");
-    }
+
+    let config = config::KodeKrakenConfig::load_config();
     match args.command {
-        Commands::Mutate(config) => {
-            mutate_tool_builder
-                .set_verbose(verbose)
-                .set_config(config)
+        Commands::Mutate(mutate_config) => {
+            if let Err(e) = mutate_tool_builder
+                .set_mutate_config(mutate_config)
+                .set_general_config(config)
                 .set_mutation_comment(true)
                 .build()
                 .mutate()
-                .unwrap();
+            {
+                let error_msg = match e {
+                    error::KodeKrakenError::FileReadingError(msg) => msg,
+                    error::KodeKrakenError::MutationGenerationError => {
+                        "Error Generating Mutations".into()
+                    }
+                    error::KodeKrakenError::MutationGatheringError => {
+                        "Error Gathering Mutations".into()
+                    }
+                    error::KodeKrakenError::MutationBuildTestError => {
+                        "Error Building and Testing Mutations".into()
+                    }
+                    error::KodeKrakenError::ConversionError => "Error Converting".into(),
+                    error::KodeKrakenError::Error(msg) => msg,
+                };
+                drop(guard);
+                Cli::command()
+                    .error(clap::error::ErrorKind::Io, error_msg)
+                    .exit();
+            }
         }
     }
+}
+
+fn setup_logging() -> WorkerGuard {
+    // Create dist log folder if it doesn't exist
+    let log_dir = Path::new(OUT_DIRECTORY).join("logs");
+    std::fs::create_dir_all(&log_dir).unwrap();
+    let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
+    let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_ansi(false)
+        .with_target(false)
+        .with_writer(non_blocking)
+        .init();
+    guard
 }
 
 #[cfg(test)]
