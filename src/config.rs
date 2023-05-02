@@ -31,10 +31,17 @@ impl KodeKrakenConfig {
     }
 
     pub fn load_config() -> Self {
-        let file = fs::File::open("kodekraken.config.json").unwrap();
-        let buffer_reader = BufReader::new(file);
-        let config: KodeKrakenConfig = serde_json::from_reader(buffer_reader).unwrap();
-        config
+        match fs::File::open("kodekraken.config.json") {
+            Ok(file) => {
+                let buffer_reader = BufReader::new(file);
+                let config: KodeKrakenConfig = serde_json::from_reader(buffer_reader).unwrap();
+                config
+            }
+            Err(_) => {
+                tracing::warn!("No config file found, using default config");
+                Self::default()
+            }
+        }
     }
 }
 

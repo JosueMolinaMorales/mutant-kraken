@@ -359,7 +359,6 @@ impl MutationTool {
 
                         if let Err(_err) = gradle::run(
                             &PathBuf::from(&td),
-                            false,
                             &mutated_file_path,
                             &original_file_path,
                             mutation,

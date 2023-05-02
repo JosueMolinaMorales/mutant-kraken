@@ -1,10 +1,9 @@
 use std::path::Path;
 
-use clap::{Args, Command, CommandFactory, Parser, Subcommand};
+use clap::{Args, CommandFactory, Parser, Subcommand};
 use mutation::Mutation;
 use mutation_tool::{MutationToolBuilder, OUT_DIRECTORY};
 use tracing_appender::non_blocking::WorkerGuard;
-use tracing_subscriber::fmt::format;
 
 pub mod config;
 pub mod error;
