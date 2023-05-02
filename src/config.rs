@@ -34,8 +34,17 @@ impl KodeKrakenConfig {
         match fs::File::open("kodekraken.config.json") {
             Ok(file) => {
                 let buffer_reader = BufReader::new(file);
-                let config: KodeKrakenConfig = serde_json::from_reader(buffer_reader).unwrap();
-                config
+                match serde_json::from_reader(buffer_reader) {
+                    Ok(config) => config,
+                    Err(e) => {
+                        println!("[WARNING] ⚠️  Could not parse config file, view logs for error.");
+                        tracing::warn!(
+                            "Could not parse config file, using default config. Error: {}",
+                            e
+                        );
+                        Self::default()
+                    }
+                }
             }
             Err(_) => {
                 tracing::warn!("No config file found, using default config");

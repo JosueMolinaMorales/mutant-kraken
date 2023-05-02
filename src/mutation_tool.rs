@@ -141,7 +141,9 @@ impl MutationTool {
         let thread_pool = rayon::ThreadPoolBuilder::new()
             .num_threads(kodekraken_config.threading.max_threads)
             .build()
-            .unwrap();
+            .map_err(|e| {
+                KodeKrakenError::Error(format!("Error while creating thread pool: {}", e))
+            })?;
 
         Ok(Self {
             mutate_config,
@@ -178,37 +180,43 @@ impl MutationTool {
         let mut existing_files = self.get_files_from_project()?;
         // Phase 2: Gather mutations per file
         println!("[2/6] 🔎 Gathering mutations...");
-        let file_mutations = self.gather_mutations_per_file(&mut existing_files).unwrap();
+        let file_mutations = self.gather_mutations_per_file(&mut existing_files)?;
         // Phase 3: Generate mutations per file
         println!("[3/6] 🔨 Generating mutations...");
-        self.generate_mutations_per_file(&file_mutations).unwrap();
+        self.generate_mutations_per_file(&file_mutations)?;
         // Phase 4: Build and test
         println!("[4/6] 🏗 Building and testing...");
-        let mutations = self.build_and_test(&file_mutations).unwrap();
+        let mutations = self.build_and_test(&file_mutations)?;
         // Phase 5: Report results
         println!("[5/6] 📊 Reporting results...");
-        self.report_results(&mutations).unwrap();
+        self.report_results(&mutations)?;
         // Phase 6: Save Results in csv
         println!("[6/6] 💾 Saving results...");
-        self.save_results(&mutations);
+        self.save_results(&mutations)?;
 
         Ok(())
     }
 
-    fn save_results(&self, mutations: &Vec<Mutation>) {
+    fn save_results(&self, mutations: &Vec<Mutation>) -> Result<()> {
         let mut writer = csv::WriterBuilder::new()
             .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
-            .unwrap();
+            .map_err(|e| {
+                KodeKrakenError::Error(format!("Error while creating csv writer: {}", e))
+            })?;
         for mutation in mutations {
-            writer.serialize(mutation).unwrap();
+            writer.serialize(mutation).map_err(|e| {
+                KodeKrakenError::Error(format!("Error while serializing mutation: {}", e))
+            })?;
         }
-        writer.flush().unwrap();
+        writer.flush().map_err(|e| {
+            KodeKrakenError::Error(format!("Error while flushing csv writer: {}", e))
+        })?;
+        Ok(())
     }
 
     fn get_files_from_project(&self) -> Result<Vec<String>> {
         let mut existing_files: Vec<String> = vec![];
-        self.get_files_from_directory(self.mutate_config.path.clone(), &mut existing_files)
-            .unwrap();
+        self.get_files_from_directory(self.mutate_config.path.clone(), &mut existing_files)?;
         tracing::debug!("Files found from path: {:#?}", existing_files);
         tracing::info!("Gathering all mutations for files...");
         if existing_files.is_empty() {
@@ -230,7 +238,9 @@ impl MutationTool {
             _ => total_timeouts_or_build_fails += 1,
         });
         if self.kodekraken_config.output.display_end_table {
-            cli_table::print_stdout(mutations.with_title()).unwrap();
+            cli_table::print_stdout(mutations.with_title()).map_err(|e| {
+                KodeKrakenError::Error(format!("Error while printing table: {}", e))
+            })?;
         }
         let table = vec![
             vec!["Total mutations".to_string(), total_mutations.to_string()],
@@ -272,7 +282,7 @@ impl MutationTool {
                 .ok_or(KodeKrakenError::MutationBuildTestError)?;
             let backup_path = self.backup_dir.join(original_file_name);
             // Save a copy of the original file
-            fs::copy(&original_file_path, &backup_path).unwrap();
+            fs::copy(&original_file_path, &backup_path)?;
         }
         Ok(())
     }
@@ -292,7 +302,7 @@ impl MutationTool {
                 .progress_chars("=> "),
         );
 
-        self.copy_files(file_mutations).unwrap();
+        self.copy_files(file_mutations)?;
 
         // Merge all mutants into one vector
         let mut all_mutations: Vec<Mutation> = vec![];
@@ -320,7 +330,7 @@ impl MutationTool {
                 // Create unique temp directory
                 let uuid = uuid::Uuid::new_v4();
                 let mut td = Path::new(OUT_DIRECTORY).join(format!("temp/{}", uuid));
-                fs::create_dir_all(&td).unwrap();
+                fs::create_dir_all(&td).expect("Failed to create temp directory");
                 // Create directory structure inside temp directory that matches the original project
                 let dir = PathBuf::from(&self.mutate_config.path);
                 let mut config_prefix = PathBuf::new();
@@ -330,8 +340,9 @@ impl MutationTool {
                         config_prefix = config_prefix.join(dir);
                     }
                 }
-                fs::create_dir_all(&td).unwrap();
-                self.create_temp_directory(dir, &td).unwrap();
+                fs::create_dir_all(&td).expect("Failed to create temp directory");
+                self.create_temp_directory(dir, &td)
+                    .expect("Failed to create temp directory");
                 // Run gradle build and tests in parallel
                 let path = path.clone();
                 let mutation_dir = mutation_dir.clone();
@@ -389,8 +400,12 @@ impl MutationTool {
 
     fn create_temp_directory(&self, dir: PathBuf, temp_dir: &Path) -> Result<()> {
         for entry in dir.read_dir()? {
-            let path = entry.unwrap().path();
-            let file_name = path.file_name().unwrap().to_str().unwrap();
+            let path = entry?.path();
+            let file_name = path
+                .file_name()
+                .ok_or(KodeKrakenError::ConversionError)?
+                .to_str()
+                .ok_or(KodeKrakenError::ConversionError)?;
             // Ignore the kode-kraken-dist folder
             // We can add to this to ignore more things.
             if file_name == "kode-kraken-dist" {
@@ -398,15 +413,15 @@ impl MutationTool {
             }
             if path.is_dir() {
                 let temp_dir = temp_dir.join(file_name);
-                fs::create_dir(&temp_dir).unwrap();
+                fs::create_dir(&temp_dir)?;
                 self.create_temp_directory(path, &temp_dir)?;
             } else {
-                let file_contents = fs::read(&path).unwrap();
+                let file_contents = fs::read(&path)?;
                 if file_name == "gradlew" || file_name == "gradlew.bat" {
                     // We copy here so that we keep the same permissions
-                    fs::copy(&path, temp_dir.join(file_name)).unwrap();
+                    fs::copy(&path, temp_dir.join(file_name))?;
                 } else {
-                    fs::write(temp_dir.join(file_name), file_contents).unwrap();
+                    fs::write(temp_dir.join(file_name), file_contents)?;
                 }
             }
         }
@@ -420,7 +435,7 @@ impl MutationTool {
         tracing::info!("Generating mutations per file");
         self.thread_pool.scope(|s| {
             file_mutations.iter().for_each(|(file_name, fm)| {
-                let file_str = fs::read_to_string(file_name).unwrap(); // TODO: Remove unwrap
+                let file_str = fs::read_to_string(file_name).expect("Failed to read file"); // TODO: Remove unwrap
                 s.spawn(move |_| {
                     fm.mutations.iter().for_each(|m| {
                         let new_op_bytes = m.new_op.as_bytes();
@@ -443,11 +458,12 @@ impl MutationTool {
                             .join("\n");
 
                         // Create a file name for the mutated file
-                        let mutated_file_name = self
-                            .mutation_dir
-                            .join(self.create_mutated_file_name(file_name, m).unwrap());
+                        let mutated_file_name = self.mutation_dir.join(
+                            self.create_mutated_file_name(file_name, m)
+                                .expect("Failed to create mutated file name"),
+                        );
                         // Write the mutated file to the output directory
-                        fs::write(mutated_file_name, file).unwrap(); // TODO: Remove unwrap
+                        fs::write(mutated_file_name, file).expect("Failed to write mutated file");
                     });
                 });
             });
@@ -472,16 +488,18 @@ impl MutationTool {
                 s.spawn(move |_| {
                     let ast = parser
                         .lock()
-                        .unwrap()
+                        .expect("Failed to lock parser")
                         .parse(fs::read_to_string(&file).expect("File Not Found!"), None)
-                        .unwrap(); // TODO: Remove this unwrap
+                        .expect("Parsing file failed"); // TODO: Remove this unwrap
                     for mut_op in mutation_operators.iter() {
                         // Get a list of mutations that can be made
                         let mutations = mut_op.find_mutation(&ast, file);
-                        *mutation_count.lock().unwrap() += mutations.len();
+                        *mutation_count
+                            .lock()
+                            .expect("Failed to lock mutation_count var") += mutations.len();
                         file_mutations
                             .lock()
-                            .unwrap()
+                            .expect("Failed to lock file_mutations var")
                             .entry(file.clone())
                             .and_modify(|fm| fm.mutations.extend(mutations.clone()))
                             .or_insert(FileMutations {
@@ -492,15 +510,15 @@ impl MutationTool {
             }
         });
         let mutation_count = Arc::try_unwrap(mutation_count)
-            .unwrap()
+            .map_err(|_| KodeKrakenError::Error("Failed to unwrap mutation_count".to_string()))?
             .into_inner()
-            .unwrap();
+            .map_err(|_| KodeKrakenError::Error("Failed to unwrap mutation_count".to_string()))?;
         tracing::info!("Mutations made to all files");
         tracing::info!("Total mutations made: {}", mutation_count);
         Ok(Arc::try_unwrap(file_mutations)
-            .unwrap()
+            .map_err(|_| KodeKrakenError::Error("Failed to unwrap file_mutations".to_string()))?
             .into_inner()
-            .unwrap())
+            .map_err(|_| KodeKrakenError::Error("Failed to unwrap file_mutations".to_string()))?)
     }
 
     /*
@@ -518,7 +536,13 @@ impl MutationTool {
         for entry in directory {
             let entry = entry.map_err(|_| KodeKrakenError::MutationGatheringError)?;
             let path = entry.path();
-            if path.file_name().unwrap().to_str().unwrap() == "kode-kraken-dist" {
+            if path
+                .file_name()
+                .ok_or(KodeKrakenError::MutationGatheringError)?
+                .to_str()
+                .ok_or(KodeKrakenError::MutationGatheringError)?
+                == "kode-kraken-dist"
+            {
                 continue;
             }
             if path.is_dir() {
@@ -552,8 +576,12 @@ impl MutationTool {
                 .iter()
                 .any(|ignore_file| {
                     Regex::new(ignore_file)
-                        .unwrap()
-                        .is_match(file_name.to_str().unwrap())
+                        .expect("Failed to convert given regex")
+                        .is_match(
+                            file_name
+                                .to_str()
+                                .expect("Failed to convert file name to string"),
+                        )
                 })
             {
                 continue;

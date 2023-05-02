@@ -1,4 +1,8 @@
-use crate::{error::Result, kotlin_types::KotlinTypes, Mutation};
+use crate::{
+    error::{KodeKrakenError, Result},
+    kotlin_types::KotlinTypes,
+    Mutation,
+};
 use std::{collections::HashSet, fmt::Display};
 
 // Struct that stores all the mutations operators by default
@@ -170,7 +174,7 @@ impl MutationOperators {
         // Checks to see if the parent is the necessary kotlin type
         if !mutation_operators.contains(root)
             || parent.is_none()
-            || !parent_types.contains(parent.as_ref().unwrap())
+            || !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?)
         {
             return Ok(mutations_made);
         }
@@ -250,8 +254,10 @@ mod tests {
 
     fn get_ast(text: &str) -> tree_sitter::Tree {
         let mut parser = Parser::new();
-        parser.set_language(tree_sitter_kotlin::language()).unwrap();
-        parser.parse(text, None).unwrap()
+        parser
+            .set_language(tree_sitter_kotlin::language())
+            .expect("Failed to set language for parser");
+        parser.parse(text, None).expect("Failed to parse text")
     }
 
     #[test]

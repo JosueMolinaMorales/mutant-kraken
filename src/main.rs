@@ -47,7 +47,10 @@ pub struct MutationCommandConfig {
 impl Default for MutationCommandConfig {
     fn default() -> Self {
         Self {
-            path: std::env::current_dir().unwrap().display().to_string(),
+            path: std::env::current_dir()
+                .expect("Could not get the current working directory")
+                .display()
+                .to_string(),
         }
     }
 }
@@ -94,7 +97,7 @@ fn main() {
 fn setup_logging() -> WorkerGuard {
     // Create dist log folder if it doesn't exist
     let log_dir = Path::new(OUT_DIRECTORY).join("logs");
-    std::fs::create_dir_all(&log_dir).unwrap();
+    std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
     let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()

@@ -47,7 +47,7 @@ pub fn run(
         .wait()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     // Copy the mutated file to the original file
-    fs::copy(mutated_file_path, original_file_path).unwrap();
+    fs::copy(mutated_file_path, original_file_path)?;
     // Compile the project first, skip if compilation fails
     let res = build_gradle_command(config_path, GradleCommand::Assemble)?
         .wait()
