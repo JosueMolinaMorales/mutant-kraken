@@ -32,7 +32,6 @@ impl<'a> ToString for GradleCommand<'a> {
 /// This will check to see if there is a gradlew file in the root of the directory
 pub fn run(
     config_path: &PathBuf,
-    verbose: bool,
     mutated_file_path: &PathBuf,
     original_file_path: &PathBuf,
     mutation: &mut Mutation,
@@ -54,9 +53,7 @@ pub fn run(
         .wait()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     if !res.success() {
-        if verbose {
-            tracing::info!("Build failed for: {}", mutated_file_path.display());
-        }
+        tracing::info!("Build failed for: {}", mutated_file_path.display());
         mutation.result = MutationResult::BuildFailed;
         return Ok(());
     }
@@ -69,6 +66,7 @@ pub fn run(
         .ok_or(KodeKrakenError::ConversionError)?;
 
     let mut child_process = build_gradle_command(config_path, GradleCommand::Test(filter))?;
+    tracing::debug!("Running test for mutation: {}", mutated_file_path.display());
     // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
     // can occur from the mutations.
     let res = match child_process.wait_timeout(Duration::from_secs(30)) {
@@ -77,16 +75,13 @@ pub fn run(
             child_process.kill().map_err(|e| {
                 KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
             })?;
-            if verbose {
-                tracing::info!("Test timed out for: {}", mutated_file_path.display());
-            }
+            tracing::error!("Test timed out for: {}", mutated_file_path.display());
+
             mutation.result = MutationResult::Timeout;
             return Ok(());
         }
         Err(e) => {
-            if verbose {
-                tracing::info!("Test failed: {}", e);
-            }
+            tracing::error!("Test failed: {}", e);
             child_process.kill().map_err(|e| {
                 KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
             })?;
@@ -95,14 +90,10 @@ pub fn run(
         }
     };
     if res.success() {
-        if verbose {
-            tracing::info!("Mutant survived for file: {}", mutated_file_path.display());
-        }
+        tracing::info!("Mutant survived for file: {}", mutated_file_path.display());
         mutation.result = MutationResult::Survived;
     } else {
-        if verbose {
-            tracing::info!("Mutant killed for file: {}", mutated_file_path.display());
-        }
+        tracing::info!("Mutant killed for file: {}", mutated_file_path.display());
         mutation.result = MutationResult::Killed;
     }
     Ok(())
@@ -142,7 +133,6 @@ mod test {
     fn test() {
         run(
             &PathBuf::from("./kotlin-test-projects/no-gradle-project"),
-            false,
             &PathBuf::new(),
             &PathBuf::new(),
             &mut Mutation::new(
@@ -178,7 +168,6 @@ mod test {
             );
             run(
                 &PathBuf::from("./kotlin-test-projects/kotlin-project"),
-                false,
                 &entry,
                 &PathBuf::from(
                     "./kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
