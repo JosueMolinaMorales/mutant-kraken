@@ -20,6 +20,7 @@ pub enum MutationOperators {
     RelationalOperator,
     AssignmentOperator,
     UnaryOperator,
+    //NullSafetyOperator,
 }
 
 impl Display for MutationOperators {
