@@ -31,4 +31,11 @@ class CalculatorTest {
         val result = calculator.calculate("divide", 10, 2)
         assertEquals(0, result)
     }
+
+    @Test
+    fun testSafeCall() {
+        val calculator = Calculator()
+        val result = calculator.simpleFun();
+        assertEquals(null, result)
+    }
 }

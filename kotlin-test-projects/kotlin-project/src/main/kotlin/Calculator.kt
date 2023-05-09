@@ -24,4 +24,9 @@ class Calculator {
         }
         return result
     }
+
+    fun simpleFun(): Int? {
+        var test:String? = null
+        return test?.length;
+    }
 }
