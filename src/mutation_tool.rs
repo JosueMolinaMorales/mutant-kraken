@@ -13,10 +13,10 @@ use regex::Regex;
 use crate::{
     config::KodeKrakenConfig,
     error::{KodeKrakenError, Result},
-    gradle,
+    gradle, html_gen,
     mutation::{FileMutations, Mutation, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    MutationCommandConfig, html_gen,
+    MutationCommandConfig,
 };
 
 use cli_table::{Table, WithTitle};
@@ -195,7 +195,7 @@ impl MutationTool {
         self.save_results(&mutations)?;
         // Phase 7: Generate HTML Report
         println!("[7/7] 📊 Generating HTML report...");
-
+        html_gen::build_html_page(&vec![], &mutations);
         Ok(())
     }
 
