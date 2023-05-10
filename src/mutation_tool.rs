@@ -16,7 +16,7 @@ use crate::{
     gradle,
     mutation::{FileMutations, Mutation, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
-    MutationCommandConfig,
+    MutationCommandConfig, html_gen,
 };
 
 use cli_table::{Table, WithTitle};
@@ -193,6 +193,8 @@ impl MutationTool {
         // Phase 6: Save Results in csv
         println!("[6/6] 💾 Saving results...");
         self.save_results(&mutations)?;
+        // Phase 7: Generate HTML Report
+        println!("[7/7] 📊 Generating HTML report...");
 
         Ok(())
     }

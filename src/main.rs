@@ -12,6 +12,7 @@ pub mod kotlin_types;
 pub mod mutation;
 pub mod mutation_operators;
 pub mod mutation_tool;
+pub mod html_gen;
 
 #[cfg(test)]
 pub mod test_config;
@@ -56,42 +57,44 @@ impl Default for MutationCommandConfig {
 }
 
 fn main() {
-    let guard = setup_logging();
-    tracing::info!("Starting Kode Kraken");
-    let args = Cli::parse();
-    let mutate_tool_builder = MutationToolBuilder::new();
+    html_gen::build_html_page(&vec![], &vec![]);
 
-    let config = config::KodeKrakenConfig::load_config();
-    match args.command {
-        Commands::Mutate(mutate_config) => {
-            if let Err(e) = mutate_tool_builder
-                .set_mutate_config(mutate_config)
-                .set_general_config(config)
-                .set_mutation_comment(true)
-                .build()
-                .mutate()
-            {
-                let error_msg = match e {
-                    error::KodeKrakenError::FileReadingError(msg) => msg,
-                    error::KodeKrakenError::MutationGenerationError => {
-                        "Error Generating Mutations".into()
-                    }
-                    error::KodeKrakenError::MutationGatheringError => {
-                        "Error Gathering Mutations".into()
-                    }
-                    error::KodeKrakenError::MutationBuildTestError => {
-                        "Error Building and Testing Mutations".into()
-                    }
-                    error::KodeKrakenError::ConversionError => "Error Converting".into(),
-                    error::KodeKrakenError::Error(msg) => msg,
-                };
-                drop(guard);
-                Cli::command()
-                    .error(clap::error::ErrorKind::Io, error_msg)
-                    .exit();
-            }
-        }
-    }
+    // let guard = setup_logging();
+    // tracing::info!("Starting Kode Kraken");
+    // let args = Cli::parse();
+    // let mutate_tool_builder = MutationToolBuilder::new();
+
+    // let config = config::KodeKrakenConfig::load_config();
+    // match args.command {
+    //     Commands::Mutate(mutate_config) => {
+    //         if let Err(e) = mutate_tool_builder
+    //             .set_mutate_config(mutate_config)
+    //             .set_general_config(config)
+    //             .set_mutation_comment(true)
+    //             .build()
+    //             .mutate()
+    //         {
+    //             let error_msg = match e {
+    //                 error::KodeKrakenError::FileReadingError(msg) => msg,
+    //                 error::KodeKrakenError::MutationGenerationError => {
+    //                     "Error Generating Mutations".into()
+    //                 }
+    //                 error::KodeKrakenError::MutationGatheringError => {
+    //                     "Error Gathering Mutations".into()
+    //                 }
+    //                 error::KodeKrakenError::MutationBuildTestError => {
+    //                     "Error Building and Testing Mutations".into()
+    //                 }
+    //                 error::KodeKrakenError::ConversionError => "Error Converting".into(),
+    //                 error::KodeKrakenError::Error(msg) => msg,
+    //             };
+    //             drop(guard);
+    //             Cli::command()
+    //                 .error(clap::error::ErrorKind::Io, error_msg)
+    //                 .exit();
+    //         }
+    //     }
+    // }
 }
 
 fn setup_logging() -> WorkerGuard {
