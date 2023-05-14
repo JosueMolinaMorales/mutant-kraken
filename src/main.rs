@@ -26,6 +26,10 @@ enum Commands {
     /// Display help text on how to setup the config file
     /// or create a config file in the current directory
     Config(ConfigCommandConfig),
+    /// Clean the kode-kraken-dist directory
+    /// This will delete all files in the directory
+    /// This is useful if you want to remove all the files
+    Clean,
 }
 
 const ABOUT: &str = include_str!("../assets/about.txt");
@@ -121,6 +125,14 @@ fn main() {
                 println!("2. Copy the following into the file:");
                 println!("{}", include_str!("../assets/config.json"));
                 println!("3. Edit the config file to your liking");
+            }
+        }
+        Commands::Clean => {
+            // Check to see if the output directory exists
+            let output_dir = Path::new(OUT_DIRECTORY);
+            if output_dir.exists() {
+                // Delete the output directory
+                std::fs::remove_dir_all(output_dir).expect("Could not delete output directory");
             }
         }
     }
