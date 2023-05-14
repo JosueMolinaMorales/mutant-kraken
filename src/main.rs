@@ -150,7 +150,7 @@ fn setup_logging(log_level: &str) -> WorkerGuard {
     // Create dist log folder if it doesn't exist
     let log_dir = Path::new(OUT_DIRECTORY).join("logs");
     std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
-    let file_appender = tracing_appender::rolling::hourly(log_dir, "kode-kraken.log");
+    let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()
         .with_max_level(log_level)
