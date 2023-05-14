@@ -4,7 +4,7 @@ use horrorshow::{helper::doctype, html};
 
 use crate::mutation::{Mutation, MutationResult};
 
-pub fn build_html_page(_fileName: &Vec<String>, data: &Vec<Mutation>) {
+pub fn build_html_page(data: &Vec<Mutation>) {
     // Group the mutations by file name
     let mut file_mutations = HashMap::new();
     for mutation in data {
@@ -75,15 +75,16 @@ pub fn build_html_page(_fileName: &Vec<String>, data: &Vec<Mutation>) {
                                     }
                                     td(class="tg-lax") {
                                         : format!(
-                                            "{}",
-                                            fm.iter().filter(|m| m.result == MutationResult::Killed).count() as f32
+                                            "{}%",
+                                            (fm.iter().filter(|m| m.result == MutationResult::Killed).count() as f32
                                             / (fm.len() -
                                                 fm
                                                 .iter()
                                                 .filter(|m|
-                                                    m.result != MutationResult::Killed ||
-                                                    m.result != MutationResult::Survived)
-                                                .count()) as f32);
+                                            m.result != MutationResult::Killed &&
+                                            m.result != MutationResult::Survived)
+                                        .count()) as f32) * 100.0
+                                        );
                                     }
                                 }
                             }
