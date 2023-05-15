@@ -2,6 +2,7 @@ package src.test.kotlin
 import Calculator
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class CalculatorTest {
     @Test
@@ -35,7 +36,8 @@ class CalculatorTest {
     @Test
     fun testSafeCall() {
         val calculator = Calculator()
-        val result = calculator.simpleFun();
-        assertEquals(null, result)
+        assertFailsWith<NullPointerException>(
+            block = {calculator.simpleFun()}
+        )
     }
 }

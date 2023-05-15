@@ -20,7 +20,7 @@ pub enum MutationOperators {
     RelationalOperator,
     AssignmentOperator,
     UnaryOperator,
-    SafeCallOperator,
+    NotNullAssertionOperator,
 }
 
 impl Display for MutationOperators {
@@ -35,7 +35,7 @@ impl Display for MutationOperators {
                 MutationOperators::RelationalOperator => "RelationalOperator",
                 MutationOperators::AssignmentOperator => "AssignmentOperator",
                 MutationOperators::UnaryOperator => "UnaryOperator",
-                MutationOperators::SafeCallOperator => "SafeCallOperator",
+                MutationOperators::NotNullAssertionOperator => "SafeCallOperator",
             }
         )
     }
@@ -95,9 +95,9 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
-            MutationOperators::SafeCallOperator => vec![
-                KotlinTypes::NonNamedType("?.".to_string()),
-                KotlinTypes::NonNamedType(".".to_string()),
+            MutationOperators::NotNullAssertionOperator => vec![
+                KotlinTypes::NonNamedType("!!".to_string()),
+                KotlinTypes::NonNamedType("?".to_string()),
                 KotlinTypes::RemoveOperator,
             ] 
             .into_iter()
@@ -126,7 +126,7 @@ impl MutationOperators {
                 KotlinTypes::PostfixExpression,
                 KotlinTypes::PrefixExpression,
             ],
-            MutationOperators::SafeCallOperator => vec! [KotlinTypes::CallExpression]
+            MutationOperators::NotNullAssertionOperator => vec! [KotlinTypes::PostfixExpression]
         }
     }
 
@@ -233,7 +233,7 @@ impl AllMutationOperators {
                 MutationOperators::RelationalOperator,
                 MutationOperators::AssignmentOperator,
                 MutationOperators::UnaryOperator,
-                MutationOperators::SafeCallOperator,
+                MutationOperators::NotNullAssertionOperator,
             ],
         }
     }

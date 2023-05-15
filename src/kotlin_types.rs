@@ -3,7 +3,7 @@ use std::fmt;
 use crate::error::{KodeKrakenError, Result};
 
 /// Holds all characters that are not named in kotlin
-const NON_NAMED_TYPES: [&str; 129] = [
+const NON_NAMED_TYPES: [&str; 128] = [
     "!",
     "!!",
     "!=",
@@ -45,7 +45,6 @@ const NON_NAMED_TYPES: [&str; 129] = [
     "===",
     ">",
     ">=",
-    "?.",
     "?:",
     "@",
     "L",
