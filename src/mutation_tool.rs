@@ -393,8 +393,10 @@ impl MutationTool {
         });
         progress_bar.finish();
         // Delete temp directory
-        fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp"))
-            .expect("Failed to remove temp directory");
+        if let Err(err) = fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")) {
+            println!("[ERROR] Failed to delete kode-kraken-dist/temp directory. Please view logs for more information.");
+            tracing::error!("Failed to delete kode-kraken-dist/temp directory: {}", err);
+        }
         Ok(chunks.into_iter().flatten().collect())
     }
 
