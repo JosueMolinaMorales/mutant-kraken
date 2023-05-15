@@ -7,6 +7,12 @@ pub struct KodeKrakenConfig {
     pub ignore: IgnoreConfig,
     pub threading: ThreadingConfig,
     pub output: OutputConfig,
+    pub logging: LoggingConfig,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LoggingConfig {
+    pub log_level: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -47,7 +53,7 @@ impl KodeKrakenConfig {
                 }
             }
             Err(_) => {
-                tracing::warn!("No config file found, using default config");
+                println!("[WARNING] ⚠️  Could not find kodekraken.config.json file, using default config.");
                 Self::default()
             }
         }
@@ -75,5 +81,13 @@ impl Default for IgnoreConfig {
 impl Default for ThreadingConfig {
     fn default() -> Self {
         Self { max_threads: 30 }
+    }
+}
+
+impl Default for LoggingConfig {
+    fn default() -> Self {
+        Self {
+            log_level: "info".into(),
+        }
     }
 }

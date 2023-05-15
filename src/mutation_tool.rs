@@ -13,7 +13,7 @@ use regex::Regex;
 use crate::{
     config::KodeKrakenConfig,
     error::{KodeKrakenError, Result},
-    gradle,
+    gradle, html_gen,
     mutation::{FileMutations, Mutation, MutationResult},
     mutation_operators::{AllMutationOperators, MutationOperators},
     MutationCommandConfig,
@@ -128,13 +128,21 @@ impl MutationTool {
         }
 
         // Create directories
-        let mutation_dir = Path::new(&output_directory).join("mutations");
+        // If the Backups directory exists, delete it
         let backup_dir = Path::new(&output_directory).join("backups");
+        if backup_dir.exists() {
+            std::fs::remove_dir_all(&backup_dir).expect("Could not delete backup directory");
+        }
+        // If the mutations directory exists, delete it
+        let mutation_dir = Path::new(&output_directory).join("mutations");
+        if mutation_dir.exists() {
+            std::fs::remove_dir_all(&mutation_dir).expect("Could not delete mutations directory");
+        }
         if !mutation_dir.exists() {
-            fs::create_dir_all(&mutation_dir)?; // TODO: Remove unwrap
+            fs::create_dir_all(&mutation_dir)?;
         }
         if !backup_dir.exists() {
-            fs::create_dir(&backup_dir)?; // TODO: Remove unwrap
+            fs::create_dir(&backup_dir)?;
         }
 
         // Create thread pool
@@ -193,7 +201,9 @@ impl MutationTool {
         // Phase 6: Save Results in csv
         println!("[6/6] 💾 Saving results...");
         self.save_results(&mutations)?;
-
+        // Phase 7: Generate HTML Report
+        println!("[7/7] 📊 Generating HTML report...");
+        html_gen::build_html_page(&mutations);
         Ok(())
     }
 
@@ -368,13 +378,13 @@ impl MutationTool {
                                 .expect("Failed to convert file name to string") // TODO: Remove unwrap
                         ));
 
-                        if let Err(_err) = gradle::run(
+                        if let Err(err) = gradle::run(
                             &PathBuf::from(&td),
                             &mutated_file_path,
                             &original_file_path,
                             mutation,
                         ) {
-                            // Log here something?
+                            tracing::error!("An error occurred building and testing: {}", err);
                             mutation.result = MutationResult::BuildFailed;
                         }
                         let backup_path = backup_dir.join(
