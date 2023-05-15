@@ -20,6 +20,7 @@ pub enum MutationOperators {
     RelationalOperator,
     AssignmentOperator,
     UnaryOperator,
+    NotNullAssertionOperator,
 }
 
 impl Display for MutationOperators {
@@ -34,6 +35,7 @@ impl Display for MutationOperators {
                 MutationOperators::RelationalOperator => "RelationalOperator",
                 MutationOperators::AssignmentOperator => "AssignmentOperator",
                 MutationOperators::UnaryOperator => "UnaryOperator",
+                MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
             }
         )
     }
@@ -93,6 +95,13 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
+            MutationOperators::NotNullAssertionOperator => vec![
+                KotlinTypes::NonNamedType("!!".to_string()),
+                KotlinTypes::NonNamedType("?".to_string()),
+                KotlinTypes::RemoveOperator,
+            ] 
+            .into_iter()
+            .collect(),
         }
     }
 
@@ -117,6 +126,7 @@ impl MutationOperators {
                 KotlinTypes::PostfixExpression,
                 KotlinTypes::PrefixExpression,
             ],
+            MutationOperators::NotNullAssertionOperator => vec! [KotlinTypes::PostfixExpression]
         }
     }
 
@@ -223,6 +233,7 @@ impl AllMutationOperators {
                 MutationOperators::RelationalOperator,
                 MutationOperators::AssignmentOperator,
                 MutationOperators::UnaryOperator,
+                MutationOperators::NotNullAssertionOperator,
             ],
         }
     }

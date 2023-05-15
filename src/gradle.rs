@@ -104,11 +104,14 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result
     let mut cmd = if cfg!(unix) {
         Command::new("./gradlew")
     } else if cfg!(windows) {
-        Command::new("./gradlew.bat")
+        Command::new("cmd")
     } else {
         panic!("Unsupported OS");
     };
     let mut args = vec![];
+    if cfg!(windows) {
+        args.append(&mut ["/C".into(), "gradlew.bat".into()].to_vec())
+    }
     args.push(command.to_string());
     if let GradleCommand::Test(filter) = command {
         args.append(&mut ["--tests".to_string(), format!("{}Test", filter)].to_vec())
@@ -197,7 +200,7 @@ mod test {
                 "Survived" => MutationResult::Survived,
                 _ => unreachable!(),
             };
-            assert_eq!(expected, mutation.result)
+            assert_eq!(expected, mutation.result, "Failed for: {}", file_name)
         }
     }
 }
