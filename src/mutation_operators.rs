@@ -35,7 +35,7 @@ impl Display for MutationOperators {
                 MutationOperators::RelationalOperator => "RelationalOperator",
                 MutationOperators::AssignmentOperator => "AssignmentOperator",
                 MutationOperators::UnaryOperator => "UnaryOperator",
-                MutationOperators::NotNullAssertionOperator => "SafeCallOperator",
+                MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
             }
         )
     }
