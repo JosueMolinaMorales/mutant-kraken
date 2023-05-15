@@ -33,4 +33,10 @@ class Calculator {
         }
         return result
     }
+
+    fun simpleFun(): Int? {
+        var test:String? = null
+        var result:Int? = test!!.length
+        return result
+    }
 }
