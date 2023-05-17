@@ -1,9 +1,9 @@
 {
-    "ignore": {                             // Ignore files and directories
-        "ignore_files": [                   // Use regex to ignore files 
-            "^.*Test\\.[^.]*$",             // Ignore files that end with Test.*
+    "ignore": {                            
+        "ignore_files": [                   
+            "^.*Test\\.[^.]*$"            
         ],
-        "ignore_directories": [             // Use to ignore directories
+        "ignore_directories": [             
             "dist",
             "build",
             "bin",
@@ -12,13 +12,13 @@
             "gradle"
         ]
     },
-    "threading": {                          // Config for threading
-        "max_threads": 30,                  // Max number of threads to use when generating and collecting mutants
+    "threading": {                         
+        "max_threads": 30
     },
-    "output": {                             // Config for output
-        "display_end_table": false          // Display the end table of mutants
+    "output": {                            
+        "display_end_table": false
     },
-    "logging": {                            // Config for logging
-        "log_level": "INFO"                 // Set the log level
+    "logging": {                            
+        "log_level": "INFO"
     }
 }

@@ -177,7 +177,7 @@ impl MutationTool {
                 .to_str()
                 .ok_or(KodeKrakenError::Error(
                     "Eror Creating Mutated File Name".into()
-                ))? // TODO: Remove unwrap
+                ))?
         ))
     }
 
@@ -375,7 +375,7 @@ impl MutationTool {
                                 .file_name()
                                 .expect("Failed to get the filename")
                                 .to_str()
-                                .expect("Failed to convert file name to string") // TODO: Remove unwrap
+                                .expect("Failed to convert file name to string")
                         ));
 
                         if let Err(err) = gradle::run(
@@ -447,7 +447,7 @@ impl MutationTool {
         tracing::info!("Generating mutations per file");
         self.thread_pool.scope(|s| {
             file_mutations.iter().for_each(|(file_name, fm)| {
-                let file_str = fs::read_to_string(file_name).expect("Failed to read file"); // TODO: Remove unwrap
+                let file_str = fs::read_to_string(file_name).expect("Failed to read file");
                 s.spawn(move |_| {
                     fm.mutations.iter().for_each(|m| {
                         let new_op_bytes = m.new_op.as_bytes();
@@ -502,7 +502,7 @@ impl MutationTool {
                         .lock()
                         .expect("Failed to lock parser")
                         .parse(fs::read_to_string(&file).expect("File Not Found!"), None)
-                        .expect("Parsing file failed"); // TODO: Remove this unwrap
+                        .expect("Parsing file failed");
                     for mut_op in mutation_operators.iter() {
                         // Get a list of mutations that can be made
                         let mutations = mut_op.find_mutation(&ast, file);
@@ -541,7 +541,6 @@ impl MutationTool {
         path: String,
         existing_files: &mut Vec<String>,
     ) -> Result<()> {
-        // TODO: Consider adding src to this path.
         let directory = Path::new(path.as_str())
             .read_dir()
             .map_err(|_| KodeKrakenError::MutationGatheringError)?;
@@ -570,7 +569,6 @@ impl MutationTool {
                 continue;
             }
             if path.components().any(|p| {
-                // TODO: This will be where configuration file will be used
                 self.kodekraken_config
                     .ignore
                     .ignore_directories
