@@ -15,7 +15,7 @@ use cli_table::{Table, WithTitle};
 
 use crate::cli::MutationCommandConfig;
 use crate::config::KodeKrakenConfig;
-use crate::error::{KodeKrakenError, Result};
+use crate::error::{self, KodeKrakenError, Result};
 use crate::mutation_tool::{
     mutation::{FileMutations, Mutation, MutationResult},
     AllMutationOperators, MutationOperators,
@@ -190,6 +190,8 @@ impl MutationTool {
         // Phase 2: Gather mutations per file
         println!("[2/6] 🔎 Gathering mutations...");
         let file_mutations = self.gather_mutations_per_file(&mut existing_files)?;
+        // Store all mutations in a json file
+        self.store_mutations(&file_mutations)?;
         // Phase 3: Generate mutations per file
         println!("[3/6] 🔨 Generating mutations...");
         self.generate_mutations_per_file(&file_mutations)?;
@@ -205,6 +207,20 @@ impl MutationTool {
         // Phase 7: Generate HTML Report
         println!("[7/7] 📊 Generating HTML report...");
         html_gen::build_html_page(&mutations);
+        Ok(())
+    }
+
+    /// Store All Mutations into a json filed name mutations.json within kode-kraken-dist/mutations directory
+    fn store_mutations(&self, file_mutations: &HashMap<String, FileMutations>) -> Result<()> {
+        std::fs::write(
+            Path::new(OUT_DIRECTORY)
+                .join("mutations")
+                .join("mutations.json"),
+            serde_json::to_string_pretty(file_mutations)
+                .map_err(|_| error::KodeKrakenError::ConversionError)?,
+        )
+        .map_err(|e| error::KodeKrakenError::Error(e.to_string()))?;
+
         Ok(())
     }
 

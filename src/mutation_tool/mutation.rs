@@ -105,7 +105,7 @@ impl Display for Mutation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct FileMutations {
     pub mutations: Vec<Mutation>,
 }
