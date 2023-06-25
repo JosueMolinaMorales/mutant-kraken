@@ -1,3 +1,4 @@
+use std::time::Instant;
 use std::{
     collections::HashMap,
     ffi::OsStr,
@@ -10,16 +11,16 @@ use std::{
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 
-use crate::{
-    config::KodeKrakenConfig,
-    error::{KodeKrakenError, Result},
-    gradle, html_gen,
-    mutation::{FileMutations, Mutation, MutationResult},
-    mutation_operators::{AllMutationOperators, MutationOperators},
-    MutationCommandConfig,
-};
-
 use cli_table::{Table, WithTitle};
+
+use crate::cli::MutationCommandConfig;
+use crate::config::KodeKrakenConfig;
+use crate::error::{KodeKrakenError, Result};
+use crate::mutation_tool::{
+    mutation::{FileMutations, Mutation, MutationResult},
+    AllMutationOperators, MutationOperators,
+};
+use crate::{gradle, html_gen};
 
 pub const OUT_DIRECTORY: &str = "./kode-kraken-dist";
 const MAX_BUILD_THREADS: f32 = 5f32;
@@ -225,9 +226,19 @@ impl MutationTool {
     }
 
     fn get_files_from_project(&self) -> Result<Vec<String>> {
+        let start = Instant::now();
         let mut existing_files: Vec<String> = vec![];
         self.get_files_from_directory(self.mutate_config.path.clone(), &mut existing_files)?;
-        tracing::debug!("Files found from path: {:#?}", existing_files);
+        let end = Instant::now();
+        tracing::info!(
+            "Gathering files took {} seconds",
+            end.duration_since(start).as_secs()
+        );
+        tracing::debug!(
+            "Found a total of {} files. Files found from path: {:#?}",
+            existing_files.len(),
+            existing_files
+        );
         tracing::info!("Gathering all mutations for files...");
         if existing_files.is_empty() {
             tracing::error!("No files found in path");
@@ -445,6 +456,7 @@ impl MutationTool {
         file_mutations: &HashMap<String, FileMutations>,
     ) -> Result<()> {
         tracing::info!("Generating mutations per file");
+        let start = Instant::now();
         self.thread_pool.scope(|s| {
             file_mutations.iter().for_each(|(file_name, fm)| {
                 let file_str = fs::read_to_string(file_name).expect("Failed to read file");
@@ -480,7 +492,11 @@ impl MutationTool {
                 });
             });
         });
-
+        let end = Instant::now();
+        tracing::info!(
+            "Generating mutations per file took: {}",
+            end.duration_since(start).as_secs_f64()
+        );
         Ok(())
     }
 
@@ -488,6 +504,7 @@ impl MutationTool {
         &mut self,
         existing_files: &mut [String],
     ) -> Result<HashMap<String, FileMutations>> {
+        let start = Instant::now();
         let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> =
             Arc::new(Mutex::new(HashMap::new()));
         let mutation_count = Arc::new(Mutex::new(0));
@@ -521,6 +538,11 @@ impl MutationTool {
                 });
             }
         });
+        let end = Instant::now();
+        tracing::info!(
+            "Time to gather mutations: {}",
+            end.duration_since(start).as_secs()
+        );
         let mutation_count = Arc::try_unwrap(mutation_count)
             .map_err(|_| KodeKrakenError::Error("Failed to unwrap mutation_count".to_string()))?
             .into_inner()

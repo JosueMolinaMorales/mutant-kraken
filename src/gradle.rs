@@ -8,7 +8,7 @@ use wait_timeout::ChildExt;
 
 use crate::{
     error::{KodeKrakenError, Result},
-    mutation::{Mutation, MutationResult},
+    mutation_tool::{Mutation, MutationResult},
 };
 
 #[derive(PartialEq, Eq)]
@@ -46,17 +46,21 @@ pub fn run(
     build_gradle_command(config_path, GradleCommand::Clean)?
         .wait()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+
     // Copy the mutated file to the original file
     fs::copy(mutated_file_path, original_file_path)?;
+
     // Compile the project first, skip if compilation fails
     let res = build_gradle_command(config_path, GradleCommand::Assemble)?
         .wait()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+
     if !res.success() {
         tracing::info!("Build failed for: {}", mutated_file_path.display());
         mutation.result = MutationResult::BuildFailed;
         return Ok(());
     }
+
     let filter = original_file_path
         .file_name()
         .ok_or(KodeKrakenError::ConversionError)?
@@ -144,7 +148,7 @@ mod test {
                 "new_op".into(),
                 "old_op".into(),
                 0,
-                crate::mutation_operators::MutationOperators::ArthimeticOperator,
+                crate::mutation_tool::MutationOperators::ArthimeticOperator,
                 "file_name".into(),
             ),
         )
@@ -166,7 +170,7 @@ mod test {
                 "new_op".into(),
                 "old_op".into(),
                 0,
-                crate::mutation_operators::MutationOperators::ArthimeticOperator,
+                crate::mutation_tool::MutationOperators::ArthimeticOperator,
                 "file_name".into(),
             );
             run(

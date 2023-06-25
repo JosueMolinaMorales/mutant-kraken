@@ -1,7 +1,7 @@
 use crate::{
     error::{KodeKrakenError, Result},
     kotlin_types::KotlinTypes,
-    Mutation,
+    mutation_tool::Mutation,
 };
 use std::{collections::HashSet, fmt::Display};
 
@@ -99,7 +99,7 @@ impl MutationOperators {
                 KotlinTypes::NonNamedType("!!".to_string()),
                 KotlinTypes::NonNamedType("?".to_string()),
                 KotlinTypes::RemoveOperator,
-            ] 
+            ]
             .into_iter()
             .collect(),
         }
@@ -126,7 +126,7 @@ impl MutationOperators {
                 KotlinTypes::PostfixExpression,
                 KotlinTypes::PrefixExpression,
             ],
-            MutationOperators::NotNullAssertionOperator => vec! [KotlinTypes::PostfixExpression]
+            MutationOperators::NotNullAssertionOperator => vec![KotlinTypes::PostfixExpression],
         }
     }
 

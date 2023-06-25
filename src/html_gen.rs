@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::File, io::Write, path::Path};
 
 use horrorshow::{helper::doctype, html};
 
-use crate::mutation::{Mutation, MutationResult};
+use crate::mutation_tool::{Mutation, MutationResult};
 
 pub fn build_html_page(data: &Vec<Mutation>) {
     // Group the mutations by file name
