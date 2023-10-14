@@ -1,10 +1,10 @@
-use std::path::Path;
+use std::{path::Path, time::Duration};
 
 use clap::{Args, CommandFactory, Parser, Subcommand};
 
 use crate::{
     config::KodeKrakenConfig,
-    error,
+    error::{self, KodeKrakenError},
     mutation_tool::{MutationToolBuilder, OUT_DIRECTORY},
 };
 
@@ -63,19 +63,49 @@ impl Default for MutationCommandConfig {
     }
 }
 
+pub fn run_with_timeout<F>(mut f: F, timeout: Duration) -> error::Result<()>
+where
+    F: FnMut() -> error::Result<()> + Send + 'static,
+{
+    // Create a channel to send a message when the function is done
+    let (sender, receiver) = std::sync::mpsc::channel();
+    // Spawn a thread to run the function
+    std::thread::spawn(move || {
+        sender.send(f()).expect("Could not send message");
+    });
+    // Wait for the function to finish or timeout
+    match receiver.recv_timeout(timeout) {
+        Ok(res) => res,
+        Err(_) => Err(KodeKrakenError::Error(
+            format!(
+                "Timeout reached, mutation tool took longer than {} seconds to finish",
+                timeout.as_secs()
+            )
+            .into(),
+        )),
+    }
+}
+
 pub fn run_cli(config: KodeKrakenConfig) {
     let args = Cli::parse();
     let mutate_tool_builder = MutationToolBuilder::new();
 
     match args.command {
         Commands::Mutate(mutate_config) => {
-            if let Err(e) = mutate_tool_builder
+            let mut tool = mutate_tool_builder
                 .set_mutate_config(mutate_config)
                 .set_general_config(config)
                 .set_mutation_comment(true)
-                .build()
-                .mutate()
-            {
+                .build();
+            println!("{:#?}", tool.kodekraken_config.general.timeout);
+            let res = match tool.kodekraken_config.general.timeout {
+                Some(timeout) => {
+                    println!("Timeout set to {} seconds", timeout);
+                    run_with_timeout(move || tool.mutate(), Duration::from_secs(timeout))
+                }
+                None => tool.mutate(),
+            };
+            if let Err(e) = res {
                 let error_msg = match e {
                     error::KodeKrakenError::FileReadingError(msg) => msg,
                     error::KodeKrakenError::MutationGenerationError => {

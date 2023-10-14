@@ -4,10 +4,25 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Default)]
 pub struct KodeKrakenConfig {
+    pub general: GeneralConfig,
     pub ignore: IgnoreConfig,
     pub threading: ThreadingConfig,
     pub output: OutputConfig,
     pub logging: LoggingConfig,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GeneralConfig {
+    /// The time in seconds to wait for the mutation tool to finish
+    /// before killing the process
+    pub timeout: Option<u64>,
+}
+
+impl Default for GeneralConfig {
+    /// Set Default timeout of 5 minutes
+    fn default() -> Self {
+        Self { timeout: None }
+    }
 }
 
 #[derive(Debug, Deserialize)]

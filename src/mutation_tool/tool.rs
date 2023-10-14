@@ -25,62 +25,6 @@ use crate::{gradle, html_gen};
 pub const OUT_DIRECTORY: &str = "./kode-kraken-dist";
 const MAX_BUILD_THREADS: f32 = 5f32;
 
-pub struct MutationToolBuilder {
-    mutate_config: Option<MutationCommandConfig>,
-    kodekraken_config: Option<KodeKrakenConfig>,
-    mutation_operators: Option<Vec<MutationOperators>>,
-    enable_mutation_comment: bool,
-}
-
-impl Default for MutationToolBuilder {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl MutationToolBuilder {
-    pub fn new() -> Self {
-        Self {
-            mutate_config: None,
-            kodekraken_config: None,
-            mutation_operators: None,
-            enable_mutation_comment: false,
-        }
-    }
-    pub fn set_general_config(mut self, config: KodeKrakenConfig) -> Self {
-        self.kodekraken_config = Some(config);
-        self
-    }
-    pub fn set_mutate_config(mut self, config: MutationCommandConfig) -> Self {
-        self.mutate_config = Some(config);
-        self
-    }
-    pub fn set_mutation_operators(mut self, mutation_operators: Vec<MutationOperators>) -> Self {
-        self.mutation_operators = Some(mutation_operators);
-        self
-    }
-    pub fn set_mutation_comment(mut self, enable_mutation_comment: bool) -> Self {
-        self.enable_mutation_comment = enable_mutation_comment;
-        self
-    }
-
-    pub fn build(self) -> MutationTool {
-        let mutate_config = self.mutate_config.unwrap_or_default();
-        let kodekraken_config = self.kodekraken_config.unwrap_or_default();
-        let mutation_operators = self
-            .mutation_operators
-            .unwrap_or(AllMutationOperators::new().get_mutation_operators());
-        MutationTool::new(
-            mutate_config,
-            kodekraken_config,
-            OUT_DIRECTORY.into(),
-            mutation_operators,
-            self.enable_mutation_comment,
-        )
-        .unwrap()
-    }
-}
-
 pub struct MutationTool {
     parser: Arc<Mutex<tree_sitter::Parser>>,
     mutate_config: MutationCommandConfig,
@@ -89,7 +33,7 @@ pub struct MutationTool {
     backup_dir: PathBuf,
     enable_mutation_comment: bool,
     thread_pool: rayon::ThreadPool,
-    kodekraken_config: KodeKrakenConfig,
+    pub kodekraken_config: KodeKrakenConfig,
 }
 
 impl Default for MutationTool {
@@ -106,7 +50,7 @@ impl Default for MutationTool {
 }
 
 impl MutationTool {
-    fn new(
+    pub fn new(
         mutate_config: MutationCommandConfig,
         kodekraken_config: KodeKrakenConfig,
         output_directory: String,

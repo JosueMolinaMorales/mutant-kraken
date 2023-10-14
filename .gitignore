@@ -1,5 +1,5 @@
 /target
-/kode-kraken-dist
+**/kode-kraken-dist
 
 *.iml
 .gradle
@@ -7,7 +7,8 @@ local.properties
 .idea/
 .DS_Store
 **/build/
-*/.gradle/
+**/bin/
+**/.gradle/
 /captures
 .externalNativeBuild
 .cxx
