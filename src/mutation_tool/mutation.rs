@@ -35,26 +35,36 @@ impl Default for MutationResult {
 }
 
 #[derive(Debug, Clone, Table, serde::Serialize)]
+/// Represents a mutation applied to a code file.
 pub struct Mutation {
+    /// The unique identifier for the mutation.
     #[table(title = "Id")]
     #[serde(skip)]
     pub id: Uuid,
+    /// The starting byte of the old operator.
     #[table(skip)]
     #[serde(skip)]
     pub start_byte: usize,
+    /// The ending byte of the old operator.
     #[table(skip)]
     #[serde(skip)]
     pub end_byte: usize,
+    /// The name of the file that was mutated.
     #[table(title = "File Name")]
     pub file_name: String,
+    /// The line number where the mutation was applied.
     #[table(title = "Line Number")]
     pub line_number: usize,
+    /// The new operator that was applied.
     #[table(title = "New Operator")]
     pub new_op: String,
+    /// The old operator that was replaced.
     #[table(title = "Old Operator")]
     pub old_op: String,
+    /// The type of mutation that was applied.
     #[table(title = "Mutation Type")]
     pub mutation_type: MutationOperators,
+    /// The result of the mutation.
     #[table(title = "Result")]
     pub result: MutationResult,
 }

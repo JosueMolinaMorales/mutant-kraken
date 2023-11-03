@@ -97,7 +97,6 @@ pub fn run_cli(config: KodeKrakenConfig) {
                 .set_general_config(config)
                 .set_mutation_comment(true)
                 .build();
-            println!("{:#?}", tool.kodekraken_config.general.timeout);
             let res = match tool.kodekraken_config.general.timeout {
                 Some(timeout) => {
                     println!("Timeout set to {} seconds", timeout);

@@ -3,7 +3,7 @@ use crate::{
     kotlin_types::KotlinTypes,
     mutation_tool::Mutation,
 };
-use std::{collections::HashSet, fmt::Display};
+use std::{collections::HashSet, fmt::Display, fs};
 
 // Struct that stores all the mutations operators by default
 #[derive(Clone)]
@@ -21,6 +21,8 @@ pub enum MutationOperators {
     AssignmentOperator,
     UnaryOperator,
     NotNullAssertionOperator,
+    RemoveElvisOperator,
+    ElvisOperator,
 }
 
 impl Display for MutationOperators {
@@ -36,6 +38,8 @@ impl Display for MutationOperators {
                 MutationOperators::AssignmentOperator => "AssignmentOperator",
                 MutationOperators::UnaryOperator => "UnaryOperator",
                 MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
+                MutationOperators::RemoveElvisOperator => "RemoveElvisOperator",
+                MutationOperators::ElvisOperator => "ElvisOperator",
             }
         )
     }
@@ -102,6 +106,11 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
+            MutationOperators::RemoveElvisOperator | MutationOperators::ElvisOperator => {
+                vec![KotlinTypes::NonNamedType("?:".to_string())]
+                    .into_iter()
+                    .collect()
+            }
         }
     }
 
@@ -127,6 +136,9 @@ impl MutationOperators {
                 KotlinTypes::PrefixExpression,
             ],
             MutationOperators::NotNullAssertionOperator => vec![KotlinTypes::PostfixExpression],
+            MutationOperators::RemoveElvisOperator | MutationOperators::ElvisOperator => {
+                vec![KotlinTypes::ElvisExpression]
+            }
         }
     }
 
@@ -139,7 +151,28 @@ impl MutationOperators {
         mutations
     }
 
-    /// Recursive function that finds all the mutations that can be made to the file
+    /// Mutates the given `root` node and its children using the provided `cursor`, `parent`, `mutations_made`, `file_name`, `operators`, and `parent_necessary_types`.
+    ///
+    /// # Arguments
+    ///
+    /// * `root` - A `tree_sitter::Node` representing the root node to mutate.
+    /// * `cursor` - A mutable reference to a `tree_sitter::TreeCursor` used to traverse the syntax tree.
+    /// * `parent` - An optional `tree_sitter::Node` representing the parent node of `root`.
+    /// * `mutations_made` - A mutable reference to a `Vec<Mutation>` that will be populated with any mutations made during the function's execution.
+    /// * `file_name` - A `String` representing the name of the file being mutated.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut cursor = tree_sitter::TreeCursor::new();
+    /// let mut mutations_made = Vec::new();
+    /// let root_node = tree_sitter::Node::new();
+    /// let parent_node = tree_sitter::Node::new();
+    /// let file_name = String::from("example.kt");
+    /// let operator = Operator::new();
+    /// let parent_necessary_types = vec![KotlinTypes::IfStatement];
+    /// operator.mutate(root_node, &mut cursor, Some(parent_node), &mut mutations_made, &file_name);
+    /// ```
     fn mutate(
         &self,
         root: tree_sitter::Node,
@@ -152,33 +185,44 @@ impl MutationOperators {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
             let parent_type = parent
                 .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
+            if root_type == KotlinTypes::NonNamedType("?:".into()) {
+                // println!("Found elvis operator");
+                // println!("{:#?}", node);
+                // println!("{:#?}", node.parent());
+            }
             mutations_made.append(
                 &mut self
-                    .mutate_operator(
-                        &node,
-                        &root_type,
-                        &parent_type,
-                        self.get_operators(),
-                        self.get_parent_necessary_types(),
-                        file_name,
-                    )
+                    .mutate_operator(&node, &root_type, &parent_type, file_name)
                     .expect("Failed to mutate an operator"),
             );
             self.mutate(node, cursor, Some(node), mutations_made, file_name);
         });
     }
 
-    /// Checks to see if the mutation operator can be applied to the node
+    /// Mutates the given root node based on the specified mutation operators and returns a vector of mutations made.
+    ///
+    /// # Arguments
+    ///
+    /// * `root_node` - A reference to the root node of the AST.
+    /// * `root` - A reference to the root type of the AST.
+    /// * `parent` - An optional reference to the parent type of the AST.
+    /// * `mutation_operators` - A HashSet of mutation operators to apply.
+    /// * `parent_types` - A vector of parent types to check against.
+    /// * `file_name` - The name of the file being mutated.
+    ///
+    /// # Returns
+    ///
+    /// A Result containing a vector of mutations made.
     fn mutate_operator(
         &self,
         root_node: &tree_sitter::Node,
         root: &KotlinTypes,
         parent: &Option<KotlinTypes>,
-        mutation_operators: HashSet<KotlinTypes>,
-        parent_types: Vec<KotlinTypes>,
         file_name: &str,
     ) -> Result<Vec<Mutation>> {
         let mut mutations_made = Vec::new();
+        let mutation_operators = self.get_operators();
+        let parent_types = self.get_parent_necessary_types();
         // Check to see if root type is in the mutation_operators
         // Check to see if the parent exists
         // Checks to see if the parent is the necessary kotlin type
@@ -189,36 +233,127 @@ impl MutationOperators {
             return Ok(mutations_made);
         }
 
-        if *self == MutationOperators::UnaryRemovalOperator {
-            // If the operator is a unary removal operator, we just remove the operator
-            let mutation = Mutation::new(
-                root_node.start_byte(),
-                root_node.end_byte(),
-                KotlinTypes::RemoveOperator.to_string(),
-                root.as_str(),
-                root_node.start_position().row + 1,
-                self.clone(),
-                file_name.to_string(),
-            );
-            mutations_made.push(mutation);
-            return Ok(mutations_made);
-        }
-
-        // Create a mutant for all mutation operators
-        mutation_operators.iter().for_each(|operator| {
-            if operator != root {
+        match *self {
+            MutationOperators::UnaryRemovalOperator => {
+                // If the operator is a unary removal operator, we just remove the operator
                 let mutation = Mutation::new(
                     root_node.start_byte(),
                     root_node.end_byte(),
-                    operator.to_string(),
+                    KotlinTypes::RemoveOperator.to_string(),
                     root.as_str(),
                     root_node.start_position().row + 1,
                     self.clone(),
                     file_name.to_string(),
                 );
-                mutations_made.push(mutation)
+                mutations_made.push(mutation);
             }
-        });
+            MutationOperators::RemoveElvisOperator => {
+                // If the operator is a Remove elvis operator, we remove the operator and everything after it
+                // Get the end byte of the end of the line
+                let end_byte = root_node.parent().unwrap().end_byte(); // TODO: remove unwrap
+
+                let mutation = Mutation::new(
+                    root_node.start_byte(),
+                    end_byte,
+                    KotlinTypes::RemoveOperator.to_string(),
+                    root.as_str(),
+                    root_node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
+            }
+            MutationOperators::ElvisOperator => {
+                println!("Found elvis operator for mutation");
+                let parent_node = root_node.parent().unwrap();
+                println!("Parent node: {:#?}", parent_node);
+                let file = fs::read(file_name).expect("Failed to read file");
+                let file = file.as_slice();
+                parent_node
+                    .children(&mut parent_node.walk())
+                    .for_each(|node| {
+                        let child_type =
+                            KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
+
+                        println!("Child type: {:#?}", child_type);
+
+                        // Change the literal to a different literal
+                        let mut val = node.utf8_text(file).unwrap();
+                        match child_type {
+                            KotlinTypes::IntegerLiteral => {
+                                let val = val.parse::<i32>().unwrap();
+                                // Change the value and create a mutation
+                                let rnd_val = rand::random::<i32>() % 100;
+                                let mutated_val = val & rnd_val;
+                                println!("new value is: {}", mutated_val);
+                                let mutation = Mutation::new(
+                                    node.start_byte(),
+                                    node.end_byte(),
+                                    mutated_val.to_string(),
+                                    val.to_string(),
+                                    node.start_position().row + 1,
+                                    self.clone(),
+                                    file_name.to_string(),
+                                );
+                                mutations_made.push(mutation);
+                            }
+                            KotlinTypes::PrefixExpression => {
+                                println!("Found prefix expression");
+                            }
+                            KotlinTypes::LineStringLiteral => {
+                                println!("Value is: {}", val);
+                                println!("Found line string literal");
+                            }
+                            KotlinTypes::BooleanLiteral => {
+                                let val = val.parse::<bool>().unwrap();
+                                println!("Value is: {}", val);
+                                println!("Found boolean literal");
+                            }
+                            KotlinTypes::LongLiteral => {
+                                // Need to strip off the l at the end
+                                if val.ends_with("l") {
+                                    val = val.strip_suffix("l").unwrap();
+                                }
+
+                                let val = val.parse::<i64>().unwrap();
+                                println!("Value is: {}", val);
+                                println!("Found long literal");
+                            }
+                            KotlinTypes::RealLiteral => {
+                                // Need to strip off the f at the end
+                                if val.ends_with("f") {
+                                    val = val.strip_suffix("f").unwrap();
+                                }
+                                let val = val.parse::<f32>().unwrap();
+                                println!("Value is: {}", val);
+                                println!("Found real literal");
+                            }
+                            KotlinTypes::CharacterLiteral => {
+                                println!("Found character literal");
+                            }
+                            _ => {}
+                        }
+                    });
+            }
+            _ => {
+                // Create a mutant for all mutation operators
+                mutation_operators.iter().for_each(|operator| {
+                    if operator != root {
+                        let mutation = Mutation::new(
+                            root_node.start_byte(),
+                            root_node.end_byte(),
+                            operator.to_string(),
+                            root.as_str(),
+                            root_node.start_position().row + 1,
+                            self.clone(),
+                            file_name.to_string(),
+                        );
+                        mutations_made.push(mutation)
+                    }
+                });
+            }
+        }
+
         Ok(mutations_made)
     }
 }
@@ -227,13 +362,15 @@ impl AllMutationOperators {
     pub fn new() -> Self {
         Self {
             mutation_operators: vec![
-                MutationOperators::ArthimeticOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalOperator,
-                MutationOperators::RelationalOperator,
-                MutationOperators::AssignmentOperator,
-                MutationOperators::UnaryOperator,
-                MutationOperators::NotNullAssertionOperator,
+                // MutationOperators::ArthimeticOperator,
+                // MutationOperators::UnaryRemovalOperator,
+                // MutationOperators::LogicalOperator,
+                // MutationOperators::RelationalOperator,
+                // MutationOperators::AssignmentOperator,
+                // MutationOperators::UnaryOperator,
+                // MutationOperators::NotNullAssertionOperator,
+                MutationOperators::RemoveElvisOperator,
+                MutationOperators::ElvisOperator,
             ],
         }
     }
@@ -392,6 +529,26 @@ mod tests {
     }
 
     #[test]
+    fn test_elvis_remove_operator() {
+        let tree = get_ast(KOTLIN_ELVIS_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::RemoveElvisOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        assert_eq!(mutations_made.len(), 1);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+            assert_eq!(mutation.new_op, "".to_string());
+        }
+    }
+
+    #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
@@ -442,6 +599,21 @@ mod tests {
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
         MutationOperators::AssignmentOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_remove_elvis_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::RemoveElvisOperator.mutate(
             root,
             &mut root.walk(),
             None,

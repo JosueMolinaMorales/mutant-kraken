@@ -50,6 +50,19 @@ impl Default for MutationTool {
 }
 
 impl MutationTool {
+    /// Creates a new instance of the mutation tool with the given configuration.
+    ///
+    /// # Arguments
+    ///
+    /// * `mutate_config` - The mutation command configuration.
+    /// * `kodekraken_config` - The KodeKraken configuration.
+    /// * `output_directory` - The output directory for the mutated files.
+    /// * `mutation_operators` - The mutation operators to use.
+    /// * `enable_mutation_comment` - Whether to enable mutation comments in the mutated files.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the new instance of the mutation tool, or an error if one occurred.
     pub fn new(
         mutate_config: MutationCommandConfig,
         kodekraken_config: KodeKrakenConfig,
@@ -110,6 +123,16 @@ impl MutationTool {
         })
     }
 
+    /// Creates a mutated file name by appending the mutation ID to the original file name.
+    ///
+    /// # Arguments
+    ///
+    /// * `file_name` - A string slice that holds the name of the original file.
+    /// * `mutation` - A reference to a `Mutation` struct that holds the mutation ID.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` that contains a string with the mutated file name if successful, or a `KodeKrakenError` if an error occurs.
     fn create_mutated_file_name(&self, file_name: &str, mutation: &Mutation) -> Result<String> {
         Ok(format!(
             "{}_{}",
@@ -126,6 +149,8 @@ impl MutationTool {
         ))
     }
 
+    /// Mutates the project by gathering files, gathering mutations per file, generating mutations per file,
+    /// building and testing, reporting results, saving results in csv, and generating an HTML report.
     pub fn mutate(&mut self) -> Result<()> {
         tracing::info!("Mutation tool started...");
         // Phase 1: Get files from project
@@ -168,6 +193,27 @@ impl MutationTool {
         Ok(())
     }
 
+    /// Saves the given mutations to a CSV file located in the `OUT_DIRECTORY`.
+    ///
+    /// # Arguments
+    ///
+    /// * `mutations` - A reference to a vector of `Mutation` structs to be saved.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `KodeKrakenError` if there was an error creating the CSV writer, serializing a mutation,
+    /// flushing the CSV writer, or writing to the output file.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use mutation_tool::tool::Tool;
+    ///
+    /// let tool = Tool::new();
+    /// let mutations = vec![Mutation::new("file.rs", 10, "foo".to_string(), "bar".to_string())];
+    /// let result = tool.save_results(&mutations);
+    /// assert!(result.is_ok());
+    /// ```
     fn save_results(&self, mutations: &Vec<Mutation>) -> Result<()> {
         let mut writer = csv::WriterBuilder::new()
             .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
@@ -185,6 +231,9 @@ impl MutationTool {
         Ok(())
     }
 
+    /// This function retrieves all files from the project directory specified in the `mutate_config` field of the `Tool` struct.
+    /// It returns a `Result` containing a `Vec` of `String`s representing the file paths.
+    /// If no files are found in the directory, it returns an `Err` containing a `KodeKrakenError`.
     fn get_files_from_project(&self) -> Result<Vec<String>> {
         let start = Instant::now();
         let mut existing_files: Vec<String> = vec![];
@@ -268,13 +317,32 @@ impl MutationTool {
         Ok(())
     }
 
+    /// Builds and tests mutated files in parallel using a thread pool.
+    ///
+    /// # Arguments
+    ///
+    /// * `file_mutations` - A hashmap containing the mutations for each file.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a vector of `Mutation` structs.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut tool = Tool::new(config);
+    /// let file_mutations = tool.generate_mutations()?;
+    /// let mutations = tool.build_and_test(&file_mutations)?;
+    /// ```
     fn build_and_test(
         &mut self,
         file_mutations: &HashMap<String, FileMutations>,
     ) -> Result<Vec<Mutation>> {
+        // Get total number of mutations
         let num_mutations = file_mutations
             .iter()
             .fold(0, |acc, (_, fm)| acc + fm.mutations.len());
+        // Set up progress bar
         let progress_bar = Arc::new(ProgressBar::new(num_mutations as u64));
         progress_bar.set_style(
             ProgressStyle::default_bar()
@@ -283,6 +351,7 @@ impl MutationTool {
                 .progress_chars("=> "),
         );
 
+        // Make Copies of all files
         self.copy_files(file_mutations)?;
 
         // Merge all mutants into one vector
@@ -293,7 +362,8 @@ impl MutationTool {
             }
         }
         // Partition the mutations into chunks
-        let chunk_size = ((all_mutations.len() as f32) / MAX_BUILD_THREADS) as usize;
+        let chunk_size = ((all_mutations.len() as f32) / MAX_BUILD_THREADS).ceil() as usize;
+
         let mut chunks: Vec<Vec<Mutation>> = all_mutations
             .chunks(chunk_size)
             .map(|c| c.to_vec())
@@ -411,6 +481,9 @@ impl MutationTool {
         Ok(())
     }
 
+    /// Generates mutations for each file in the given `file_mutations` HashMap.
+    /// Each mutation is applied to the corresponding file, and the resulting mutated file is written to
+    /// the output directory specified in the `MutationTool` configuration.
     fn generate_mutations_per_file(
         &self,
         file_mutations: &HashMap<String, FileMutations>,
@@ -418,9 +491,11 @@ impl MutationTool {
         tracing::info!("Generating mutations per file");
         let start = Instant::now();
         self.thread_pool.scope(|s| {
+            // Iterate over each file and generate mutations
             file_mutations.iter().for_each(|(file_name, fm)| {
                 let file_str = fs::read_to_string(file_name).expect("Failed to read file");
                 s.spawn(move |_| {
+                    // Iterate over each mutation and apply it to the file
                     fm.mutations.iter().for_each(|m| {
                         let new_op_bytes = m.new_op.as_bytes();
                         let mut file = file_str.as_bytes().to_vec();
@@ -460,6 +535,23 @@ impl MutationTool {
         Ok(())
     }
 
+    /// Gathers mutations for each file in the given list of existing files.
+    ///
+    /// # Arguments
+    ///
+    /// * `existing_files` - A mutable slice of strings representing the paths to the existing files.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a `HashMap` of `String` keys and `FileMutations` values, or an error if the operation fails.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut tool = Tool::new();
+    /// let existing_files = vec!["/path/to/file1.rs", "/path/to/file2.rs"];
+    /// let mutations = tool.gather_mutations_per_file(&mut existing_files).unwrap();
+    /// ```
     fn gather_mutations_per_file(
         &mut self,
         existing_files: &mut [String],
@@ -515,9 +607,6 @@ impl MutationTool {
             .map_err(|_| KodeKrakenError::Error("Failed to unwrap file_mutations".to_string()))?)
     }
 
-    /*
-        Take in path to directory and get all files that end with .kt
-    */
     fn get_files_from_directory(
         &self,
         path: String,

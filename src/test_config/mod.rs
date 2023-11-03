@@ -62,3 +62,11 @@ h *= 2
 h /= 4
 h %= 2
 "#;
+
+pub const KOTLIN_ELVIS_TEST_CODE: &str = r#"
+fun main() {
+    val a = 10
+    val b = 3
+    val c = a ?: b
+}
+"#;
