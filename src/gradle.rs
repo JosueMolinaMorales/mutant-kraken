@@ -28,6 +28,36 @@ impl<'a> ToString for GradleCommand<'a> {
     }
 }
 
+/// Checks to see if gradle is installed on the system
+pub fn is_gradle_installed() -> bool {
+    let mut cmd = if cfg!(unix) {
+        Command::new("gradle")
+    } else if cfg!(windows) {
+        Command::new("cmd")
+    } else {
+        panic!("Unsupported OS");
+    };
+    let mut args = vec![];
+    if cfg!(windows) {
+        args.append(&mut ["/C".into(), "gradlew.bat".into()].to_vec())
+    }
+    args.append(&mut ["--version".to_string()].to_vec());
+
+    let res = cmd
+        .args(args)
+        .stderr(Stdio::null())
+        .stdout(Stdio::null())
+        .spawn()
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)));
+    match res {
+        Ok(mut child) => {
+            let res = child.wait().unwrap();
+            res.success()
+        }
+        Err(_) => false,
+    }
+}
+
 /// Run the gradle commands, assemble and test
 /// This will check to see if there is a gradlew file in the root of the directory
 pub fn run(

@@ -338,6 +338,12 @@ impl MutationTool {
         &mut self,
         file_mutations: &HashMap<String, FileMutations>,
     ) -> Result<Vec<Mutation>> {
+        // Check to see if gradle is installed
+        if !gradle::is_gradle_installed() {
+            return Err(KodeKrakenError::Error(
+                "Gradle is not installed. Please install Gradle and try again.".into(),
+            ));
+        }
         // Get total number of mutations
         let num_mutations = file_mutations
             .iter()
@@ -601,6 +607,12 @@ impl MutationTool {
             .map_err(|_| KodeKrakenError::Error("Failed to unwrap mutation_count".to_string()))?;
         tracing::info!("Mutations made to all files");
         tracing::info!("Total mutations made: {}", mutation_count);
+
+        if mutation_count == 0 {
+            return Err(KodeKrakenError::Error(
+                "No mutations were found in the project".into(),
+            ));
+        }
         Ok(Arc::try_unwrap(file_mutations)
             .map_err(|_| KodeKrakenError::Error("Failed to unwrap file_mutations".to_string()))?
             .into_inner()

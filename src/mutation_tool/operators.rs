@@ -189,11 +189,6 @@ impl MutationOperators {
             let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
             let parent_type = parent
                 .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
-            if root_type == KotlinTypes::NonNamedType("?:".into()) {
-                // println!("Found elvis operator");
-                // println!("{:#?}", node);
-                // println!("{:#?}", node.parent());
-            }
             mutations_made.append(
                 &mut self
                     .mutate_operator(&node, &root_type, &parent_type, file_name)
@@ -309,8 +304,6 @@ impl MutationOperators {
 
         let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
 
-        println!("Child type: {:#?}", child_type);
-
         // Change the literal to a different literal
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
@@ -424,15 +417,15 @@ impl AllMutationOperators {
     pub fn new() -> Self {
         Self {
             mutation_operators: vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                // MutationOperators::ElvisRemoveOperator,
-                // MutationOperators::ElvisLiteralChangeOperator,
+                // MutationOperators::ArithmeticReplacementOperator,
+                // MutationOperators::UnaryRemovalOperator,
+                // MutationOperators::LogicalReplacementOperator,
+                // MutationOperators::RelationalReplacementOperator,
+                // MutationOperators::AssignmentReplacementOperator,
+                // MutationOperators::UnaryReplacementOperator,
+                // MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ElvisRemoveOperator,
+                MutationOperators::ElvisLiteralChangeOperator,
             ],
         }
     }
