@@ -1,3 +1,5 @@
+use rand::Rng;
+
 use crate::{
     error::{KodeKrakenError, Result},
     kotlin_types::KotlinTypes,
@@ -264,76 +266,7 @@ impl MutationOperators {
                 mutations_made.push(mutation);
             }
             MutationOperators::ElvisOperator => {
-                println!("Found elvis operator for mutation");
-                let parent_node = root_node.parent().unwrap();
-                println!("Parent node: {:#?}", parent_node);
-                let file = fs::read(file_name).expect("Failed to read file");
-                let file = file.as_slice();
-                parent_node
-                    .children(&mut parent_node.walk())
-                    .for_each(|node| {
-                        let child_type =
-                            KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
-
-                        println!("Child type: {:#?}", child_type);
-
-                        // Change the literal to a different literal
-                        let mut val = node.utf8_text(file).unwrap();
-                        match child_type {
-                            KotlinTypes::IntegerLiteral => {
-                                let val = val.parse::<i32>().unwrap();
-                                // Change the value and create a mutation
-                                let rnd_val = rand::random::<i32>() % 100;
-                                let mutated_val = val & rnd_val;
-                                println!("new value is: {}", mutated_val);
-                                let mutation = Mutation::new(
-                                    node.start_byte(),
-                                    node.end_byte(),
-                                    mutated_val.to_string(),
-                                    val.to_string(),
-                                    node.start_position().row + 1,
-                                    self.clone(),
-                                    file_name.to_string(),
-                                );
-                                mutations_made.push(mutation);
-                            }
-                            KotlinTypes::PrefixExpression => {
-                                println!("Found prefix expression");
-                            }
-                            KotlinTypes::LineStringLiteral => {
-                                println!("Value is: {}", val);
-                                println!("Found line string literal");
-                            }
-                            KotlinTypes::BooleanLiteral => {
-                                let val = val.parse::<bool>().unwrap();
-                                println!("Value is: {}", val);
-                                println!("Found boolean literal");
-                            }
-                            KotlinTypes::LongLiteral => {
-                                // Need to strip off the l at the end
-                                if val.ends_with("l") {
-                                    val = val.strip_suffix("l").unwrap();
-                                }
-
-                                let val = val.parse::<i64>().unwrap();
-                                println!("Value is: {}", val);
-                                println!("Found long literal");
-                            }
-                            KotlinTypes::RealLiteral => {
-                                // Need to strip off the f at the end
-                                if val.ends_with("f") {
-                                    val = val.strip_suffix("f").unwrap();
-                                }
-                                let val = val.parse::<f32>().unwrap();
-                                println!("Value is: {}", val);
-                                println!("Found real literal");
-                            }
-                            KotlinTypes::CharacterLiteral => {
-                                println!("Found character literal");
-                            }
-                            _ => {}
-                        }
-                    });
+                self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
             }
             _ => {
                 // Create a mutant for all mutation operators
@@ -356,21 +289,148 @@ impl MutationOperators {
 
         Ok(mutations_made)
     }
+
+    fn mutate_literal(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        let file = fs::read(file_name).expect("Failed to read file");
+        let file = file.as_slice();
+        let children = root_node
+            .children(&mut root_node.walk())
+            .collect::<Vec<tree_sitter::Node>>();
+        println!("Children: {:#?}", children);
+        println!("Num of children: {}", children.len());
+        let node = children.iter().last().unwrap();
+
+        let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
+
+        println!("Child type: {:#?}", child_type);
+
+        // Change the literal to a different literal
+        let mut val = node.utf8_text(file).unwrap();
+        match child_type {
+            KotlinTypes::IntegerLiteral => {
+                let val = val.parse::<i32>().unwrap();
+                // Change the value and create a mutation
+                let rnd_val = rand::random::<i32>() % 100;
+                let mutated_val = val & rnd_val;
+                println!("new value is: {}", mutated_val);
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    mutated_val.to_string(),
+                    val.to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
+            }
+            KotlinTypes::PrefixExpression => {
+                // In this case, we need to see the type of the prefix expression, so we need to
+                // Recurse down to the literal
+                self.mutate_literal(node, mutations_made, file_name)
+            }
+            KotlinTypes::LineStringLiteral => {
+                // Replace the string with a different string
+                let val = r#""Hello I am a Mutant!""#.to_string();
+
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    val,
+                    node.utf8_text(file).unwrap().to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
+            }
+            KotlinTypes::BooleanLiteral => {
+                let val = val.parse::<bool>().unwrap();
+
+                // Change the value and create a mutation
+                let mutated_val = !val;
+
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    mutated_val.to_string(),
+                    val.to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
+            }
+            KotlinTypes::LongLiteral => {
+                // Need to strip off the l at the end
+                if val.ends_with("L") {
+                    val = val.strip_suffix("L").unwrap();
+                }
+
+                let val = val.parse::<i64>().unwrap();
+                println!("Value is: {}", val);
+                println!("Found long literal");
+            }
+            KotlinTypes::RealLiteral => {
+                // Need to strip off the f at the end
+                if val.ends_with("f") {
+                    val = val.strip_suffix("f").unwrap();
+                }
+                let val = val.parse::<f32>().unwrap();
+                println!("Value is: {}", val);
+                println!("Found real literal");
+            }
+            KotlinTypes::CharacterLiteral => {
+                // Remove the single quotes and get the value
+                let val = val
+                    .strip_prefix("'")
+                    .unwrap()
+                    .strip_suffix("'")
+                    .unwrap()
+                    .chars()
+                    .next()
+                    .unwrap();
+
+                // Get a random character between 'a' and 'z'
+                let mut rnd_val = rand::thread_rng().gen_range(b'a'..b'z') as char;
+                while rnd_val == val {
+                    rnd_val = rand::thread_rng().gen_range(b'a'..b'z') as char;
+                }
+                let mut_val = format!("'{}'", rnd_val);
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    mut_val,
+                    val.to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
+            }
+            _ => {}
+        }
+    }
 }
 
 impl AllMutationOperators {
     pub fn new() -> Self {
         Self {
             mutation_operators: vec![
-                // MutationOperators::ArthimeticOperator,
-                // MutationOperators::UnaryRemovalOperator,
-                // MutationOperators::LogicalOperator,
-                // MutationOperators::RelationalOperator,
-                // MutationOperators::AssignmentOperator,
-                // MutationOperators::UnaryOperator,
-                // MutationOperators::NotNullAssertionOperator,
-                MutationOperators::RemoveElvisOperator,
-                MutationOperators::ElvisOperator,
+                MutationOperators::ArthimeticOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalOperator,
+                MutationOperators::RelationalOperator,
+                MutationOperators::AssignmentOperator,
+                MutationOperators::UnaryOperator,
+                MutationOperators::NotNullAssertionOperator,
+                // MutationOperators::RemoveElvisOperator,
+                // MutationOperators::ElvisOperator,
             ],
         }
     }
