@@ -786,7 +786,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::ArthimeticOperator],
+            vec![MutationOperators::ArithmeticReplacementOperator],
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
@@ -797,7 +797,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::ArthimeticOperator],
+            vec![MutationOperators::ArithmeticReplacementOperator],
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
@@ -809,7 +809,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::AssignmentOperator],
+            vec![MutationOperators::AssignmentReplacementOperator],
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
@@ -821,7 +821,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::AssignmentOperator],
+            vec![MutationOperators::AssignmentReplacementOperator],
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
@@ -832,7 +832,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::LogicalOperator],
+            vec![MutationOperators::LogicalReplacementOperator],
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
@@ -843,7 +843,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::LogicalOperator],
+            vec![MutationOperators::LogicalReplacementOperator],
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
@@ -855,7 +855,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::RelationalOperator],
+            vec![MutationOperators::RelationalReplacementOperator],
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
@@ -867,7 +867,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::RelationalOperator],
+            vec![MutationOperators::RelationalReplacementOperator],
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
@@ -878,7 +878,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::UnaryOperator],
+            vec![MutationOperators::UnaryReplacementOperator],
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
@@ -889,7 +889,7 @@ mod tests {
         let mut mutator = create_mutator_with_specific_operators(
             mutation_test_id,
             output_directory.clone(),
-            vec![MutationOperators::UnaryOperator],
+            vec![MutationOperators::UnaryReplacementOperator],
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }

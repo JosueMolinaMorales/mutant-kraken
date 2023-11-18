@@ -16,15 +16,15 @@ pub struct AllMutationOperators {
 // The different types of mutation operators that can be performed on a file
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub enum MutationOperators {
-    ArthimeticOperator,
+    ArithmeticReplacementOperator,
     UnaryRemovalOperator,
-    LogicalOperator,
-    RelationalOperator,
-    AssignmentOperator,
-    UnaryOperator,
+    LogicalReplacementOperator,
+    RelationalReplacementOperator,
+    AssignmentReplacementOperator,
+    UnaryReplacementOperator,
     NotNullAssertionOperator,
-    RemoveElvisOperator,
-    ElvisOperator,
+    ElvisRemoveOperator,
+    ElvisLiteralChangeOperator,
 }
 
 impl Display for MutationOperators {
@@ -33,15 +33,15 @@ impl Display for MutationOperators {
             f,
             "{}",
             match self {
-                MutationOperators::ArthimeticOperator => "ArthimeticOperator",
+                MutationOperators::ArithmeticReplacementOperator => "ArithmeticReplacementOperator",
                 MutationOperators::UnaryRemovalOperator => "UnaryRemovalOperator",
-                MutationOperators::LogicalOperator => "LogicalOperator",
-                MutationOperators::RelationalOperator => "RelationalOperator",
-                MutationOperators::AssignmentOperator => "AssignmentOperator",
-                MutationOperators::UnaryOperator => "UnaryOperator",
+                MutationOperators::LogicalReplacementOperator => "LogicalReplacementOperator",
+                MutationOperators::RelationalReplacementOperator => "RelationalReplacementOperator",
+                MutationOperators::AssignmentReplacementOperator => "AssignmentReplacementOperator",
+                MutationOperators::UnaryReplacementOperator => "UnaryReplacementOperator",
                 MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
-                MutationOperators::RemoveElvisOperator => "RemoveElvisOperator",
-                MutationOperators::ElvisOperator => "ElvisOperator",
+                MutationOperators::ElvisRemoveOperator => "ElvisRemoveOperator",
+                MutationOperators::ElvisLiteralChangeOperator => "ElvisLiteralChangeOperator",
             }
         )
     }
@@ -51,7 +51,7 @@ impl MutationOperators {
     /// Get the operators that correspond to the mutation operator
     fn get_operators(&self) -> HashSet<KotlinTypes> {
         match self {
-            MutationOperators::ArthimeticOperator => vec![
+            MutationOperators::ArithmeticReplacementOperator => vec![
                 KotlinTypes::NonNamedType("+".to_string()),
                 KotlinTypes::NonNamedType("-".to_string()),
                 KotlinTypes::NonNamedType("*".to_string()),
@@ -67,13 +67,13 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
-            MutationOperators::LogicalOperator => vec![
+            MutationOperators::LogicalReplacementOperator => vec![
                 KotlinTypes::NonNamedType("&&".to_string()),
                 KotlinTypes::NonNamedType("||".to_string()),
             ]
             .into_iter()
             .collect(),
-            MutationOperators::RelationalOperator => vec![
+            MutationOperators::RelationalReplacementOperator => vec![
                 KotlinTypes::NonNamedType("==".to_string()),
                 KotlinTypes::NonNamedType("!=".to_string()),
                 KotlinTypes::NonNamedType("<".to_string()),
@@ -83,7 +83,7 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
-            MutationOperators::AssignmentOperator => vec![
+            MutationOperators::AssignmentReplacementOperator => vec![
                 KotlinTypes::NonNamedType("=".to_string()),
                 KotlinTypes::NonNamedType("+=".to_string()),
                 KotlinTypes::NonNamedType("-=".to_string()),
@@ -93,7 +93,7 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
-            MutationOperators::UnaryOperator => vec![
+            MutationOperators::UnaryReplacementOperator => vec![
                 KotlinTypes::NonNamedType("!".to_string()),
                 KotlinTypes::NonNamedType("++".to_string()),
                 KotlinTypes::NonNamedType("--".to_string()),
@@ -108,7 +108,8 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
-            MutationOperators::RemoveElvisOperator | MutationOperators::ElvisOperator => {
+            MutationOperators::ElvisRemoveOperator
+            | MutationOperators::ElvisLiteralChangeOperator => {
                 vec![KotlinTypes::NonNamedType("?:".to_string())]
                     .into_iter()
                     .collect()
@@ -119,26 +120,27 @@ impl MutationOperators {
     /// Get the parent types that are necessary for the mutation operator
     fn get_parent_necessary_types(&self) -> Vec<KotlinTypes> {
         match self {
-            MutationOperators::ArthimeticOperator => vec![
+            MutationOperators::ArithmeticReplacementOperator => vec![
                 KotlinTypes::AdditiveExpression,
                 KotlinTypes::MultiplicativeExpression,
             ],
             MutationOperators::UnaryRemovalOperator => vec![KotlinTypes::PrefixExpression],
-            MutationOperators::LogicalOperator => vec![
+            MutationOperators::LogicalReplacementOperator => vec![
                 KotlinTypes::ConjunctionExpression,
                 KotlinTypes::DisjunctionExpression,
             ],
-            MutationOperators::RelationalOperator => vec![
+            MutationOperators::RelationalReplacementOperator => vec![
                 KotlinTypes::EqualityExpression,
                 KotlinTypes::ComparisonExpression,
             ],
-            MutationOperators::AssignmentOperator => vec![KotlinTypes::Assignment],
-            MutationOperators::UnaryOperator => vec![
+            MutationOperators::AssignmentReplacementOperator => vec![KotlinTypes::Assignment],
+            MutationOperators::UnaryReplacementOperator => vec![
                 KotlinTypes::PostfixExpression,
                 KotlinTypes::PrefixExpression,
             ],
             MutationOperators::NotNullAssertionOperator => vec![KotlinTypes::PostfixExpression],
-            MutationOperators::RemoveElvisOperator | MutationOperators::ElvisOperator => {
+            MutationOperators::ElvisRemoveOperator
+            | MutationOperators::ElvisLiteralChangeOperator => {
                 vec![KotlinTypes::ElvisExpression]
             }
         }
@@ -249,7 +251,7 @@ impl MutationOperators {
                 );
                 mutations_made.push(mutation);
             }
-            MutationOperators::RemoveElvisOperator => {
+            MutationOperators::ElvisRemoveOperator => {
                 // If the operator is a Remove elvis operator, we remove the operator and everything after it
                 // Get the end byte of the end of the line
                 let end_byte = root_node.parent().unwrap().end_byte(); // TODO: remove unwrap
@@ -265,7 +267,7 @@ impl MutationOperators {
                 );
                 mutations_made.push(mutation);
             }
-            MutationOperators::ElvisOperator => {
+            MutationOperators::ElvisLiteralChangeOperator => {
                 self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
             }
             _ => {
@@ -422,15 +424,15 @@ impl AllMutationOperators {
     pub fn new() -> Self {
         Self {
             mutation_operators: vec![
-                MutationOperators::ArthimeticOperator,
+                MutationOperators::ArithmeticReplacementOperator,
                 MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalOperator,
-                MutationOperators::RelationalOperator,
-                MutationOperators::AssignmentOperator,
-                MutationOperators::UnaryOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
                 MutationOperators::NotNullAssertionOperator,
-                // MutationOperators::RemoveElvisOperator,
-                // MutationOperators::ElvisOperator,
+                // MutationOperators::ElvisRemoveOperator,
+                // MutationOperators::ElvisLiteralChangeOperator,
             ],
         }
     }
@@ -473,7 +475,7 @@ mod tests {
         let tree = get_ast(KOTLIN_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::ArthimeticOperator.mutate(
+        MutationOperators::ArithmeticReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -492,7 +494,7 @@ mod tests {
         let tree = get_ast(KOTLIN_RELATIONAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RelationalOperator.mutate(
+        MutationOperators::RelationalReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -512,7 +514,7 @@ mod tests {
         let tree = get_ast(KOTLIN_LOGICAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::LogicalOperator.mutate(
+        MutationOperators::LogicalReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -532,7 +534,7 @@ mod tests {
         let tree = get_ast(KOTLIN_ASSIGNMENT_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::AssignmentOperator.mutate(
+        MutationOperators::AssignmentReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -552,7 +554,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::UnaryOperator.mutate(
+        MutationOperators::UnaryReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -593,7 +595,7 @@ mod tests {
         let tree = get_ast(KOTLIN_ELVIS_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RemoveElvisOperator.mutate(
+        MutationOperators::ElvisRemoveOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -613,7 +615,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::ArthimeticOperator.mutate(
+        MutationOperators::ArithmeticReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -628,7 +630,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RelationalOperator.mutate(
+        MutationOperators::RelationalReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -643,7 +645,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::LogicalOperator.mutate(
+        MutationOperators::LogicalReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -658,7 +660,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::AssignmentOperator.mutate(
+        MutationOperators::AssignmentReplacementOperator.mutate(
             root,
             &mut root.walk(),
             None,
@@ -673,7 +675,7 @@ mod tests {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
-        MutationOperators::RemoveElvisOperator.mutate(
+        MutationOperators::ElvisRemoveOperator.mutate(
             root,
             &mut root.walk(),
             None,

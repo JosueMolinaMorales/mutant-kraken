@@ -17,7 +17,7 @@ class Calculator {
         return result
     }
 
-    // fun elvisOperator() {
+    // fun ElvisLiteralChangeOperator() {
     //     var b: String? = null
     //     val c = 1 
     //     val x = b?.length ?: -11

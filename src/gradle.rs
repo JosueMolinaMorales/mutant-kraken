@@ -148,7 +148,7 @@ mod test {
                 "new_op".into(),
                 "old_op".into(),
                 0,
-                crate::mutation_tool::MutationOperators::ArthimeticOperator,
+                crate::mutation_tool::MutationOperators::ArithmeticReplacementOperator,
                 "file_name".into(),
             ),
         )
@@ -170,7 +170,7 @@ mod test {
                 "new_op".into(),
                 "old_op".into(),
                 0,
-                crate::mutation_tool::MutationOperators::ArthimeticOperator,
+                crate::mutation_tool::MutationOperators::ArithmeticReplacementOperator,
                 "file_name".into(),
             );
             run(

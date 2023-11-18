@@ -20,7 +20,7 @@ class Calculator {
 
             /**
             AUTO GENERATED COMMENT
-            Mutation Operator: UnaryOperator
+            Mutation Operator: UnaryReplacementOperator
             Line number: 29
             Id: eeea3a90-506d-49c7-b0ab-219fecc09ceb,
             Old Operator: ++,

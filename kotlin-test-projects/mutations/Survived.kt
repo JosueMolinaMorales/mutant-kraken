@@ -11,7 +11,7 @@ class Calculator {
 
             /**
             AUTO GENERATED COMMENT
-            Mutation Operator: AssignmentOperator
+            Mutation Operator: AssignmentReplacementOperator
             Line number: 20
             Id: 7d99bafd-300e-4fb0-9527-524b808763f6,
             Old Operator: =,
