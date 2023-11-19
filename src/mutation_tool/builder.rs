@@ -66,3 +66,115 @@ impl MutationToolBuilder {
         .unwrap()
     }
 }
+#[cfg(test)]
+mod tests {
+    use crate::config::GeneralConfig;
+
+    use super::*;
+    use std::sync::Arc;
+
+    #[test]
+    fn test_default_builder() {
+        let builder = MutationToolBuilder::new();
+        let mutation_tool = builder.build();
+
+        // Add assertions based on your specific default values
+        assert_eq!(mutation_tool.enable_mutation_comment, false);
+        assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::new());
+        assert_eq!(
+            mutation_tool.mutate_config,
+            MutationCommandConfig::default()
+        );
+        assert_eq!(
+            Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
+            AllMutationOperators::new().get_mutation_operators()
+        );
+    }
+
+    #[test]
+    fn test_set_general_config() {
+        let general_config = KodeKrakenConfig {
+            general: GeneralConfig {
+                timeout: Some(10),
+                operators: vec![
+                    MutationOperators::AssignmentReplacementOperator,
+                    MutationOperators::UnaryRemovalOperator,
+                ],
+            },
+            ..Default::default()
+        };
+
+        let builder = MutationToolBuilder::new().set_general_config(general_config.clone());
+        let mutation_tool = builder.build();
+
+        assert_eq!(mutation_tool.kodekraken_config.general.timeout, Some(10));
+        assert_eq!(
+            mutation_tool.kodekraken_config.general.operators,
+            vec![
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryRemovalOperator
+            ]
+        );
+    }
+
+    #[test]
+    fn test_set_mutate_config() {
+        let mutate_config = MutationCommandConfig {
+            path: "./tests/kotlin-test-projects/demo".into(),
+        };
+
+        let builder = MutationToolBuilder::new().set_mutate_config(mutate_config.clone());
+        let mutation_tool = builder.build();
+
+        // Add assertions based on your specific mutate_config fields
+        assert_eq!(mutation_tool.mutate_config, mutate_config);
+        assert_eq!(
+            mutation_tool.mutate_config.path,
+            "./tests/kotlin-test-projects/demo".to_string()
+        );
+    }
+
+    #[test]
+    fn test_set_mutation_operators() {
+        let mutation_operators = vec![
+            MutationOperators::AssignmentReplacementOperator,
+            MutationOperators::ArithmeticReplacementOperator,
+        ];
+
+        let builder = MutationToolBuilder::new().set_mutation_operators(mutation_operators.clone());
+        let mutation_tool = builder.build();
+
+        assert_eq!(
+            Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
+            mutation_operators
+        );
+    }
+
+    #[test]
+    fn test_set_mutation_comment() {
+        let builder = MutationToolBuilder::new().set_mutation_comment(true);
+        let mutation_tool = builder.build();
+
+        assert_eq!(mutation_tool.enable_mutation_comment, true);
+    }
+
+    #[test]
+    fn test_build_with_defaults() {
+        let builder = MutationToolBuilder::new();
+        let mutation_tool = builder.build();
+
+        // Add assertions based on your specific default values
+        assert_eq!(mutation_tool.enable_mutation_comment, false);
+        assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::default());
+        assert_eq!(
+            mutation_tool.mutate_config,
+            MutationCommandConfig::default()
+        );
+        assert_eq!(
+            Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
+            AllMutationOperators::new().get_mutation_operators()
+        );
+    }
+
+    // Add more tests based on your specific requirements and configurations
+}

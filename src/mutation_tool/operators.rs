@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::{distributions::uniform::SampleUniform, Rng};
 
 use crate::{
     error::{KodeKrakenError, Result},
@@ -14,7 +14,7 @@ pub struct AllMutationOperators {
 }
 
 // The different types of mutation operators that can be performed on a file
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
 pub enum MutationOperators {
     ArithmeticReplacementOperator,
     UnaryRemovalOperator,
@@ -165,18 +165,6 @@ impl MutationOperators {
     /// * `mutations_made` - A mutable reference to a `Vec<Mutation>` that will be populated with any mutations made during the function's execution.
     /// * `file_name` - A `String` representing the name of the file being mutated.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut cursor = tree_sitter::TreeCursor::new();
-    /// let mut mutations_made = Vec::new();
-    /// let root_node = tree_sitter::Node::new();
-    /// let parent_node = tree_sitter::Node::new();
-    /// let file_name = String::from("example.kt");
-    /// let operator = Operator::new();
-    /// let parent_necessary_types = vec![KotlinTypes::IfStatement];
-    /// operator.mutate(root_node, &mut cursor, Some(parent_node), &mut mutations_made, &file_name);
-    /// ```
     fn mutate(
         &self,
         root: tree_sitter::Node,
@@ -310,9 +298,7 @@ impl MutationOperators {
             KotlinTypes::IntegerLiteral => {
                 let val = val.parse::<i32>().unwrap();
                 // Change the value and create a mutation
-                let rnd_val = rand::random::<i32>() % 100;
-                let mutated_val = val & rnd_val;
-                println!("new value is: {}", mutated_val);
+                let mutated_val = generate_random_literal(val, i32::MIN, i32::MAX);
                 let mutation = Mutation::new(
                     node.start_byte(),
                     node.end_byte(),
@@ -368,8 +354,19 @@ impl MutationOperators {
                 }
 
                 let val = val.parse::<i64>().unwrap();
-                println!("Value is: {}", val);
-                println!("Found long literal");
+                // Change the value and create a mutation
+                let mutated_val = generate_random_literal(val, i64::MIN, i64::MAX);
+
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    mutated_val.to_string(),
+                    val.to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+                mutations_made.push(mutation);
             }
             KotlinTypes::RealLiteral => {
                 // Need to strip off the f at the end
@@ -377,8 +374,19 @@ impl MutationOperators {
                     val = val.strip_suffix("f").unwrap();
                 }
                 let val = val.parse::<f32>().unwrap();
-                println!("Value is: {}", val);
-                println!("Found real literal");
+                // Change the value and create a mutation
+                let mutated_val = generate_random_literal(val, 0.0, 1.0);
+                let mutation = Mutation::new(
+                    node.start_byte(),
+                    node.end_byte(),
+                    mutated_val.to_string(),
+                    val.to_string(),
+                    node.start_position().row + 1,
+                    self.clone(),
+                    file_name.to_string(),
+                );
+
+                mutations_made.push(mutation);
             }
             KotlinTypes::CharacterLiteral => {
                 // Remove the single quotes and get the value
@@ -413,17 +421,34 @@ impl MutationOperators {
     }
 }
 
+fn generate_random_literal<T>(original_literal: T, min: T, max: T) -> T
+where
+    T: std::cmp::PartialOrd + std::cmp::PartialEq + Copy + SampleUniform,
+{
+    let mut rng = rand::thread_rng();
+
+    // Generate a random integer different from the original literal
+    let mut random_literal = rng.gen_range(min..max);
+
+    // Ensure the random literal is different from the original
+    while random_literal == original_literal {
+        random_literal = rng.gen_range(min..max);
+    }
+
+    random_literal
+}
+
 impl AllMutationOperators {
     pub fn new() -> Self {
         Self {
             mutation_operators: vec![
-                // MutationOperators::ArithmeticReplacementOperator,
-                // MutationOperators::UnaryRemovalOperator,
-                // MutationOperators::LogicalReplacementOperator,
-                // MutationOperators::RelationalReplacementOperator,
-                // MutationOperators::AssignmentReplacementOperator,
-                // MutationOperators::UnaryReplacementOperator,
-                // MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ArithmeticReplacementOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
+                MutationOperators::NotNullAssertionOperator,
                 MutationOperators::ElvisRemoveOperator,
                 MutationOperators::ElvisLiteralChangeOperator,
             ],
@@ -451,8 +476,11 @@ impl Iterator for AllMutationOperators {
 
 #[cfg(test)]
 mod tests {
+    use std::{env::temp_dir, io::Write};
+
+    use crate::mutation_tool::test_util::*;
+
     use super::*;
-    use crate::test_config::*;
     use tree_sitter::Parser;
 
     fn get_ast(text: &str) -> tree_sitter::Tree {
@@ -604,6 +632,34 @@ mod tests {
     }
 
     #[test]
+    fn test_elvis_literal_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_ELVIS_LITERAL_TEST_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+
+        let tree = get_ast(KOTLIN_ELVIS_LITERAL_TEST_CODE);
+
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::ElvisLiteralChangeOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        println!("{:#?}", mutations_made);
+        assert_eq!(mutations_made.len(), 12);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+        }
+    }
+
+    #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
@@ -660,6 +716,22 @@ mod tests {
             &mut mutations_made,
             &"".into(),
         );
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_unary_removal_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_ASSIGNMENT_TEST_CODE);
+        let mutations_made =
+            MutationOperators::UnaryRemovalOperator.find_mutation(&tree, &"file_name".into());
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_unary_replacement_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_ASSIGNMENT_TEST_CODE);
+        let mutations_made =
+            MutationOperators::UnaryReplacementOperator.find_mutation(&tree, &"file_name".into());
         assert_eq!(mutations_made.len(), 0);
     }
 

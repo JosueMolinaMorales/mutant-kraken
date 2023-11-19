@@ -28,6 +28,20 @@ impl<'a> ToString for GradleCommand<'a> {
     }
 }
 
+pub fn build_project_success(path: &PathBuf) -> Result<bool> {
+    let res = build_gradle_command(path, GradleCommand::Assemble)?
+        .wait()
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+    Ok(res.success())
+}
+
+pub fn project_tests_pass(path: &PathBuf) -> Result<bool> {
+    let res = build_gradle_command(path, GradleCommand::Test("*"))?
+        .wait()
+        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+    Ok(res.success())
+}
+
 /// Checks to see if gradle is installed on the system
 pub fn is_gradle_installed() -> bool {
     let mut cmd = if cfg!(unix) {
@@ -164,12 +178,12 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result
 #[cfg(test)]
 mod test {
     use super::*;
-
+    const KOTLIN_CODE_DIR: &str = "./tests/kotlin-test-projects";
     #[test]
     #[should_panic(expected = "gradlew does not exist at the root of this project")]
     fn test() {
         run(
-            &PathBuf::from("./kotlin-test-projects/no-gradle-project"),
+            &PathBuf::from(KOTLIN_CODE_DIR).join("no-gradle-project"),
             &PathBuf::new(),
             &PathBuf::new(),
             &mut Mutation::new(
@@ -187,11 +201,13 @@ mod test {
 
     #[test]
     fn run_mutations_should_all_pass() {
-        let dir = PathBuf::from("./kotlin-test-projects/mutations")
+        let dir = PathBuf::from(KOTLIN_CODE_DIR)
+            .join("mutations")
             .read_dir()
             .unwrap();
-        let file_backup =
-            include_str!("../kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt");
+        let file_backup = include_str!(
+            "../tests/kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt"
+        );
         for entry in dir {
             let entry = entry.unwrap().path();
             let mut mutation = Mutation::new(
@@ -204,10 +220,10 @@ mod test {
                 "file_name".into(),
             );
             run(
-                &PathBuf::from("./kotlin-test-projects/kotlin-project"),
+                &PathBuf::from(KOTLIN_CODE_DIR).join("kotlin-project"),
                 &entry,
                 &PathBuf::from(
-                    "./kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
+                    "./tests/kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
                 ),
                 &mut mutation,
             )
@@ -215,7 +231,7 @@ mod test {
             // Reset File
             fs::write(
                 &PathBuf::from(
-                    "./kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
+                    "./tests/kotlin-test-projects/kotlin-project/src/main/kotlin/Calculator.kt",
                 ),
                 file_backup,
             )

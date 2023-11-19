@@ -1,6 +1,7 @@
 use std::{path::Path, time::Duration};
 
 use clap::{Args, CommandFactory, Parser, Subcommand};
+use tracing_appender::non_blocking::WorkerGuard;
 
 use crate::{
     config::KodeKrakenConfig,
@@ -37,7 +38,7 @@ pub struct Cli {
     pub command: Commands,
 }
 
-#[derive(Args, Debug, Clone)]
+#[derive(Args, Debug, Clone, PartialEq, Eq)]
 pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
@@ -86,12 +87,18 @@ where
     }
 }
 
-pub fn run_cli(config: KodeKrakenConfig) {
+pub fn run_cli() {
+    let _guard: WorkerGuard;
+    tracing::info!("Starting Kode Kraken");
+
     let args = Cli::parse();
     let mutate_tool_builder = MutationToolBuilder::new();
 
     match args.command {
         Commands::Mutate(mutate_config) => {
+            let config = KodeKrakenConfig::load_config(mutate_config.path.clone());
+            _guard = setup_logging(&config.logging.log_level);
+
             let mut tool = mutate_tool_builder
                 .set_mutate_config(mutate_config)
                 .set_general_config(config)
@@ -153,6 +160,30 @@ pub fn run_cli(config: KodeKrakenConfig) {
             }
         }
     }
+}
+
+fn setup_logging(log_level: &str) -> WorkerGuard {
+    let log_level = match log_level.to_lowercase().as_str() {
+        "trace" => tracing::Level::TRACE,
+        "debug" => tracing::Level::DEBUG,
+        "info" => tracing::Level::INFO,
+        "warn" => tracing::Level::WARN,
+        "error" => tracing::Level::ERROR,
+        _ => tracing::Level::INFO,
+    };
+    // Create dist log folder if it doesn't exist
+    let log_dir = Path::new(OUT_DIRECTORY).join("logs");
+    std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
+    let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
+    let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+    tracing_subscriber::fmt()
+        .with_max_level(log_level)
+        .with_ansi(false)
+        .with_target(false)
+        .with_writer(non_blocking)
+        .with_thread_ids(true)
+        .init();
+    guard
 }
 
 #[cfg(test)]

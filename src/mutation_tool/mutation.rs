@@ -119,3 +119,104 @@ impl Display for Mutation {
 pub struct FileMutations {
     pub mutations: Vec<Mutation>,
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_default_mutation_result() {
+        let default_result = MutationResult::default();
+        assert_eq!(default_result, MutationResult::InProgress);
+    }
+
+    #[test]
+    fn test_display_mutation_result() {
+        let result = MutationResult::Timeout;
+        let formatted_result = format!("{}", result);
+        assert_eq!(formatted_result, "Timeout");
+    }
+
+    #[test]
+    fn test_create_mutation() {
+        let mutation = Mutation::new(
+            10, // start_byte
+            20, // end_byte
+            "new_op".to_string(),
+            "old_op".to_string(),
+            42, // line_number
+            MutationOperators::ArithmeticReplacementOperator,
+            "example.rs".to_string(),
+        );
+
+        assert_eq!(mutation.start_byte, 10);
+        assert_eq!(mutation.end_byte, 20);
+        assert_eq!(mutation.new_op, "new_op");
+        assert_eq!(mutation.old_op, "old_op");
+        assert_eq!(mutation.line_number, 42);
+        assert_eq!(
+            mutation.mutation_type,
+            MutationOperators::ArithmeticReplacementOperator
+        );
+        assert_eq!(mutation.file_name, "example.rs");
+        assert_ne!(mutation.id, Uuid::nil()); // Ensure that UUID is not nil
+        assert_eq!(mutation.result, MutationResult::InProgress);
+    }
+
+    #[test]
+    fn test_display_mutation() {
+        let mutation = Mutation::new(
+            10, // start_byte
+            20, // end_byte
+            "new_op".to_string(),
+            "old_op".to_string(),
+            42, // line_number
+            MutationOperators::ArithmeticReplacementOperator,
+            "example.rs".to_string(),
+        );
+
+        let expected_output = format!(
+            "
+            /**
+            AUTO GENERATED COMMENT
+            Mutation Operator: ArithmeticReplacementOperator
+            Line number: {}
+            Id: {},
+            Old Operator: old_op,
+            New Operator: new_op
+            */",
+            (42 + 9),
+            mutation.id
+        );
+
+        assert_eq!(format!("{}", mutation), expected_output);
+    }
+
+    #[test]
+    fn test_create_file_mutations() {
+        let mutations = vec![
+            Mutation::new(
+                10, // start_byte
+                20, // end_byte
+                "new_op1".to_string(),
+                "old_op1".to_string(),
+                42, // line_number
+                MutationOperators::ArithmeticReplacementOperator,
+                "example.rs".to_string(),
+            ),
+            Mutation::new(
+                30, // start_byte
+                40, // end_byte
+                "new_op2".to_string(),
+                "old_op2".to_string(),
+                56, // line_number
+                MutationOperators::UnaryRemovalOperator,
+                "example.rs".to_string(),
+            ),
+        ];
+
+        let file_mutations = FileMutations { mutations };
+
+        assert_eq!(file_mutations.mutations.len(), 2);
+        // Add more assertions based on your specific requirements
+    }
+}

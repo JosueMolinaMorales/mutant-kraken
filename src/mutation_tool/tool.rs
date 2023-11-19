@@ -27,11 +27,11 @@ const MAX_BUILD_THREADS: f32 = 5f32;
 
 pub struct MutationTool {
     parser: Arc<Mutex<tree_sitter::Parser>>,
-    mutate_config: MutationCommandConfig,
-    mutation_operators: Arc<Vec<MutationOperators>>,
-    mutation_dir: PathBuf,
-    backup_dir: PathBuf,
-    enable_mutation_comment: bool,
+    pub mutate_config: MutationCommandConfig,
+    pub mutation_operators: Arc<Vec<MutationOperators>>,
+    pub mutation_dir: PathBuf,
+    pub backup_dir: PathBuf,
+    pub enable_mutation_comment: bool,
     thread_pool: rayon::ThreadPool,
     pub kodekraken_config: KodeKrakenConfig,
 }
@@ -204,16 +204,6 @@ impl MutationTool {
     /// Returns a `KodeKrakenError` if there was an error creating the CSV writer, serializing a mutation,
     /// flushing the CSV writer, or writing to the output file.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// use mutation_tool::tool::Tool;
-    ///
-    /// let tool = Tool::new();
-    /// let mutations = vec![Mutation::new("file.rs", 10, "foo".to_string(), "bar".to_string())];
-    /// let result = tool.save_results(&mutations);
-    /// assert!(result.is_ok());
-    /// ```
     fn save_results(&self, mutations: &Vec<Mutation>) -> Result<()> {
         let mut writer = csv::WriterBuilder::new()
             .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
@@ -327,13 +317,6 @@ impl MutationTool {
     ///
     /// A `Result` containing a vector of `Mutation` structs.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut tool = Tool::new(config);
-    /// let file_mutations = tool.generate_mutations()?;
-    /// let mutations = tool.build_and_test(&file_mutations)?;
-    /// ```
     fn build_and_test(
         &mut self,
         file_mutations: &HashMap<String, FileMutations>,
@@ -344,6 +327,21 @@ impl MutationTool {
                 "Gradle is not installed. Please install Gradle and try again.".into(),
             ));
         }
+
+        let path = PathBuf::from(&self.mutate_config.path);
+        // Make sure the project builds and tests pass before mutating
+        if !gradle::build_project_success(&path)? {
+            return Err(KodeKrakenError::Error(
+                "Project does not build successfully. Please fix the errors and try again.".into(),
+            ));
+        }
+
+        if !gradle::project_tests_pass(&path)? {
+            return Err(KodeKrakenError::Error(
+                "Project tests do not pass. Please fix the errors and try again.".into(),
+            ));
+        }
+
         // Get total number of mutations
         let num_mutations = file_mutations
             .iter()
@@ -551,13 +549,6 @@ impl MutationTool {
     ///
     /// A `Result` containing a `HashMap` of `String` keys and `FileMutations` values, or an error if the operation fails.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// let mut tool = Tool::new();
-    /// let existing_files = vec!["/path/to/file1.rs", "/path/to/file2.rs"];
-    /// let mutations = tool.gather_mutations_per_file(&mut existing_files).unwrap();
-    /// ```
     fn gather_mutations_per_file(
         &mut self,
         existing_files: &mut [String],
@@ -698,8 +689,9 @@ mod tests {
 
     use uuid::Uuid;
 
+    use crate::mutation_tool::test_util::*;
+
     use super::*;
-    use crate::test_config::*;
 
     fn create_temp_directory(file_contents: &str) -> (Uuid, String) {
         let mutation_test_id = Uuid::new_v4();
@@ -791,6 +783,16 @@ mod tests {
         // Remove contents in temp directory
         remove_directory(mutation_test_id);
     }
+
+    // #[test]
+    // fn test_tool_exists_if_no_mutable_files_found() {
+    //     todo!()
+    // }
+
+    // #[test]
+    // fn test_tool_exists_if_no_mutations_are_made() {
+    //     todo!()
+    // }
 
     #[test]
     fn test_mutate_arithmetic_mutated_files_exist() {
@@ -929,4 +931,19 @@ mod tests {
         );
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
+
+    // #[test]
+    // fn test_mutate_no_null_assertion_mutations_are_correct() {
+    //     todo!()
+    // }
+
+    // #[test]
+    // fn test_mutate_elvis_remove_mutations_are_correct() {
+    //     todo!()
+    // }
+
+    // #[test]
+    // fn test_mutate_elvis_literal_change_mutations_are_correct() {
+    //     todo!()
+    // }
 }
