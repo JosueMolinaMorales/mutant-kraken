@@ -158,6 +158,9 @@ mod test {
             mutation4.clone(),
         ];
 
+        // Create kode-kraken-dist directory
+        std::fs::create_dir_all("kode-kraken-dist").unwrap();
+
         // Create test data
         let mut file_mutations = HashMap::new();
         for mutation in &mutations {
