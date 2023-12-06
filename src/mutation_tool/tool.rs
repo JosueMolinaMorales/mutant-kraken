@@ -325,18 +325,16 @@ impl MutationTool {
 
         // Get total number of mutations
         let num_mutations = file_mutations
-            .values()
-            .map(|fm| fm.mutations.len())
-            .sum::<usize>();
+            .iter()
+            .fold(0, |acc, (_, fm)| acc + fm.mutations.len());
+        // Set up progress bar
+        let progress_bar = create_progress_bar(num_mutations)?;
 
-        // Create Progress Bar
-        let progress_bar = fun_name(num_mutations)?;
-
-        // Make copies of all files
+        // Make Copies of all files
         self.copy_files(file_mutations)?;
 
-        // Create mutation chunks
-        let chunks = create_mutation_chucks(file_mutations);
+        // Merge all mutants into one vector
+        let mut chunks = create_mutation_chucks(file_mutations);
 
         // Set up threading
         let path = Arc::new(self.mutate_config.path.clone());
@@ -346,42 +344,43 @@ impl MutationTool {
             .num_threads(chunks.len())
             .build()
             .map_err(|e| KodeKrakenError::Error(e.to_string()))?;
-
         thread_pool.scope(|s| {
-            for chunk in chunks.iter() {
+            for chunck in chunks.iter_mut() {
                 // Create unique temp directory
                 let uuid = uuid::Uuid::new_v4();
-                let temp_dir = Path::new(OUT_DIRECTORY).join(format!("temp/{}", uuid));
-                fs::create_dir_all(&temp_dir).expect("Failed to create temp directory");
-
+                let mut td = Path::new(OUT_DIRECTORY).join(format!("temp/{}", uuid));
+                fs::create_dir_all(&td).expect("Failed to create temp directory");
                 // Create directory structure inside temp directory that matches the original project
                 let dir = PathBuf::from(&self.mutate_config.path);
-                let config_prefix = dir.components().collect::<PathBuf>();
-                let temp_dir = temp_dir.join(&config_prefix);
-                fs::create_dir_all(&temp_dir).expect("Failed to create temp directory");
-                self.create_temp_directory(dir, &temp_dir)
+                let mut config_prefix = PathBuf::new();
+                for c in dir.components() {
+                    if let Component::Normal(dir) = c {
+                        td = td.join(dir);
+                        config_prefix = config_prefix.join(dir);
+                    }
+                }
+                fs::create_dir_all(&td).expect("Failed to create temp directory");
+                self.create_temp_directory(dir, &td)
                     .expect("Failed to create temp directory");
-
                 // Run gradle build and tests in parallel
                 let path = path.clone();
                 let mutation_dir = mutation_dir.clone();
                 let backup_dir = backup_dir.clone();
                 let progress_bar = progress_bar.clone();
-
                 s.spawn(move |_| {
-                    for mutation in chunk.iter() {
-                        let original_file_name = &mutation.file_name;
-                        let file_name = Path::new(original_file_name)
-                            .strip_prefix(&path)
+                    chunck.iter_mut().for_each(|mutation| {
+                        let original_file_name = mutation.file_name.clone();
+                        let file_name = Path::new(&original_file_name)
+                            .strip_prefix(path.as_ref())
                             .expect("Failed to strip prefix");
-                        let original_file_path = temp_dir.join(file_name);
+                        let original_file_path =
+                            PathBuf::from(format!("{}/{}", td.display(), file_name.display()));
 
                         progress_bar.inc(1);
-
                         let mutated_file_path = mutation_dir.join(format!(
                             "{}_{}",
                             mutation.id,
-                            Path::new(original_file_name)
+                            Path::new(&file_name)
                                 .file_name()
                                 .expect("Failed to get the filename")
                                 .to_str()
@@ -389,43 +388,38 @@ impl MutationTool {
                         ));
 
                         if let Err(err) = gradle::run(
-                            &temp_dir,
+                            &PathBuf::from(&td),
                             &mutated_file_path,
                             &original_file_path,
-                            &mut mutation,
+                            mutation,
                         ) {
                             tracing::error!("An error occurred building and testing: {}", err);
                             mutation.result = MutationResult::BuildFailed;
                         }
-
                         let backup_path = backup_dir.join(
-                            Path::new(original_file_name)
+                            Path::new(&file_name)
                                 .file_name()
                                 .expect("Failed to convert file name to string")
                                 .to_str()
                                 .expect("Failed to convert file name to string"),
                         );
-
                         // Restore original file
-                        fs::copy(&backup_path, &original_file_path)
+                        fs::copy(backup_path, &original_file_path)
                             .expect("Failed to restore original file");
-                    }
+                    });
                 });
             }
         });
-
         progress_bar.finish();
-
         // Delete temp directory
         if let Err(err) = fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")) {
             println!("[ERROR] Failed to delete kode-kraken-dist/temp directory. Please view logs for more information.");
             tracing::error!("Failed to delete kode-kraken-dist/temp directory: {}", err);
         }
-
         Ok(chunks.into_iter().flatten().collect())
     }
 
-    fn gradle_checks(&mut self) -> Result<(), KodeKrakenError> {
+    fn gradle_checks(&mut self) -> Result<()> {
         if !gradle::is_gradle_installed() {
             return Err(KodeKrakenError::Error(
                 "Gradle is not installed. Please install Gradle and try again.".into(),
@@ -437,6 +431,7 @@ impl MutationTool {
                 "Project does not build successfully. Please fix the errors and try again.".into(),
             ));
         }
+
         Ok(if !gradle::project_tests_pass(&path)? {
             return Err(KodeKrakenError::Error(
                 "Project tests do not pass. Please fix the errors and try again.".into(),
@@ -741,7 +736,7 @@ fn create_mutation_chucks(file_mutations: &HashMap<String, FileMutations>) -> Ve
     chunks
 }
 
-fn create_progress_bar(num_mutations: usize) -> Result<Arc<ProgressBar>, KodeKrakenError> {
+fn create_progress_bar(num_mutations: usize) -> Result<Arc<ProgressBar>> {
     let progress_bar = Arc::new(ProgressBar::new(num_mutations as u64));
     progress_bar.set_style(
         ProgressStyle::default_bar()
