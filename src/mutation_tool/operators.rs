@@ -25,6 +25,7 @@ pub enum MutationOperators {
     NotNullAssertionOperator,
     ElvisRemoveOperator,
     ElvisLiteralChangeOperator,
+    LiteralChangeOpeator,
 }
 
 impl Display for MutationOperators {
@@ -42,6 +43,7 @@ impl Display for MutationOperators {
                 MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
                 MutationOperators::ElvisRemoveOperator => "ElvisRemoveOperator",
                 MutationOperators::ElvisLiteralChangeOperator => "ElvisLiteralChangeOperator",
+                MutationOperators::LiteralChangeOpeator => "LiteralChangeOpeator",
             }
         )
     }
@@ -114,6 +116,16 @@ impl MutationOperators {
                     .into_iter()
                     .collect()
             }
+            MutationOperators::LiteralChangeOpeator => vec![
+                KotlinTypes::IntegerLiteral,
+                KotlinTypes::LineStringLiteral,
+                KotlinTypes::BooleanLiteral,
+                KotlinTypes::LongLiteral,
+                KotlinTypes::RealLiteral,
+                KotlinTypes::CharacterLiteral,
+            ]
+            .into_iter()
+            .collect(),
         }
     }
 
@@ -143,6 +155,16 @@ impl MutationOperators {
             | MutationOperators::ElvisLiteralChangeOperator => {
                 vec![KotlinTypes::ElvisExpression]
             }
+            MutationOperators::LiteralChangeOpeator => vec![
+                KotlinTypes::IntegerLiteral,
+                KotlinTypes::LineStringLiteral,
+                KotlinTypes::BooleanLiteral,
+                KotlinTypes::LongLiteral,
+                KotlinTypes::RealLiteral,
+                KotlinTypes::CharacterLiteral,
+                KotlinTypes::PrefixExpression,
+                KotlinTypes::PostfixExpression,
+            ],
         }
     }
 
@@ -253,6 +275,10 @@ impl MutationOperators {
             MutationOperators::ElvisLiteralChangeOperator => {
                 self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
             }
+            MutationOperators::LiteralChangeOpeator => {
+                println!("Literal change operator on root: {:#?}", root_node);
+                self.mutate_literal(root_node, &mut mutations_made, file_name)
+            }
             _ => {
                 // Create a mutant for all mutation operators
                 mutation_operators.iter().for_each(|operator| {
@@ -288,7 +314,10 @@ impl MutationOperators {
             .collect::<Vec<tree_sitter::Node>>();
         println!("Children: {:#?}", children);
         println!("Num of children: {}", children.len());
-        let node = children.iter().last().unwrap();
+        let node = match children.iter().last() {
+            Some(node) => node,
+            None => root_node,
+        };
 
         let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
 
@@ -659,6 +688,31 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_literal_change_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("literal_change_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_LITERAL_TEST_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_LITERAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::LiteralChangeOpeator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        println!("{:#?}", mutations_made);
+        assert_eq!(mutations_made.len(), 12);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+        }
+    }
     #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);

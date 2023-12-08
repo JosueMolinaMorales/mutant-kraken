@@ -106,4 +106,21 @@ fun main() {
     val s = q ?: 'b'
 }
 "#;
+
+    pub const KOTLIN_LITERAL_TEST_CODE: &str = r#"
+fun main() {
+    val a = 10
+    val b = -10
+    val c = 10.0
+    val d = -10.0
+    val e = 10L
+    val f = -10L
+    val g = 10.0f
+    val h = -10.0f
+    val i = true
+    val j = false
+    val k = 'a'
+    val l = "a"
+}
+"#;
 }
