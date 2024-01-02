@@ -82,7 +82,9 @@ mod tests {
         assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::new());
         assert_eq!(
             mutation_tool.mutate_config,
-            MutationCommandConfig::default()
+            MutationCommandConfig {
+                path: temp_dir.to_str().unwrap().to_string(),
+            }
         );
         assert_eq!(
             Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
