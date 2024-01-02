@@ -18,6 +18,8 @@ pub struct GeneralConfig {
     /// The time in seconds to wait for the mutation tool to finish
     /// before killing the process
     pub timeout: Option<u64>,
+
+    #[serde(default)]
     pub operators: Vec<MutationOperators>,
 }
 
@@ -291,8 +293,12 @@ mod tests {
 
     #[test]
     fn test_load_config_from_missing_file() {
+        // Create a temp directory
+        let temp_dir = temp_dir().join("missing_config");
+        // Create the temp directory
+        fs::create_dir_all(&temp_dir).expect("Failed to create temporary directory");
         // Test loading config from a missing file
-        let config = KodeKrakenConfig::load_config("/tmp");
+        let config = KodeKrakenConfig::load_config(temp_dir);
         // Since the file is missing, it should fall back to default values
         assert_eq!(config.general.timeout, None);
         assert_eq!(
