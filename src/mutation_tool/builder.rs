@@ -1,6 +1,6 @@
 use crate::{cli::MutationCommandConfig, config::KodeKrakenConfig};
 
-use super::{MutationOperators, MutationTool, OUT_DIRECTORY};
+use super::{MutationTool, OUT_DIRECTORY};
 
 pub struct MutationToolBuilder {
     mutate_config: Option<MutationCommandConfig>,
@@ -58,7 +58,7 @@ impl MutationToolBuilder {
 }
 #[cfg(test)]
 mod tests {
-    use crate::config::GeneralConfig;
+    use crate::{config::GeneralConfig, mutation_tool::MutationOperators};
     use std::env::temp_dir;
 
     use super::*;

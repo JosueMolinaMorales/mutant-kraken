@@ -134,7 +134,21 @@ mod tests {
     fn test_default_general_config() {
         let default_general = GeneralConfig::default();
         assert_eq!(default_general.timeout, None);
-        assert_eq!(default_general.operators, vec![]);
+        assert_eq!(
+            default_general.operators,
+            vec![
+                MutationOperators::ArithmeticReplacementOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
+                MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ElvisRemoveOperator,
+                MutationOperators::ElvisLiteralChangeOperator,
+                MutationOperators::LiteralChangeOpeator,
+            ]
+        );
     }
 
     #[test]
@@ -166,7 +180,21 @@ mod tests {
     fn test_new_kodekraken_config() {
         let config = KodeKrakenConfig::new();
         assert_eq!(config.general.timeout, None);
-        assert_eq!(config.general.operators, vec![]);
+        assert_eq!(
+            config.general.operators,
+            vec![
+                MutationOperators::ArithmeticReplacementOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
+                MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ElvisRemoveOperator,
+                MutationOperators::ElvisLiteralChangeOperator,
+                MutationOperators::LiteralChangeOpeator,
+            ]
+        );
         assert_eq!(config.ignore.ignore_files.len(), 1);
         assert_eq!(config.ignore.ignore_directories.len(), 6);
         assert_eq!(config.threading.max_threads, 30);
@@ -244,7 +272,21 @@ mod tests {
         let config = KodeKrakenConfig::load_config(temp_dir);
         // Since the JSON is invalid, it should fall back to default values
         assert_eq!(config.general.timeout, None);
-        assert_eq!(config.general.operators, vec![]);
+        assert_eq!(
+            config.general.operators,
+            vec![
+                MutationOperators::ArithmeticReplacementOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
+                MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ElvisRemoveOperator,
+                MutationOperators::ElvisLiteralChangeOperator,
+                MutationOperators::LiteralChangeOpeator,
+            ]
+        );
     }
 
     #[test]
@@ -253,6 +295,20 @@ mod tests {
         let config = KodeKrakenConfig::load_config("/tmp");
         // Since the file is missing, it should fall back to default values
         assert_eq!(config.general.timeout, None);
-        assert_eq!(config.general.operators, vec![]);
+        assert_eq!(
+            config.general.operators,
+            vec![
+                MutationOperators::ArithmeticReplacementOperator,
+                MutationOperators::UnaryRemovalOperator,
+                MutationOperators::LogicalReplacementOperator,
+                MutationOperators::RelationalReplacementOperator,
+                MutationOperators::AssignmentReplacementOperator,
+                MutationOperators::UnaryReplacementOperator,
+                MutationOperators::NotNullAssertionOperator,
+                MutationOperators::ElvisRemoveOperator,
+                MutationOperators::ElvisLiteralChangeOperator,
+                MutationOperators::LiteralChangeOpeator,
+            ]
+        );
     }
 }
