@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use crate::{cli::MutationCommandConfig, config::KodeKrakenConfig};
 
 use super::{MutationTool, OUT_DIRECTORY};
@@ -46,10 +48,15 @@ impl MutationToolBuilder {
         let mutate_config = self.mutate_config.unwrap_or_default();
         let kodekraken_config = self.kodekraken_config.unwrap_or_default();
 
+        let output_directory = PathBuf::from(&mutate_config.path)
+            .join(OUT_DIRECTORY)
+            .to_str()
+            .unwrap()
+            .to_string();
         MutationTool::new(
-            mutate_config,
+            mutate_config.clone(),
             kodekraken_config.clone(),
-            OUT_DIRECTORY.into(),
+            output_directory,
             kodekraken_config.general.operators.clone(),
             self.enable_mutation_comment,
         )
