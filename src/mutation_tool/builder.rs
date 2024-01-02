@@ -1,11 +1,10 @@
 use crate::{cli::MutationCommandConfig, config::KodeKrakenConfig};
 
-use super::{AllMutationOperators, MutationOperators, MutationTool, OUT_DIRECTORY};
+use super::{MutationOperators, MutationTool, OUT_DIRECTORY};
 
 pub struct MutationToolBuilder {
     mutate_config: Option<MutationCommandConfig>,
     kodekraken_config: Option<KodeKrakenConfig>,
-    mutation_operators: Option<Vec<MutationOperators>>,
     enable_mutation_comment: bool,
 }
 
@@ -21,7 +20,6 @@ impl MutationToolBuilder {
         Self {
             mutate_config: None,
             kodekraken_config: None,
-            mutation_operators: None,
             enable_mutation_comment: false,
         }
     }
@@ -38,12 +36,6 @@ impl MutationToolBuilder {
         self
     }
 
-    /// Set the mutation operators to be used
-    pub fn set_mutation_operators(mut self, mutation_operators: Vec<MutationOperators>) -> Self {
-        self.mutation_operators = Some(mutation_operators);
-        self
-    }
-
     /// Sets whether to enable the mutation comment
     pub fn set_mutation_comment(mut self, enable_mutation_comment: bool) -> Self {
         self.enable_mutation_comment = enable_mutation_comment;
@@ -53,14 +45,12 @@ impl MutationToolBuilder {
     pub fn build(self) -> MutationTool {
         let mutate_config = self.mutate_config.unwrap_or_default();
         let kodekraken_config = self.kodekraken_config.unwrap_or_default();
-        let mutation_operators = self
-            .mutation_operators
-            .unwrap_or(AllMutationOperators::new().get_mutation_operators());
+
         MutationTool::new(
             mutate_config,
-            kodekraken_config,
+            kodekraken_config.clone(),
             OUT_DIRECTORY.into(),
-            mutation_operators,
+            kodekraken_config.general.operators.clone(),
             self.enable_mutation_comment,
         )
         .unwrap()
@@ -73,6 +63,7 @@ mod tests {
 
     use super::*;
     use std::sync::Arc;
+    use MutationOperators::*;
 
     #[test]
     fn test_default_builder() {
@@ -88,7 +79,18 @@ mod tests {
         );
         assert_eq!(
             Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
-            AllMutationOperators::new().get_mutation_operators()
+            vec![
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOpeator,
+            ]
         );
     }
 
@@ -141,22 +143,6 @@ mod tests {
     }
 
     #[test]
-    fn test_set_mutation_operators() {
-        let mutation_operators = vec![
-            MutationOperators::AssignmentReplacementOperator,
-            MutationOperators::ArithmeticReplacementOperator,
-        ];
-
-        let builder = MutationToolBuilder::new().set_mutation_operators(mutation_operators.clone());
-        let mutation_tool = builder.build();
-
-        assert_eq!(
-            Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
-            mutation_operators
-        );
-    }
-
-    #[test]
     fn test_set_mutation_comment() {
         let builder = MutationToolBuilder::new().set_mutation_comment(true);
         let mutation_tool = builder.build();
@@ -178,7 +164,18 @@ mod tests {
         );
         assert_eq!(
             Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
-            AllMutationOperators::new().get_mutation_operators()
+            vec![
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOpeator,
+            ]
         );
     }
 }

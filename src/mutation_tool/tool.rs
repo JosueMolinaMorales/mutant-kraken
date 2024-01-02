@@ -18,9 +18,11 @@ use crate::config::KodeKrakenConfig;
 use crate::error::{self, KodeKrakenError, Result};
 use crate::mutation_tool::{
     mutation::{FileMutations, Mutation, MutationResult},
-    AllMutationOperators, MutationOperators,
+    MutationOperators,
 };
 use crate::{gradle, html_gen};
+
+use super::MutationToolBuilder;
 
 pub const OUT_DIRECTORY: &str = "./kode-kraken-dist";
 const MAX_BUILD_THREADS: f32 = 5f32;
@@ -38,14 +40,7 @@ pub struct MutationTool {
 
 impl Default for MutationTool {
     fn default() -> Self {
-        Self::new(
-            MutationCommandConfig::default(),
-            KodeKrakenConfig::default(),
-            OUT_DIRECTORY.into(),
-            AllMutationOperators::new().get_mutation_operators(),
-            false,
-        )
-        .unwrap()
+        MutationToolBuilder::new().build()
     }
 }
 

@@ -7,12 +7,6 @@ use crate::{
 };
 use std::{collections::HashSet, fmt::Display, fs};
 
-// Struct that stores all the mutations operators by default
-#[derive(Clone)]
-pub struct AllMutationOperators {
-    mutation_operators: Vec<MutationOperators>,
-}
-
 // The different types of mutation operators that can be performed on a file
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
 pub enum MutationOperators {
@@ -472,42 +466,6 @@ where
     }
 
     random_literal
-}
-
-impl AllMutationOperators {
-    pub fn new() -> Self {
-        Self {
-            mutation_operators: vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                MutationOperators::ElvisRemoveOperator,
-                MutationOperators::ElvisLiteralChangeOperator,
-            ],
-        }
-    }
-
-    pub fn get_mutation_operators(&self) -> Vec<MutationOperators> {
-        self.mutation_operators.clone()
-    }
-}
-
-impl Default for AllMutationOperators {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Iterator for AllMutationOperators {
-    type Item = MutationOperators;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.mutation_operators.pop()
-    }
 }
 
 #[cfg(test)]

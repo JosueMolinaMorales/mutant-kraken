@@ -24,9 +24,21 @@ pub struct GeneralConfig {
 impl Default for GeneralConfig {
     /// Set Default timeout of 5 minutes
     fn default() -> Self {
+        use MutationOperators::*;
         Self {
             timeout: None,
-            operators: vec![],
+            operators: vec![
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOpeator,
+            ],
         }
     }
 }
