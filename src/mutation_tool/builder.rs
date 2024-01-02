@@ -67,7 +67,14 @@ mod tests {
 
     #[test]
     fn test_default_builder() {
-        let builder = MutationToolBuilder::new();
+        // Create temp directory
+        let temp_dir = temp_dir().join("default_builder");
+        // Create the temp directory
+        std::fs::create_dir_all(&temp_dir).unwrap();
+
+        let builder = MutationToolBuilder::new().set_mutate_config(MutationCommandConfig {
+            path: temp_dir.to_str().unwrap().to_string(),
+        });
         let mutation_tool = builder.build();
 
         // Add assertions based on your specific default values
@@ -96,6 +103,11 @@ mod tests {
 
     #[test]
     fn test_set_general_config() {
+        // Create temp directory
+        let temp_dir = temp_dir().join("set_general_config");
+        // Create the temp directory
+        std::fs::create_dir_all(&temp_dir).unwrap();
+
         let general_config = KodeKrakenConfig {
             general: GeneralConfig {
                 timeout: Some(10),
@@ -107,7 +119,11 @@ mod tests {
             ..Default::default()
         };
 
-        let builder = MutationToolBuilder::new().set_general_config(general_config.clone());
+        let builder = MutationToolBuilder::new()
+            .set_mutate_config(MutationCommandConfig {
+                path: temp_dir.to_str().unwrap().to_string(),
+            })
+            .set_general_config(general_config.clone());
         let mutation_tool = builder.build();
 
         assert_eq!(mutation_tool.kodekraken_config.general.timeout, Some(10));
@@ -144,7 +160,15 @@ mod tests {
 
     #[test]
     fn test_set_mutation_comment() {
-        let builder = MutationToolBuilder::new().set_mutation_comment(true);
+        // Create a temp directory
+        let temp_dir = temp_dir().join("set_mutation_comment");
+        // Create the temp directory
+        std::fs::create_dir_all(&temp_dir).unwrap();
+        let builder = MutationToolBuilder::new()
+            .set_mutate_config(MutationCommandConfig {
+                path: temp_dir.to_str().unwrap().to_string(),
+            })
+            .set_mutation_comment(true);
         let mutation_tool = builder.build();
 
         assert_eq!(mutation_tool.enable_mutation_comment, true);
@@ -152,7 +176,14 @@ mod tests {
 
     #[test]
     fn test_build_with_defaults() {
-        let builder = MutationToolBuilder::new();
+        // Create a temp directory
+        let temp_dir = temp_dir().join("build_with_defaults");
+        // Create the temp directory
+        std::fs::create_dir_all(&temp_dir).unwrap();
+
+        let builder = MutationToolBuilder::new().set_mutate_config(MutationCommandConfig {
+            path: temp_dir.to_str().unwrap().to_string(),
+        });
         let mutation_tool = builder.build();
 
         // Add assertions based on your specific default values
@@ -160,7 +191,9 @@ mod tests {
         assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::default());
         assert_eq!(
             mutation_tool.mutate_config,
-            MutationCommandConfig::default()
+            MutationCommandConfig {
+                path: temp_dir.to_str().unwrap().to_string(),
+            }
         );
         assert_eq!(
             Arc::into_inner(mutation_tool.mutation_operators).unwrap(),
