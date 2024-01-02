@@ -69,6 +69,7 @@ impl MutationToolBuilder {
 #[cfg(test)]
 mod tests {
     use crate::config::GeneralConfig;
+    use std::env::temp_dir;
 
     use super::*;
     use std::sync::Arc;
@@ -119,8 +120,13 @@ mod tests {
 
     #[test]
     fn test_set_mutate_config() {
+        // Create a temp directory
+        let temp_dir = temp_dir().join("set_mutate_config");
+        // Create the temp directory
+        std::fs::create_dir_all(&temp_dir).unwrap();
+
         let mutate_config = MutationCommandConfig {
-            path: "./tests/kotlin-test-projects/demo".into(),
+            path: temp_dir.to_str().unwrap().to_string(),
         };
 
         let builder = MutationToolBuilder::new().set_mutate_config(mutate_config.clone());
@@ -130,7 +136,7 @@ mod tests {
         assert_eq!(mutation_tool.mutate_config, mutate_config);
         assert_eq!(
             mutation_tool.mutate_config.path,
-            "./tests/kotlin-test-projects/demo".to_string()
+            temp_dir.to_str().unwrap().to_string()
         );
     }
 
@@ -175,6 +181,4 @@ mod tests {
             AllMutationOperators::new().get_mutation_operators()
         );
     }
-
-    // Add more tests based on your specific requirements and configurations
 }

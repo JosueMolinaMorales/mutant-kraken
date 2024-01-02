@@ -164,6 +164,14 @@ impl MutationOperators {
                 KotlinTypes::CharacterLiteral,
                 KotlinTypes::PrefixExpression,
                 KotlinTypes::PostfixExpression,
+                KotlinTypes::AdditiveExpression,
+                KotlinTypes::MultiplicativeExpression,
+                KotlinTypes::ConjunctionExpression,
+                KotlinTypes::DisjunctionExpression,
+                KotlinTypes::EqualityExpression,
+                KotlinTypes::ComparisonExpression,
+                KotlinTypes::PropertyDeclaration,
+                KotlinTypes::VariableDeclaration,
             ],
         }
     }
@@ -176,7 +184,6 @@ impl MutationOperators {
         self.mutate(root, &mut cursor, None, &mut mutations, file_name);
         mutations
     }
-
     /// Mutates the given `root` node and its children using the provided `cursor`, `parent`, `mutations_made`, `file_name`, `operators`, and `parent_necessary_types`.
     ///
     /// # Arguments
@@ -239,6 +246,9 @@ impl MutationOperators {
             || parent.is_none()
             || !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?)
         {
+            if root == &KotlinTypes::BooleanLiteral {
+                println!("Boolean Literal, root: {:?}, parent: {:?}", root, parent);
+            }
             return Ok(mutations_made);
         }
 
@@ -272,12 +282,9 @@ impl MutationOperators {
                 );
                 mutations_made.push(mutation);
             }
-            MutationOperators::ElvisLiteralChangeOperator => {
+            MutationOperators::ElvisLiteralChangeOperator
+            | MutationOperators::LiteralChangeOpeator => {
                 self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
-            }
-            MutationOperators::LiteralChangeOpeator => {
-                println!("Literal change operator on root: {:#?}", root_node);
-                self.mutate_literal(root_node, &mut mutations_made, file_name)
             }
             _ => {
                 // Create a mutant for all mutation operators
@@ -320,7 +327,7 @@ impl MutationOperators {
         };
 
         let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
-
+        println!("Child type: {:?}", child_type);
         // Change the literal to a different literal
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
@@ -361,7 +368,7 @@ impl MutationOperators {
             }
             KotlinTypes::BooleanLiteral => {
                 let val = val.parse::<bool>().unwrap();
-
+                println!("Boolean literal: {}", val);
                 // Change the value and create a mutation
                 let mutated_val = !val;
 
@@ -510,6 +517,7 @@ mod tests {
     use crate::mutation_tool::test_util::*;
 
     use super::*;
+    use crate::mutation_tool::debug_print_ast;
     use tree_sitter::Parser;
 
     fn get_ast(text: &str) -> tree_sitter::Tree {
@@ -698,6 +706,7 @@ mod tests {
             .expect("Failed to write to temp file");
         let tree = get_ast(KOTLIN_LITERAL_TEST_CODE);
         let root = tree.root_node();
+        debug_print_ast(&root, 0);
         let mut mutations_made = Vec::new();
         MutationOperators::LiteralChangeOpeator.mutate(
             root,
@@ -713,6 +722,7 @@ mod tests {
             assert_ne!(mutation.old_op, mutation.new_op);
         }
     }
+
     #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);

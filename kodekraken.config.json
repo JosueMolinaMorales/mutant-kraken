@@ -1,24 +1,28 @@
 {
-    "ignore": {                            
-        "ignore_files": [                   
-            "^.*Test\\.[^.]*$"            
-        ],
-        "ignore_directories": [             
-            "dist",
-            "build",
-            "bin",
-            ".gradle",
-            ".idea",
-            "gradle"
-        ]
-    },
-    "threading": {                         
-        "max_threads": 30
-    },
-    "output": {                            
-        "display_end_table": false
-    },
-    "logging": {                            
-        "log_level": "INFO"
-    }
+  "general": {
+    "timeout": 10,
+    "operators": []
+  },
+  "ignore": {
+    "ignore_files": [
+      "^.*Test\\.[^.]*$"
+    ],
+    "ignore_directories": [
+      "dist",
+      "build",
+      "bin",
+      ".gradle",
+      ".idea",
+      "gradle"
+    ]
+  },
+  "threading": {
+    "max_threads": 30
+  },
+  "output": {
+    "display_end_table": false
+  },
+  "logging": {
+    "log_level": "INFO"
+  }
 }

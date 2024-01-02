@@ -1,10 +1,10 @@
 use std::{fs, io::BufReader, path::Path};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::mutation_tool::MutationOperators;
 
-#[derive(Debug, Deserialize, Default, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 pub struct KodeKrakenConfig {
     pub general: GeneralConfig,
     pub ignore: IgnoreConfig,
@@ -13,7 +13,7 @@ pub struct KodeKrakenConfig {
     pub logging: LoggingConfig,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct GeneralConfig {
     /// The time in seconds to wait for the mutation tool to finish
     /// before killing the process
@@ -31,23 +31,23 @@ impl Default for GeneralConfig {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct LoggingConfig {
     pub log_level: String,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct IgnoreConfig {
     pub ignore_files: Vec<String>,
     pub ignore_directories: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct ThreadingConfig {
     pub max_threads: usize,
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 pub struct OutputConfig {
     pub display_end_table: bool,
 }
@@ -69,6 +69,7 @@ impl KodeKrakenConfig {
                             "Could not parse config file, using default config. Error: {}",
                             e
                         );
+                        println!("{:?}", e);
                         Self::default()
                     }
                 }
@@ -168,29 +169,31 @@ mod tests {
         let mut file = File::create(file_path).expect("Failed to create temporary file");
 
         // Create a valid JSON content
-        let json_content = r#"
-            {
-                "general": {
-                    "timeout": 10,
-                    "operators": ["UnaryRemovalOperator", "AssignmentReplacementOperator"]
-                },
-                "ignore": {
-                    "ignore_files": ["file1", "file2"],
-                    "ignore_directories": ["dir1", "dir2"]
-                },
-                "threading": {
-                    "max_threads": 42
-                },
-                "output": {
-                    "display_end_table": true
-                },
-                "logging": {
-                    "log_level": "debug"
-                }
-            }
-        "#;
+        let config = KodeKrakenConfig {
+            general: GeneralConfig {
+                timeout: Some(10),
+                operators: vec![
+                    MutationOperators::UnaryRemovalOperator,
+                    MutationOperators::AssignmentReplacementOperator,
+                ],
+            },
+            ignore: IgnoreConfig {
+                ignore_files: vec!["file1".into(), "file2".into()],
+                ignore_directories: vec!["dir1".into(), "dir2".into()],
+            },
+            threading: ThreadingConfig { max_threads: 42 },
+            output: OutputConfig {
+                display_end_table: true,
+            },
+            logging: LoggingConfig {
+                log_level: "debug".into(),
+            },
+        };
 
-        writeln!(file, "{}", json_content).expect("Failed to write to temporary file");
+        let config_json = serde_json::to_string_pretty(&config).unwrap();
+        file.write_all(config_json.as_bytes())
+            .expect("Failed to write to temporary file");
+
         let config = KodeKrakenConfig::load_config(temp_dir);
         assert_eq!(config.general.timeout, Some(10));
         assert_eq!(
@@ -210,7 +213,10 @@ mod tests {
     #[test]
     fn test_load_config_from_invalid_file() {
         // Create an invalid JSON content
-        let temp_dir = temp_dir();
+        let temp_dir = temp_dir().join("invalid_config");
+        // Create the temporary directory
+        fs::create_dir_all(&temp_dir).expect("Failed to create temporary directory");
+        // Create the temporary file
         let file_path = temp_dir.join("kodekraken.config.json");
         let mut file = File::create(file_path).expect("Failed to create temporary file");
 

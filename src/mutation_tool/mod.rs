@@ -8,6 +8,15 @@ pub use mutation::*;
 pub use operators::*;
 pub use tool::*;
 
+pub fn debug_print_ast(ast: &tree_sitter::Node, spaces: usize) {
+    // Print the node
+    println!("{}{:?}", " ".repeat(spaces), ast.kind());
+    // Go through the children
+    for child in ast.children(&mut ast.walk()) {
+        debug_print_ast(&child, spaces + 2);
+    }
+}
+
 #[cfg(test)]
 pub mod test_util {
     pub const KOTLIN_TEST_CODE: &str = r#"
@@ -109,14 +118,14 @@ fun main() {
 
     pub const KOTLIN_LITERAL_TEST_CODE: &str = r#"
 fun main() {
-    val a = 10
-    val b = -10
-    val c = 10.0
-    val d = -10.0
-    val e = 10L
-    val f = -10L
-    val g = 10.0f
-    val h = -10.0f
+    val a = 1
+    val b = -2
+    val c = 4.0
+    val d = -6.0
+    val e = 12L
+    val f = -13L
+    val g = 14.0f
+    val h = -16.0f
     val i = true
     val j = false
     val k = 'a'
