@@ -21,7 +21,8 @@ fn test_tool_runs_correctly() {
     // Assert that the command runs successfully
     cmd.assert().success();
 
-    let dir_path = Path::new("kode-kraken-dist");
+    let dir_path =
+        Path::new("tests/kotlin-test-projects/demo/kodekraken.config.json/kode-kraken-dist");
     // Assert that kode-kraken-dist was created
     assert!(dir_path.exists());
     // Assert that the backups directory was created and that the backup file exists
