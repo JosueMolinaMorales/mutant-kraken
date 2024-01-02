@@ -72,7 +72,7 @@ impl KodeKrakenConfig {
     }
 
     pub fn load_config<P: AsRef<Path>>(path: P) -> Self {
-        match fs::File::open(path.as_ref().join("kodekraken.config.json")) {
+        let mut config = match fs::File::open(path.as_ref().join("kodekraken.config.json")) {
             Ok(file) => {
                 let buffer_reader = BufReader::new(file);
                 match serde_json::from_reader(buffer_reader) {
@@ -92,7 +92,14 @@ impl KodeKrakenConfig {
                 println!("[WARNING] ⚠️  Could not find kodekraken.config.json file in root directory, using default config.");
                 Self::default()
             }
+        };
+
+        if config.general.operators.is_empty() {
+            println!("[WARNING] ⚠️  No mutation operators specified in config file, using default operators.");
+            config.general.operators = GeneralConfig::default().operators;
         }
+
+        config
     }
 }
 
