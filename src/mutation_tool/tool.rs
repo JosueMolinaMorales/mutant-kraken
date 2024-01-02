@@ -24,13 +24,13 @@ use crate::{gradle, html_gen};
 
 use super::MutationToolBuilder;
 
-pub const OUT_DIRECTORY: &str = "./kode-kraken-dist";
 const MAX_BUILD_THREADS: f32 = 5f32;
 
 pub struct MutationTool {
     parser: Arc<Mutex<tree_sitter::Parser>>,
     pub mutate_config: MutationCommandConfig,
     pub mutation_operators: Arc<Vec<MutationOperators>>,
+    pub output_directory: String,
     pub mutation_dir: PathBuf,
     pub backup_dir: PathBuf,
     pub enable_mutation_comment: bool,
@@ -110,6 +110,7 @@ impl MutationTool {
             mutate_config,
             parser: Arc::new(Mutex::new(parser)),
             mutation_operators: Arc::new(mutation_operators),
+            output_directory,
             mutation_dir,
             backup_dir,
             enable_mutation_comment,
@@ -170,14 +171,14 @@ impl MutationTool {
         self.save_results(&mutations)?;
         // Phase 7: Generate HTML Report
         println!("[7/7] 📊 Generating HTML report...");
-        html_gen::build_html_page(&mutations);
+        html_gen::build_html_page(&mutations, &Path::new(self.output_directory.as_str()));
         Ok(())
     }
 
     /// Store All Mutations into a json filed name mutations.json within kode-kraken-dist/mutations directory
     fn store_mutations(&self, file_mutations: &HashMap<String, FileMutations>) -> Result<()> {
         std::fs::write(
-            Path::new(OUT_DIRECTORY)
+            Path::new(self.output_directory.as_str())
                 .join("mutations")
                 .join("mutations.json"),
             serde_json::to_string_pretty(file_mutations)
@@ -201,7 +202,7 @@ impl MutationTool {
     ///
     fn save_results(&self, mutations: &Vec<Mutation>) -> Result<()> {
         let mut writer = csv::WriterBuilder::new()
-            .from_path(Path::new(OUT_DIRECTORY).join("output.csv"))
+            .from_path(Path::new(self.output_directory.as_str()).join("output.csv"))
             .map_err(|e| {
                 KodeKrakenError::Error(format!("Error while creating csv writer: {}", e))
             })?;
@@ -343,7 +344,8 @@ impl MutationTool {
             for chunck in chunks.iter_mut() {
                 // Create unique temp directory
                 let uuid = uuid::Uuid::new_v4();
-                let mut td = Path::new(OUT_DIRECTORY).join(format!("temp/{}", uuid));
+                let mut td =
+                    Path::new(self.output_directory.as_str()).join(format!("temp/{}", uuid));
                 fs::create_dir_all(&td).expect("Failed to create temp directory");
                 // Create directory structure inside temp directory that matches the original project
                 let dir = PathBuf::from(&self.mutate_config.path);
@@ -407,7 +409,8 @@ impl MutationTool {
         });
         progress_bar.finish();
         // Delete temp directory
-        if let Err(err) = fs::remove_dir_all(Path::new(OUT_DIRECTORY).join("temp")) {
+        if let Err(err) = fs::remove_dir_all(Path::new(self.output_directory.as_str()).join("temp"))
+        {
             println!("[ERROR] Failed to delete kode-kraken-dist/temp directory. Please view logs for more information.");
             tracing::error!("Failed to delete kode-kraken-dist/temp directory: {}", err);
         }

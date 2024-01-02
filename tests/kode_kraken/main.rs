@@ -1,11 +1,15 @@
 use assert_cmd::prelude::*;
-use kode_kraken::config::KodeKrakenConfig;
+use kode_kraken::{config::KodeKrakenConfig, mutation_tool::MutationOperators};
 use std::{fs, path::Path, process::Command};
 
 #[test]
 fn test_tool_runs_correctly() {
     // Set the config
-    let config = KodeKrakenConfig::default();
+    let mut config = KodeKrakenConfig::default();
+    config.general.operators = vec![
+        MutationOperators::ArithmeticReplacementOperator,
+        MutationOperators::AssignmentReplacementOperator,
+    ];
     // Create or replace the config file
     fs::write(
         "tests/kotlin-test-projects/demo/kodekraken.config.json",
@@ -13,7 +17,7 @@ fn test_tool_runs_correctly() {
     )
     .unwrap();
 
-    let mut cmd = Command::cargo_bin("kode-kraken").unwrap();
+    let mut cmd = Command::cargo_bin("kode-kraken").expect("Could not find kode-kraken binary");
 
     // Create command
     cmd.arg("mutate").arg("tests/kotlin-test-projects/demo");
@@ -21,8 +25,7 @@ fn test_tool_runs_correctly() {
     // Assert that the command runs successfully
     cmd.assert().success();
 
-    let dir_path =
-        Path::new("tests/kotlin-test-projects/demo/kodekraken.config.json/kode-kraken-dist");
+    let dir_path = Path::new("tests/kotlin-test-projects/demo/kode-kraken-dist");
     // Assert that kode-kraken-dist was created
     assert!(dir_path.exists());
     // Assert that the backups directory was created and that the backup file exists

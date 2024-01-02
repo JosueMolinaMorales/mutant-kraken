@@ -4,7 +4,7 @@ use horrorshow::{helper::doctype, html};
 
 use crate::mutation_tool::{Mutation, MutationResult};
 
-pub fn build_html_page(data: &Vec<Mutation>) {
+pub fn build_html_page(data: &Vec<Mutation>, path: &Path) {
     // Group the mutations by file name
     let mut file_mutations = HashMap::new();
     for mutation in data {
@@ -95,8 +95,8 @@ pub fn build_html_page(data: &Vec<Mutation>) {
         }
     );
     // write file to kode-kraken-dist/report.html
-    let file_path = Path::new("kode-kraken-dist").join("report.html");
-    let mut file = File::create(file_path).unwrap();
+    let file_path = path.join("report.html");
+    let mut file = File::create(file_path).expect("Could not create report.html file");
     file.write_all(report.as_bytes()).unwrap();
 }
 
@@ -170,7 +170,7 @@ mod test {
         }
 
         // Call the function
-        build_html_page(&mutations);
+        build_html_page(&mutations, Path::new("."));
 
         // Read the generated HTML file
         let file_path = Path::new("kode-kraken-dist").join("report.html");

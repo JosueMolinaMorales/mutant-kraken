@@ -21,14 +21,10 @@ class Calculator {
         var b: String? = null
         var x = b?.length ?: -11
         var y = b?.length ?: "Hello There"
-        var ab = b?.length ?: c
         var z = b?.length ?: 1.0
         var a = b?.length ?: 1.0f
         var c = b?.length ?: 1L
-        var abc = b?.length ?: 'a'
-        var abcd = b?.length ?: 1.toShort()
-        var xy = b?.length ?: 1.toChar()
-    
+
         if (x > 1) {
             println("Len is greater than 1!")
         }

@@ -6,7 +6,7 @@ use tracing_appender::non_blocking::WorkerGuard;
 use crate::{
     config::KodeKrakenConfig,
     error::{self, KodeKrakenError},
-    mutation_tool::{MutationToolBuilder, OUT_DIRECTORY},
+    mutation_tool::MutationToolBuilder,
 };
 
 #[derive(Subcommand, Debug, Clone)]
@@ -21,7 +21,7 @@ pub enum Commands {
     /// Clean the kode-kraken-dist directory
     /// This will delete all files in the directory
     /// This is useful if you want to remove all the files
-    Clean,
+    Clean(MutationCommandConfig),
 }
 
 const ABOUT: &str = include_str!("../assets/about.txt");
@@ -97,7 +97,7 @@ pub fn run_cli() {
     match args.command {
         Commands::Mutate(mutate_config) => {
             let config = KodeKrakenConfig::load_config(mutate_config.path.clone());
-            _guard = setup_logging(&config.logging.log_level);
+            _guard = setup_logging(&config.logging.log_level, mutate_config.path.clone());
 
             let mut tool = mutate_tool_builder
                 .set_mutate_config(mutate_config)
@@ -152,9 +152,9 @@ pub fn run_cli() {
                 println!("3. Edit the config file to your liking");
             }
         }
-        Commands::Clean => {
+        Commands::Clean(config) => {
             // Check to see if the output directory exists
-            let output_dir = Path::new(OUT_DIRECTORY);
+            let output_dir = Path::new(config.path.as_str()).join("kode-kraken-dist");
             if output_dir.exists() {
                 // Delete the output directory
                 std::fs::remove_dir_all(output_dir).expect("Could not delete output directory");
@@ -163,7 +163,7 @@ pub fn run_cli() {
     }
 }
 
-fn setup_logging(log_level: &str) -> WorkerGuard {
+fn setup_logging(log_level: &str, dir: String) -> WorkerGuard {
     let log_level = match log_level.to_lowercase().as_str() {
         "trace" => tracing::Level::TRACE,
         "debug" => tracing::Level::DEBUG,
@@ -173,7 +173,9 @@ fn setup_logging(log_level: &str) -> WorkerGuard {
         _ => tracing::Level::INFO,
     };
     // Create dist log folder if it doesn't exist
-    let log_dir = Path::new(OUT_DIRECTORY).join("logs");
+    let log_dir = Path::new(dir.as_str())
+        .join("kode-kraken-dist")
+        .join("logs");
     std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
     let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
