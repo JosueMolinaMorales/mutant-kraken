@@ -1,8 +1,18 @@
 use assert_cmd::prelude::*;
+use kode_kraken::config::KodeKrakenConfig;
 use std::{fs, path::Path, process::Command};
 
 #[test]
 fn test_tool_runs_correctly() {
+    // Set the config
+    let config = KodeKrakenConfig::default();
+    // Create or replace the config file
+    fs::write(
+        "tests/kotlin-test-projects/demo/kodekraken.config.json",
+        serde_json::to_string(&config).unwrap(),
+    )
+    .unwrap();
+
     let mut cmd = Command::cargo_bin("kode-kraken").unwrap();
 
     // Create command
