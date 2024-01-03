@@ -4,6 +4,7 @@ use rand::seq::SliceRandom;
 
 use crate::error::{KodeKrakenError, Result};
 
+// TODO: Add more exceptions, and move to a separate file
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub enum KotlinExceptions {
     ArithmArithmeticException,

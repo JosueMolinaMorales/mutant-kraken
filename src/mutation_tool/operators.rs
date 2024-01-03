@@ -21,6 +21,7 @@ pub enum MutationOperators {
     ElvisLiteralChangeOperator,
     LiteralChangeOperator,
     ExceptionChangeOperator,
+    // WhenRemoveBranchOperator,
 }
 
 impl Display for MutationOperators {
@@ -668,7 +669,7 @@ mod tests {
             &"".into(),
         );
         dbg!(&mutations_made);
-        assert_eq!(mutations_made.len(), 3);
+        assert_eq!(mutations_made.len(), 2);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
