@@ -170,7 +170,7 @@ mod test {
         }
 
         // Call the function
-        build_html_page(&mutations, Path::new("."));
+        build_html_page(&mutations, Path::new("./kode-kraken-dist"));
 
         // Read the generated HTML file
         let file_path = Path::new("kode-kraken-dist").join("report.html");
