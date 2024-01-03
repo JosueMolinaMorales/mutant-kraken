@@ -1,6 +1,78 @@
-use std::fmt;
+use std::{fmt, str::FromStr};
+
+use rand::seq::SliceRandom;
 
 use crate::error::{KodeKrakenError, Result};
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
+pub enum KotlinExceptions {
+    ArithmArithmeticException,
+    NullPointerException,
+    IllegalArgumentException,
+    IllegalStateException,
+    IndexOutOfBoundsException,
+    NoSuchElementException,
+    UnsupportedOperationException,
+}
+
+impl fmt::Display for KotlinExceptions {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            KotlinExceptions::ArithmArithmeticException => write!(f, "ArithmeticException"),
+            KotlinExceptions::NullPointerException => write!(f, "NullPointerException"),
+            KotlinExceptions::IllegalArgumentException => write!(f, "IllegalArgumentException"),
+            KotlinExceptions::IllegalStateException => write!(f, "IllegalStateException"),
+            KotlinExceptions::IndexOutOfBoundsException => write!(f, "IndexOutOfBoundsException"),
+            KotlinExceptions::NoSuchElementException => write!(f, "NoSuchElementException"),
+            KotlinExceptions::UnsupportedOperationException => {
+                write!(f, "UnsupportedOperationException")
+            }
+        }
+    }
+}
+
+impl FromStr for KotlinExceptions {
+    type Err = KodeKrakenError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let res = match s {
+            "ArithmeticException" => KotlinExceptions::ArithmArithmeticException,
+            "NullPointerException" => KotlinExceptions::NullPointerException,
+            "IllegalArgumentException" => KotlinExceptions::IllegalArgumentException,
+            "IllegalStateException" => KotlinExceptions::IllegalStateException,
+            "IndexOutOfBoundsException" => KotlinExceptions::IndexOutOfBoundsException,
+            "NoSuchElementException" => KotlinExceptions::NoSuchElementException,
+            "UnsupportedOperationException" => KotlinExceptions::UnsupportedOperationException,
+            _ => return Err(KodeKrakenError::ConversionError),
+        };
+        Ok(res)
+    }
+}
+
+impl KotlinExceptions {
+    pub fn get_all_exceptions() -> Vec<KotlinExceptions> {
+        vec![
+            KotlinExceptions::ArithmArithmeticException,
+            KotlinExceptions::NullPointerException,
+            KotlinExceptions::IllegalArgumentException,
+            KotlinExceptions::IllegalStateException,
+            KotlinExceptions::IndexOutOfBoundsException,
+            KotlinExceptions::NoSuchElementException,
+            KotlinExceptions::UnsupportedOperationException,
+        ]
+    }
+
+    pub fn get_random_exception(&self) -> KotlinExceptions {
+        let mut rng = rand::thread_rng();
+        let exceptions = KotlinExceptions::get_all_exceptions();
+        let mut rnd = self;
+        while rnd == self {
+            rnd = exceptions.choose(&mut rng).unwrap();
+        }
+
+        *rnd
+    }
+}
 
 /// Holds all characters that are not named in kotlin
 const NON_NAMED_TYPES: [&str; 128] = [

@@ -132,4 +132,31 @@ fun main() {
     val l = "a"
 }
 "#;
+
+    pub const KOTLIN_TEST_NULL_ASSERTION_CODE: &str = r#"
+fun main() {
+    val a: String? = null
+    val b = a!!
+    val c = a?.length
+}
+"#;
+
+    pub const KOTLIN_EXCEPTION_TEST_CODE: &str = r#"
+fun main() {
+    var result = 0;
+        if (operation == "add") {
+            result = a + b
+        } else if (operation == "subtract") {
+            result = a - b
+        } else if (operation == "multiply") {
+            throw UnsupportedOperationException("Multiplication is not supported")
+        } else if (operation == "divide") {
+            throw DivideByZeroException("Division by zero is not allowed")
+        } else {
+            throw IllegalArgumentException("Unknown operation")
+        }
+        
+        return result
+}
+"#;
 }

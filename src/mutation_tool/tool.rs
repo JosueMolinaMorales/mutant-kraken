@@ -837,10 +837,10 @@ mod tests {
                     .unwrap()
                     .as_bytes()
                     .to_vec();
-                let diff = m.new_op.as_bytes().len() as isize - m.old_op.as_bytes().len() as isize;
-                let mut_range = m.start_byte..(m.end_byte as isize + diff) as usize;
+                let new_op_len = m.new_op.as_bytes().len();
+                let mut_range = m.start_byte..(m.start_byte + new_op_len);
                 // Checks that the mutated file does not have the same contents as the original file
-
+                // Print out strings
                 assert_eq!(m.new_op.as_bytes().to_vec(), mut_file[mut_range].to_vec());
             }
         }
@@ -996,18 +996,120 @@ mod tests {
         assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
     }
 
-    // #[test]
-    // fn test_mutate_no_null_assertion_mutations_are_correct() {
-    //     todo!()
-    // }
+    #[test]
+    fn test_mutate_null_assertion_mutated_files_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_TEST_NULL_ASSERTION_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::NotNullAssertionOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
 
-    // #[test]
-    // fn test_mutate_elvis_remove_mutations_are_correct() {
-    //     todo!()
-    // }
+    #[test]
+    fn test_mutate_no_null_assertion_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_TEST_NULL_ASSERTION_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::NotNullAssertionOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
 
-    // #[test]
-    // fn test_mutate_elvis_literal_change_mutations_are_correct() {
-    //     todo!()
-    // }
+    #[test]
+    fn test_mutate_elvis_mutated_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_ELVIS_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ElvisRemoveOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_elvis_remove_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_ELVIS_LITERAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ElvisRemoveOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_elvis_literal_change_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_ELVIS_LITERAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ElvisLiteralChangeOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_elvis_literal_change_files_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_ELVIS_LITERAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ElvisLiteralChangeOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_literal_change_mutations_are_correct() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LITERAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::LiteralChangeOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_literal_remove_mutations_files_exist() {
+        let (mutation_test_id, output_directory) = create_temp_directory(KOTLIN_LITERAL_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::LiteralChangeOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_exception_change_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_EXCEPTION_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ExceptionChangeOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_mutate_exception_change_mutations_file_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_EXCEPTION_TEST_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::ExceptionChangeOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
 }

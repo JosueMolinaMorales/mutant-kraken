@@ -2,7 +2,7 @@ use rand::{distributions::uniform::SampleUniform, Rng};
 
 use crate::{
     error::{KodeKrakenError, Result},
-    kotlin_types::KotlinTypes,
+    kotlin_types::{KotlinExceptions, KotlinTypes},
     mutation_tool::Mutation,
 };
 use std::{collections::HashSet, fmt::Display, fs};
@@ -20,6 +20,7 @@ pub enum MutationOperators {
     ElvisRemoveOperator,
     ElvisLiteralChangeOperator,
     LiteralChangeOperator,
+    ExceptionChangeOperator,
 }
 
 impl Display for MutationOperators {
@@ -38,6 +39,7 @@ impl Display for MutationOperators {
                 MutationOperators::ElvisRemoveOperator => "ElvisRemoveOperator",
                 MutationOperators::ElvisLiteralChangeOperator => "ElvisLiteralChangeOperator",
                 MutationOperators::LiteralChangeOperator => "LiteralChangeOperator",
+                MutationOperators::ExceptionChangeOperator => "ExceptionChangeOperator",
             }
         )
     }
@@ -120,6 +122,11 @@ impl MutationOperators {
             ]
             .into_iter()
             .collect(),
+            MutationOperators::ExceptionChangeOperator => {
+                vec![KotlinTypes::NonNamedType("throw".to_string())]
+                    .into_iter()
+                    .collect()
+            }
         }
     }
 
@@ -167,6 +174,7 @@ impl MutationOperators {
                 KotlinTypes::PropertyDeclaration,
                 KotlinTypes::VariableDeclaration,
             ],
+            MutationOperators::ExceptionChangeOperator => vec![KotlinTypes::JumpExpression],
         }
     }
 
@@ -277,6 +285,9 @@ impl MutationOperators {
             | MutationOperators::LiteralChangeOperator => {
                 self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
             }
+            MutationOperators::ExceptionChangeOperator => {
+                self.mutate_exception(root_node, &mut mutations_made, file_name)
+            }
             _ => {
                 // Create a mutant for all mutation operators
                 mutation_operators.iter().for_each(|operator| {
@@ -297,6 +308,51 @@ impl MutationOperators {
         }
 
         Ok(mutations_made)
+    }
+
+    fn mutate_exception(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        // Get the sibling of the root node
+        let sibling = root_node.next_sibling().unwrap();
+        let sibling_type =
+            KotlinTypes::new(sibling.kind()).expect("Failed to convert to KotlinType");
+        // If the sibling is a call expression, i want to grab the simple identifier (its child)
+        if sibling_type != KotlinTypes::CallExpression {
+            return;
+        }
+
+        let child = sibling.children(&mut sibling.walk()).next().unwrap();
+        let child_type = KotlinTypes::new(child.kind()).expect("Failed to convert to KotlinType");
+        // Check to see if the child is a simple identifier
+        if child_type != KotlinTypes::SimpleIdentifier {
+            return;
+        }
+        // Get the value
+        let file = fs::read(file_name).expect("Failed to read file");
+        let file = file.as_slice();
+        let val = child.utf8_text(file).unwrap();
+        let exception: KotlinExceptions = val
+            .parse()
+            .unwrap_or(KotlinExceptions::ArithmArithmeticException);
+
+        // Pick a random exception that is not the same as the original exception
+        let mut_val = exception.get_random_exception().to_string();
+
+        let mutation = Mutation::new(
+            child.start_byte(),
+            child.end_byte(),
+            mut_val,
+            val.to_string(),
+            child.start_position().row + 1,
+            self.clone(),
+            file_name.to_string(),
+        );
+
+        mutations_made.push(mutation);
     }
 
     fn mutate_literal(
@@ -600,6 +656,26 @@ mod tests {
     }
 
     #[test]
+    fn test_not_null_assetion_operator() {
+        let tree = get_ast(KOTLIN_TEST_NULL_ASSERTION_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::NotNullAssertionOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        dbg!(&mutations_made);
+        assert_eq!(mutations_made.len(), 3);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+        }
+    }
+
+    #[test]
     fn test_elvis_remove_operator() {
         let tree = get_ast(KOTLIN_ELVIS_TEST_CODE);
         let root = tree.root_node();
@@ -666,6 +742,32 @@ mod tests {
             &temp_file.to_str().unwrap().to_string(),
         );
         assert_eq!(mutations_made.len(), 12);
+        // Assert that the old operator is not the same as the new operator
+        for mutation in mutations_made {
+            assert_ne!(mutation.old_op, mutation.new_op);
+        }
+    }
+
+    #[test]
+    fn test_exception_change_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("exception_change_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_EXCEPTION_TEST_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_EXCEPTION_TEST_CODE);
+        let root = tree.root_node();
+        debug_print_ast(&root, 0);
+        let mut mutations_made = Vec::new();
+        MutationOperators::ExceptionChangeOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        assert_eq!(mutations_made.len(), 3);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
@@ -749,11 +851,34 @@ mod tests {
     }
 
     #[test]
+    fn test_not_null_assertion_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_ASSIGNMENT_TEST_CODE);
+        let mutations_made =
+            MutationOperators::NotNullAssertionOperator.find_mutation(&tree, &"file_name".into());
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
     fn test_remove_elvis_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
         MutationOperators::ElvisRemoveOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_elvis_literal_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::ElvisLiteralChangeOperator.mutate(
             root,
             &mut root.walk(),
             None,
