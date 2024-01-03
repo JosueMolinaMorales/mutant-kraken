@@ -83,7 +83,6 @@ impl KodeKrakenConfig {
                             "Could not parse config file, using default config. Error: {}",
                             e
                         );
-                        println!("{:?}", e);
                         Self::default()
                     }
                 }

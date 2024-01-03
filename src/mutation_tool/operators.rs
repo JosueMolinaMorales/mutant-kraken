@@ -240,9 +240,6 @@ impl MutationOperators {
             || parent.is_none()
             || !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?)
         {
-            if root == &KotlinTypes::BooleanLiteral {
-                println!("Boolean Literal, root: {:?}, parent: {:?}", root, parent);
-            }
             return Ok(mutations_made);
         }
 
@@ -313,15 +310,12 @@ impl MutationOperators {
         let children = root_node
             .children(&mut root_node.walk())
             .collect::<Vec<tree_sitter::Node>>();
-        println!("Children: {:#?}", children);
-        println!("Num of children: {}", children.len());
         let node = match children.iter().last() {
             Some(node) => node,
             None => root_node,
         };
 
         let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
-        println!("Child type: {:?}", child_type);
         // Change the literal to a different literal
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
@@ -362,7 +356,6 @@ impl MutationOperators {
             }
             KotlinTypes::BooleanLiteral => {
                 let val = val.parse::<bool>().unwrap();
-                println!("Boolean literal: {}", val);
                 // Change the value and create a mutation
                 let mutated_val = !val;
 
@@ -646,7 +639,6 @@ mod tests {
             &mut mutations_made,
             &temp_file.to_str().unwrap().to_string(),
         );
-        println!("{:#?}", mutations_made);
         assert_eq!(mutations_made.len(), 12);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
@@ -673,7 +665,6 @@ mod tests {
             &mut mutations_made,
             &temp_file.to_str().unwrap().to_string(),
         );
-        println!("{:#?}", mutations_made);
         assert_eq!(mutations_made.len(), 12);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {

@@ -104,10 +104,8 @@ pub fn run_cli() {
                 .set_general_config(config)
                 .set_mutation_comment(true)
                 .build();
-            println!("{:#?}", tool.kodekraken_config.general.operators);
             let res = match tool.kodekraken_config.general.timeout {
                 Some(timeout) => {
-                    println!("Timeout set to {} seconds", timeout);
                     run_with_timeout(move || tool.mutate(), Duration::from_secs(timeout))
                 }
                 None => tool.mutate(),
