@@ -418,17 +418,17 @@ impl MutationTool {
     }
 
     fn gradle_checks(&mut self) -> Result<()> {
-        if !gradle::is_gradle_installed() {
-            return Err(KodeKrakenError::Error(
-                "Gradle is not installed. Please install Gradle and try again.".into(),
-            ));
-        }
+        // if !gradle::is_gradle_installed() {
+        //     return Err(KodeKrakenError::Error(
+        //         "Gradle is not installed. Please install Gradle and try again.".into(),
+        //     ));
+        // }
         let path = PathBuf::from(&self.mutate_config.path);
-        if !gradle::build_project_success(&path)? {
-            return Err(KodeKrakenError::Error(
-                "Project does not build successfully. Please fix the errors and try again.".into(),
-            ));
-        }
+        // if !gradle::build_project_success(&path)? {
+        //     return Err(KodeKrakenError::Error(
+        //         "Project does not build successfully. Please fix the errors and try again.".into(),
+        //     ));
+        // }
 
         Ok(if !gradle::project_tests_pass(&path)? {
             return Err(KodeKrakenError::Error(

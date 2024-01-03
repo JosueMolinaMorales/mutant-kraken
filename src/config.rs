@@ -39,7 +39,7 @@ impl Default for GeneralConfig {
                 NotNullAssertionOperator,
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
-                LiteralChangeOpeator,
+                LiteralChangeOperator,
             ],
         }
     }
@@ -154,7 +154,7 @@ mod tests {
                 MutationOperators::NotNullAssertionOperator,
                 MutationOperators::ElvisRemoveOperator,
                 MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOpeator,
+                MutationOperators::LiteralChangeOperator,
             ]
         );
     }
@@ -200,7 +200,7 @@ mod tests {
                 MutationOperators::NotNullAssertionOperator,
                 MutationOperators::ElvisRemoveOperator,
                 MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOpeator,
+                MutationOperators::LiteralChangeOperator,
             ]
         );
         assert_eq!(config.ignore.ignore_files.len(), 1);
@@ -292,7 +292,7 @@ mod tests {
                 MutationOperators::NotNullAssertionOperator,
                 MutationOperators::ElvisRemoveOperator,
                 MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOpeator,
+                MutationOperators::LiteralChangeOperator,
             ]
         );
     }
@@ -319,7 +319,7 @@ mod tests {
                 MutationOperators::NotNullAssertionOperator,
                 MutationOperators::ElvisRemoveOperator,
                 MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOpeator,
+                MutationOperators::LiteralChangeOperator,
             ]
         );
     }
