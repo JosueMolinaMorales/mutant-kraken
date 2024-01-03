@@ -8,16 +8,7 @@ class Calculator {
         } else if (operation == "multiply") {
             result = a * b
         } else if (operation == "divide") {
-
-            /**
-            AUTO GENERATED COMMENT
-            Mutation Operator: AssignmentOperator
-            Line number: 20
-            Id: 7d99bafd-300e-4fb0-9527-524b808763f6,
-            Old Operator: =,
-            New Operator: +=
-            */
-            result += a / b
+            result = a / b
         }
         var i = 0
         while (i < 10) {
@@ -26,7 +17,16 @@ class Calculator {
             } else {
                 result -= i
             }
-            i++
+
+            /**
+            AUTO GENERATED COMMENT
+            Mutation Operator: UnaryReplacementOperator
+            Line number: 29
+            Id: eeea3a90-506d-49c7-b0ab-219fecc09ceb,
+            Old Operator: ++,
+            New Operator: !
+            */
+            i!
         }
         for (j in 1..5) {
             result *= j

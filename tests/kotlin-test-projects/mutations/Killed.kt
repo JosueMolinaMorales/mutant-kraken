@@ -17,19 +17,19 @@ class Calculator {
             } else {
                 result -= i
             }
+            i++
+        }
+        for (j in 1..5) {
 
             /**
             AUTO GENERATED COMMENT
-            Mutation Operator: UnaryOperator
-            Line number: 29
-            Id: eeea3a90-506d-49c7-b0ab-219fecc09ceb,
-            Old Operator: ++,
-            New Operator: !
+            Mutation Operator: AssignmentReplacementOperator
+            Line number: 32
+            Id: e4f91eaa-6011-44cd-ae0b-0668eda62769,
+            Old Operator: *=,
+            New Operator: /=
             */
-            i!
-        }
-        for (j in 1..5) {
-            result *= j
+            result /= j
         }
         return result
     }

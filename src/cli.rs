@@ -1,11 +1,12 @@
 use std::{path::Path, time::Duration};
 
 use clap::{Args, CommandFactory, Parser, Subcommand};
+use tracing_appender::non_blocking::WorkerGuard;
 
 use crate::{
     config::KodeKrakenConfig,
     error::{self, KodeKrakenError},
-    mutation_tool::{MutationToolBuilder, OUT_DIRECTORY},
+    mutation_tool::MutationToolBuilder,
 };
 
 #[derive(Subcommand, Debug, Clone)]
@@ -20,7 +21,7 @@ pub enum Commands {
     /// Clean the kode-kraken-dist directory
     /// This will delete all files in the directory
     /// This is useful if you want to remove all the files
-    Clean,
+    Clean(MutationCommandConfig),
 }
 
 const ABOUT: &str = include_str!("../assets/about.txt");
@@ -37,7 +38,7 @@ pub struct Cli {
     pub command: Commands,
 }
 
-#[derive(Args, Debug, Clone)]
+#[derive(Args, Debug, Clone, PartialEq, Eq)]
 pub struct MutationCommandConfig {
     /// The path to the files to be mutated
     /// Error will be thrown if the path is not a directory
@@ -86,21 +87,25 @@ where
     }
 }
 
-pub fn run_cli(config: KodeKrakenConfig) {
+pub fn run_cli() {
+    let _guard: WorkerGuard;
+    tracing::info!("Starting Kode Kraken");
+
     let args = Cli::parse();
     let mutate_tool_builder = MutationToolBuilder::new();
 
     match args.command {
         Commands::Mutate(mutate_config) => {
+            let config = KodeKrakenConfig::load_config(mutate_config.path.clone());
+            _guard = setup_logging(&config.logging.log_level, mutate_config.path.clone());
+
             let mut tool = mutate_tool_builder
                 .set_mutate_config(mutate_config)
                 .set_general_config(config)
                 .set_mutation_comment(true)
                 .build();
-            println!("{:#?}", tool.kodekraken_config.general.timeout);
             let res = match tool.kodekraken_config.general.timeout {
                 Some(timeout) => {
-                    println!("Timeout set to {} seconds", timeout);
                     run_with_timeout(move || tool.mutate(), Duration::from_secs(timeout))
                 }
                 None => tool.mutate(),
@@ -145,15 +150,41 @@ pub fn run_cli(config: KodeKrakenConfig) {
                 println!("3. Edit the config file to your liking");
             }
         }
-        Commands::Clean => {
+        Commands::Clean(config) => {
             // Check to see if the output directory exists
-            let output_dir = Path::new(OUT_DIRECTORY);
+            let output_dir = Path::new(config.path.as_str()).join("kode-kraken-dist");
             if output_dir.exists() {
                 // Delete the output directory
                 std::fs::remove_dir_all(output_dir).expect("Could not delete output directory");
             }
         }
     }
+}
+
+fn setup_logging(log_level: &str, dir: String) -> WorkerGuard {
+    let log_level = match log_level.to_lowercase().as_str() {
+        "trace" => tracing::Level::TRACE,
+        "debug" => tracing::Level::DEBUG,
+        "info" => tracing::Level::INFO,
+        "warn" => tracing::Level::WARN,
+        "error" => tracing::Level::ERROR,
+        _ => tracing::Level::INFO,
+    };
+    // Create dist log folder if it doesn't exist
+    let log_dir = Path::new(dir.as_str())
+        .join("kode-kraken-dist")
+        .join("logs");
+    std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
+    let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
+    let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+    tracing_subscriber::fmt()
+        .with_max_level(log_level)
+        .with_ansi(false)
+        .with_target(false)
+        .with_writer(non_blocking)
+        .with_thread_ids(true)
+        .init();
+    guard
 }
 
 #[cfg(test)]

@@ -16,4 +16,19 @@ class Calculator {
         var result:Int? = test!!.length
         return result
     }
+
+    fun ElvisLiteralChangeOperator() {
+        var b: String? = null
+        var x = b?.length ?: -11
+        var y = b?.length ?: "Hello There"
+        var z = b?.length ?: 1.0
+        var a = b?.length ?: 1.0f
+        var c = b?.length ?: 1L
+
+        if (x > 1) {
+            println("Len is greater than 1!")
+        }
+    
+        println(x)
+    }
 }
