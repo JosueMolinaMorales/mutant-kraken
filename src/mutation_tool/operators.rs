@@ -19,7 +19,7 @@ pub enum MutationOperators {
     NotNullAssertionOperator,
     ElvisRemoveOperator,
     ElvisLiteralChangeOperator,
-    LiteralChangeOpeator,
+    LiteralChangeOperator,
 }
 
 impl Display for MutationOperators {
@@ -37,7 +37,7 @@ impl Display for MutationOperators {
                 MutationOperators::NotNullAssertionOperator => "NotNullAssertionOperator",
                 MutationOperators::ElvisRemoveOperator => "ElvisRemoveOperator",
                 MutationOperators::ElvisLiteralChangeOperator => "ElvisLiteralChangeOperator",
-                MutationOperators::LiteralChangeOpeator => "LiteralChangeOpeator",
+                MutationOperators::LiteralChangeOperator => "LiteralChangeOperator",
             }
         )
     }
@@ -110,7 +110,7 @@ impl MutationOperators {
                     .into_iter()
                     .collect()
             }
-            MutationOperators::LiteralChangeOpeator => vec![
+            MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
                 KotlinTypes::LineStringLiteral,
                 KotlinTypes::BooleanLiteral,
@@ -149,7 +149,7 @@ impl MutationOperators {
             | MutationOperators::ElvisLiteralChangeOperator => {
                 vec![KotlinTypes::ElvisExpression]
             }
-            MutationOperators::LiteralChangeOpeator => vec![
+            MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
                 KotlinTypes::LineStringLiteral,
                 KotlinTypes::BooleanLiteral,
@@ -274,7 +274,7 @@ impl MutationOperators {
                 mutations_made.push(mutation);
             }
             MutationOperators::ElvisLiteralChangeOperator
-            | MutationOperators::LiteralChangeOpeator => {
+            | MutationOperators::LiteralChangeOperator => {
                 self.mutate_literal(&root_node.parent().unwrap(), &mut mutations_made, file_name)
             }
             _ => {
@@ -658,7 +658,7 @@ mod tests {
         let root = tree.root_node();
         debug_print_ast(&root, 0);
         let mut mutations_made = Vec::new();
-        MutationOperators::LiteralChangeOpeator.mutate(
+        MutationOperators::LiteralChangeOperator.mutate(
             root,
             &mut root.walk(),
             None,

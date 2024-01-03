@@ -105,7 +105,7 @@ mod tests {
                 NotNullAssertionOperator,
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
-                LiteralChangeOpeator,
+                LiteralChangeOperator,
             ]
         );
     }
@@ -216,7 +216,7 @@ mod tests {
                 NotNullAssertionOperator,
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
-                LiteralChangeOpeator,
+                LiteralChangeOperator,
             ]
         );
     }
