@@ -2,7 +2,7 @@
     "general": {
         "timeout": null,
         "operators": [
-            "RemoveLabelOperator"
+            "FunctionalReplacementOperator"
         ]
     },
     "ignore": {

@@ -31,4 +31,33 @@ class Calculator {
     
         println(x)
     }
+
+    fun FunctionalFun() {
+        val numbers = listOf(1, 2, 3, 4, 5)
+
+        // Using any() to check if there is at least one even number
+        val hasEvenNumber = numbers.any { it % 2 == 0 }
+        println("Has even number: $hasEvenNumber")
+
+        // Using all() to check if all numbers are even
+        val allEvenNumbers = numbers.all { it % 2 == 0 }
+        println("All numbers are even: $allEvenNumbers")
+
+        // Using none() to check if there are no even numbers
+        val noEvenNumbers = numbers.none { it % 2 == 0 }
+        println("No even numbers: $noEvenNumbers")
+
+        // Using Filter() to filter the list
+        val evenNumbers = numbers.filter { it % 2 == 0 }
+        println("Even numbers: $evenNumbers")
+
+        // Using Map() to map the numbers to their squares
+        val squaredNumbers = numbers.map { it * it }
+        println("Squared numbers: $squaredNumbers")
+
+        // Using ForEach() to print each number
+        numbers.forEach { println(it) }
+
+    }
+
 }

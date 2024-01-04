@@ -1,4 +1,4 @@
-use rand::{distributions::uniform::SampleUniform, Rng};
+use rand::{distributions::uniform::SampleUniform, seq::SliceRandom, Rng};
 use tree_sitter::Node;
 
 use crate::{
@@ -6,26 +6,45 @@ use crate::{
     kotlin_types::{KotlinExceptions, KotlinTypes},
     mutation_tool::Mutation,
 };
-use std::{collections::HashSet, fmt::Display, fs};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Display,
+    fs,
+};
 
 // The different types of mutation operators that can be performed on a file
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
 pub enum MutationOperators {
+    /// Replaces an arithmetic operator with a different arithmetic operator
     ArithmeticReplacementOperator,
+    /// Removes a unary operator
     UnaryRemovalOperator,
+    /// Replaces a logical operator with a different logical operator
     LogicalReplacementOperator,
+    /// Replaces a relational operator with a different relational operator
     RelationalReplacementOperator,
+    /// Replaces an assignment operator with a different assignment operator
     AssignmentReplacementOperator,
+    /// Replaces a unary operator with a different unary operator
     UnaryReplacementOperator,
+    /// Replaces a not null assertion operator with a different not null assertion operator
     NotNullAssertionOperator,
+    /// Removes an elvis operator
     ElvisRemoveOperator,
+    /// Changes the literal of an elvis operator
     ElvisLiteralChangeOperator,
+    /// Changes the literal of a literal
     LiteralChangeOperator,
+    /// Changes the exception thrown
     ExceptionChangeOperator,
     /// Removes a branch from the when statement if the statement has more than one branch
     WhenRemoveBranchOperator,
     /// Removes a label when continuing, breaking, or returning
     RemoveLabelOperator,
+    /// Changes first() to last() and vice versa or find() to findLast() and vice versa
+    FunctionalBinaryReplacementOperator,
+    /// Changes Any() to All() or None() and vice versa or ForEach() to Map() or Filter() and vice versa
+    FunctionalReplacementOperator,
 }
 
 impl Display for MutationOperators {
@@ -47,6 +66,10 @@ impl Display for MutationOperators {
                 MutationOperators::ExceptionChangeOperator => "ExceptionChangeOperator",
                 MutationOperators::WhenRemoveBranchOperator => "WhenRemoveBranchOperator",
                 MutationOperators::RemoveLabelOperator => "RemoveLabelOperator",
+                MutationOperators::FunctionalBinaryReplacementOperator => {
+                    "FunctionalBinaryReplacementOperator"
+                }
+                MutationOperators::FunctionalReplacementOperator => "FunctionalReplacementOperator",
             }
         )
     }
@@ -140,6 +163,10 @@ impl MutationOperators {
             MutationOperators::RemoveLabelOperator => {
                 vec![KotlinTypes::JumpExpression].into_iter().collect()
             }
+            MutationOperators::FunctionalBinaryReplacementOperator
+            | MutationOperators::FunctionalReplacementOperator => {
+                vec![KotlinTypes::SimpleIdentifier].into_iter().collect()
+            }
         }
     }
 
@@ -192,6 +219,10 @@ impl MutationOperators {
             }
             MutationOperators::WhenRemoveBranchOperator
             | MutationOperators::RemoveLabelOperator => vec![KotlinTypes::AnyParent],
+            MutationOperators::FunctionalBinaryReplacementOperator
+            | MutationOperators::FunctionalReplacementOperator => {
+                vec![KotlinTypes::NavigationSuffix]
+            }
         }
     }
 
@@ -312,6 +343,12 @@ impl MutationOperators {
             MutationOperators::RemoveLabelOperator => {
                 self.mutate_label(root_node, &mut mutations_made, file_name)
             }
+            MutationOperators::FunctionalBinaryReplacementOperator => {
+                self.mutate_functional_binary(root_node, &mut mutations_made, file_name)
+            }
+            MutationOperators::FunctionalReplacementOperator => {
+                self.mutate_functional(root_node, &mut mutations_made, file_name)
+            }
             _ => {
                 // Create a mutant for all mutation operators
                 mutation_operators.iter().for_each(|operator| {
@@ -332,6 +369,92 @@ impl MutationOperators {
         }
 
         Ok(mutations_made)
+    }
+
+    fn mutate_functional(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        let predicates = ["any", "all", "none"];
+        let transform = ["forEach", "map", "filter"];
+
+        // Need to make sure the current node is either "any", "all", "none", "forEach", "map", or "filter"
+        // If it is, then we need to change it to the other one
+        let file = fs::read(file_name).expect("Failed to read file");
+        let file = file.as_slice();
+        let val = root_node.utf8_text(file).unwrap();
+
+        if !predicates.contains(&val) && !transform.contains(&val) {
+            return;
+        }
+
+        // Pick a random method that is not the same as the original method
+        let mut rng = rand::thread_rng();
+        let mut mut_val = val;
+        let type_val = if predicates.contains(&val) {
+            "predicate"
+        } else {
+            "transform"
+        };
+        while mut_val == val {
+            mut_val = match type_val {
+                "predicate" => predicates.choose(&mut rng).unwrap(),
+                "transform" => transform.choose(&mut rng).unwrap(),
+                _ => panic!("Invalid type"),
+            };
+        }
+
+        let mutation = Mutation::new(
+            root_node.start_byte(),
+            root_node.end_byte(),
+            mut_val.into(),
+            val.to_string(),
+            root_node.start_position().row + 1,
+            self.clone(),
+            file_name.to_string(),
+        );
+        mutations_made.push(mutation);
+    }
+
+    fn mutate_functional_binary(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        let changes = HashMap::from([
+            ("first", "last"),
+            ("last", "first"),
+            ("firstOrNull", "lastOrNull"),
+            ("lastOrNull", "firstOrNull"),
+            ("find", "findLast"),
+            ("findLast", "find"),
+        ]);
+
+        // Need to make sure the current node is either "first", "last", "firstOrNull", or "lastOrNull"
+        // If it is, then we need to change it to the other one
+        let file = fs::read(file_name).expect("Failed to read file");
+        let file = file.as_slice();
+        let val = root_node.utf8_text(file).unwrap();
+
+        if !changes.contains_key(val) {
+            return;
+        }
+
+        let mut_val = changes[val];
+
+        let mutation = Mutation::new(
+            root_node.start_byte(),
+            root_node.end_byte(),
+            mut_val.into(),
+            val.to_string(),
+            root_node.start_position().row + 1,
+            self.clone(),
+            file_name.to_string(),
+        );
+        mutations_made.push(mutation);
     }
 
     fn mutate_label(
@@ -920,6 +1043,50 @@ mod tests {
     }
 
     #[test]
+    fn test_functional_binary_replacement_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("functional_find_find_last_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_FUNCTIONAL_BINARY_REPLACEMENT_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_FUNCTIONAL_BINARY_REPLACEMENT_CODE);
+        let root = tree.root_node();
+        debug_print_ast(&root, 0);
+        let mut mutations_made = Vec::new();
+        MutationOperators::FunctionalBinaryReplacementOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        assert_eq!(mutations_made.len(), 6);
+    }
+
+    #[test]
+    fn test_functional_replacement_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("functional_any_all_none_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_FUNCTIONAL_REPLACEMENT_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_FUNCTIONAL_REPLACEMENT_CODE);
+        let root = tree.root_node();
+        debug_print_ast(&root, 0);
+        let mut mutations_made = Vec::new();
+        MutationOperators::FunctionalReplacementOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        assert_eq!(mutations_made.len(), 6);
+    }
+
+    #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
@@ -1060,6 +1227,22 @@ mod tests {
             &mut mutations_made,
             &"".into(),
         );
+        assert!(mutations_made.is_empty());
+    }
+
+    #[test]
+    fn test_functional_binary_replacement_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let mutations_made = MutationOperators::FunctionalBinaryReplacementOperator
+            .find_mutation(&tree, &"file_name".into());
+        assert!(mutations_made.is_empty());
+    }
+
+    #[test]
+    fn test_functional_replacement_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let mutations_made = MutationOperators::FunctionalReplacementOperator
+            .find_mutation(&tree, &"file_name".into());
         assert!(mutations_made.is_empty());
     }
 }

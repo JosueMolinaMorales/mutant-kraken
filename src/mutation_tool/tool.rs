@@ -1160,4 +1160,52 @@ mod tests {
         );
         assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
     }
+
+    #[test]
+    fn test_functional_binary_replacement_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_FUNCTIONAL_BINARY_REPLACEMENT_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::FunctionalBinaryReplacementOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_functional_binary_replacement_mutations_files_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_FUNCTIONAL_BINARY_REPLACEMENT_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::FunctionalBinaryReplacementOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_functional_replacement_mutations_are_correct() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_FUNCTIONAL_REPLACEMENT_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::FunctionalReplacementOperator],
+        );
+        assert_all_mutations_are_correct(&mut mutator, mutation_test_id, output_directory);
+    }
+
+    #[test]
+    fn test_functional_replacement_mutations_files_exist() {
+        let (mutation_test_id, output_directory) =
+            create_temp_directory(KOTLIN_FUNCTIONAL_REPLACEMENT_CODE);
+        let mut mutator = create_mutator_with_specific_operators(
+            mutation_test_id,
+            output_directory.clone(),
+            vec![MutationOperators::FunctionalReplacementOperator],
+        );
+        assert_all_mutation_files_were_created(&mut mutator, mutation_test_id, output_directory);
+    }
 }
