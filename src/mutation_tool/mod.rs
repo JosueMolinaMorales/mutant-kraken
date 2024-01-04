@@ -177,4 +177,32 @@ fun main() {
         else -> 0
     }
 "#;
+
+    pub const KOTLIN_LABEL_REMOVING_TEST_CODE: &str = r#"
+    fun main() {
+        listOf(1, 2, 3, 4, 5).forEach lit@{
+            if (it == 3) return@lit // local return to the caller of the lambda - the forEach loop
+            print(it)
+        }
+        
+        print(" done with explicit label")
+
+        outerLoop@ for (i in 1..5) {
+            innerLoop@ for (j in 1..3) {
+                println("i: $i, j: $j")
+
+                when (j) {
+                    2 -> {
+                        println("Breaking inner loop")
+                        break@innerLoop
+                    }
+                    3 -> {
+                        println("Continuing to the next iteration of outer loop")
+                        continue@outerLoop
+                    }
+                }
+            }
+        }
+    }
+"#;
 }

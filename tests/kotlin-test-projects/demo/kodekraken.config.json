@@ -2,7 +2,7 @@
     "general": {
         "timeout": null,
         "operators": [
-            "WhenRemoveBranchOperator"
+            "RemoveLabelOperator"
         ]
     },
     "ignore": {

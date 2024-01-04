@@ -24,6 +24,8 @@ pub enum MutationOperators {
     ExceptionChangeOperator,
     /// Removes a branch from the when statement if the statement has more than one branch
     WhenRemoveBranchOperator,
+    /// Removes a label when continuing, breaking, or returning
+    RemoveLabelOperator,
 }
 
 impl Display for MutationOperators {
@@ -44,6 +46,7 @@ impl Display for MutationOperators {
                 MutationOperators::LiteralChangeOperator => "LiteralChangeOperator",
                 MutationOperators::ExceptionChangeOperator => "ExceptionChangeOperator",
                 MutationOperators::WhenRemoveBranchOperator => "WhenRemoveBranchOperator",
+                MutationOperators::RemoveLabelOperator => "RemoveLabelOperator",
             }
         )
     }
@@ -134,6 +137,9 @@ impl MutationOperators {
             MutationOperators::WhenRemoveBranchOperator => {
                 vec![KotlinTypes::WhenExpression].into_iter().collect()
             }
+            MutationOperators::RemoveLabelOperator => {
+                vec![KotlinTypes::JumpExpression].into_iter().collect()
+            }
         }
     }
 
@@ -181,8 +187,11 @@ impl MutationOperators {
                 KotlinTypes::PropertyDeclaration,
                 KotlinTypes::VariableDeclaration,
             ],
-            MutationOperators::ExceptionChangeOperator => vec![KotlinTypes::JumpExpression],
-            MutationOperators::WhenRemoveBranchOperator => vec![KotlinTypes::AnyParent],
+            MutationOperators::ExceptionChangeOperator => {
+                vec![KotlinTypes::JumpExpression]
+            }
+            MutationOperators::WhenRemoveBranchOperator
+            | MutationOperators::RemoveLabelOperator => vec![KotlinTypes::AnyParent],
         }
     }
 
@@ -300,6 +309,9 @@ impl MutationOperators {
             MutationOperators::WhenRemoveBranchOperator => {
                 self.mutate_when(root_node, &mut mutations_made, file_name)
             }
+            MutationOperators::RemoveLabelOperator => {
+                self.mutate_label(root_node, &mut mutations_made, file_name)
+            }
             _ => {
                 // Create a mutant for all mutation operators
                 mutation_operators.iter().for_each(|operator| {
@@ -320,6 +332,39 @@ impl MutationOperators {
         }
 
         Ok(mutations_made)
+    }
+
+    fn mutate_label(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        // Get the value of the node
+        let file = fs::read(file_name).expect("Failed to read file");
+        let file = file.as_slice();
+        let val = root_node.utf8_text(file).unwrap();
+
+        // If the value is not a label, return
+        if !val.contains("@") {
+            return;
+        }
+
+        // Remove the label
+        let label_start = val.find("@").unwrap();
+        let mut_value = val[0..label_start].to_string();
+
+        let mutation = Mutation::new(
+            root_node.start_byte(),
+            root_node.end_byte(),
+            mut_value,
+            val.to_string(),
+            root_node.start_position().row + 1,
+            self.clone(),
+            file_name.to_string(),
+        );
+
+        mutations_made.push(mutation);
     }
 
     fn mutate_when(
@@ -853,6 +898,28 @@ mod tests {
     }
 
     #[test]
+    fn test_label_remove_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("label_remove_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_LABEL_REMOVING_TEST_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_LABEL_REMOVING_TEST_CODE);
+        let root = tree.root_node();
+        debug_print_ast(&root, 0);
+        let mut mutations_made = Vec::new();
+        MutationOperators::RemoveLabelOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        assert_eq!(mutations_made.len(), 3);
+    }
+
+    #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
@@ -979,5 +1046,20 @@ mod tests {
             &"".into(),
         );
         assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_label_removal_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::RemoveLabelOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        assert!(mutations_made.is_empty());
     }
 }
