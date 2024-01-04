@@ -1,4 +1,5 @@
 use rand::{distributions::uniform::SampleUniform, Rng};
+use tree_sitter::Node;
 
 use crate::{
     error::{KodeKrakenError, Result},
@@ -21,7 +22,8 @@ pub enum MutationOperators {
     ElvisLiteralChangeOperator,
     LiteralChangeOperator,
     ExceptionChangeOperator,
-    // WhenRemoveBranchOperator,
+    /// Removes a branch from the when statement if the statement has more than one branch
+    WhenRemoveBranchOperator,
 }
 
 impl Display for MutationOperators {
@@ -41,6 +43,7 @@ impl Display for MutationOperators {
                 MutationOperators::ElvisLiteralChangeOperator => "ElvisLiteralChangeOperator",
                 MutationOperators::LiteralChangeOperator => "LiteralChangeOperator",
                 MutationOperators::ExceptionChangeOperator => "ExceptionChangeOperator",
+                MutationOperators::WhenRemoveBranchOperator => "WhenRemoveBranchOperator",
             }
         )
     }
@@ -128,6 +131,9 @@ impl MutationOperators {
                     .into_iter()
                     .collect()
             }
+            MutationOperators::WhenRemoveBranchOperator => {
+                vec![KotlinTypes::WhenExpression].into_iter().collect()
+            }
         }
     }
 
@@ -176,6 +182,7 @@ impl MutationOperators {
                 KotlinTypes::VariableDeclaration,
             ],
             MutationOperators::ExceptionChangeOperator => vec![KotlinTypes::JumpExpression],
+            MutationOperators::WhenRemoveBranchOperator => vec![KotlinTypes::AnyParent],
         }
     }
 
@@ -247,7 +254,8 @@ impl MutationOperators {
         // Checks to see if the parent is the necessary kotlin type
         if !mutation_operators.contains(root)
             || parent.is_none()
-            || !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?)
+            || (!parent_types.contains(&KotlinTypes::AnyParent)
+                && !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?))
         {
             return Ok(mutations_made);
         }
@@ -289,6 +297,9 @@ impl MutationOperators {
             MutationOperators::ExceptionChangeOperator => {
                 self.mutate_exception(root_node, &mut mutations_made, file_name)
             }
+            MutationOperators::WhenRemoveBranchOperator => {
+                self.mutate_when(root_node, &mut mutations_made, file_name)
+            }
             _ => {
                 // Create a mutant for all mutation operators
                 mutation_operators.iter().for_each(|operator| {
@@ -309,6 +320,50 @@ impl MutationOperators {
         }
 
         Ok(mutations_made)
+    }
+
+    fn mutate_when(
+        &self,
+        root_node: &tree_sitter::Node,
+        mutations_made: &mut Vec<Mutation>,
+        file_name: &str,
+    ) {
+        // Get the when entry list
+        let when_entry_list = root_node
+            .children(&mut root_node.walk())
+            .filter_map(|node| {
+                let kt_node =
+                    KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
+                if kt_node == KotlinTypes::WhenEntry {
+                    Some(node)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<Node<'_>>>();
+
+        // If the when entry list has more than one entry, remove one of the entries
+        if when_entry_list.len() < 2 {
+            return;
+        }
+
+        // Get a random branch other than the last branch (this is usually the else branch)
+        let mut rng = rand::thread_rng();
+        let index = rng.gen_range(0..when_entry_list.len() - 1);
+        let node = when_entry_list.get(index).unwrap();
+
+        // Remove the node
+        let mutation = Mutation::new(
+            node.start_byte(),
+            node.end_byte(),
+            KotlinTypes::RemoveOperator.to_string(),
+            "When Branch".to_string(),
+            node.start_position().row + 1,
+            self.clone(),
+            file_name.to_string(),
+        );
+
+        mutations_made.push(mutation);
     }
 
     fn mutate_exception(
@@ -776,6 +831,28 @@ mod tests {
     }
 
     #[test]
+    fn test_when_remove_branch_operator() {
+        // Create a temp file
+        let temp_dir = temp_dir();
+        let temp_file = temp_dir.join("when_remove_branch_temp_file.kt");
+        let mut file = fs::File::create(&temp_file).expect("Failed to create temp file");
+        file.write_all(KOTLIN_WHEN_EXPRESSION_TEST_CODE.as_bytes())
+            .expect("Failed to write to temp file");
+        let tree = get_ast(KOTLIN_WHEN_EXPRESSION_TEST_CODE);
+        let root = tree.root_node();
+        debug_print_ast(&root, 0);
+        let mut mutations_made = Vec::new();
+        MutationOperators::WhenRemoveBranchOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &temp_file.to_str().unwrap().to_string(),
+        );
+        assert_eq!(mutations_made.len(), 2);
+    }
+
+    #[test]
     fn test_arthimetic_operator_does_not_create_mutations() {
         let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
         let root = tree.root_node();
@@ -826,6 +903,21 @@ mod tests {
         let root = tree.root_node();
         let mut mutations_made = Vec::new();
         MutationOperators::AssignmentReplacementOperator.mutate(
+            root,
+            &mut root.walk(),
+            None,
+            &mut mutations_made,
+            &"".into(),
+        );
+        assert_eq!(mutations_made.len(), 0);
+    }
+
+    #[test]
+    fn test_when_remove_operator_does_not_create_mutations() {
+        let tree = get_ast(KOTLIN_UNARY_REMOVAL_TEST_CODE);
+        let root = tree.root_node();
+        let mut mutations_made = Vec::new();
+        MutationOperators::WhenRemoveBranchOperator.mutate(
             root,
             &mut root.walk(),
             None,

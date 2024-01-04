@@ -159,4 +159,22 @@ fun main() {
         return result
 }
 "#;
+
+    pub const KOTLIN_WHEN_EXPRESSION_TEST_CODE: &str = r#"
+fun main() {
+    val a = 10
+    val b = 3
+    val c = when (a) {
+        1 -> 1
+        2 -> 2
+        3 -> 3
+        else -> 0
+    }
+    val d = when (a) {
+        1 -> 1
+        2 -> 2
+        3 -> 3
+        else -> 0
+    }
+"#;
 }

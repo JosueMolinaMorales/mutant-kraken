@@ -210,6 +210,8 @@ const NON_NAMED_TYPES: [&str; 128] = [
 /// An enum for all the types that exist within kotlin
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum KotlinTypes {
+    /// Custom type
+    AnyParent,
     AdditiveExpression,
     AnnotatedLambda,
     Annotation,
@@ -474,6 +476,7 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::ReificationModifier => write!(f, "ReificationModifier"),
             KotlinTypes::NonNamedType(s) => write!(f, "{s}"),
             KotlinTypes::Error => write!(f, "Error"),
+            KotlinTypes::AnyParent => write!(f, "AnyParent"),
         }
     }
 }
