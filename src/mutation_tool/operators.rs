@@ -600,7 +600,11 @@ impl MutationOperators {
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
             KotlinTypes::IntegerLiteral => {
-                let val = val.parse::<i32>().unwrap();
+                let val = val.replace("_", "").parse::<i32>();
+                if val.is_err() {
+                    return;
+                }
+                let val = val.unwrap();
                 // Change the value and create a mutation
                 let mutated_val = generate_random_literal(val, i32::MIN, i32::MAX);
                 let mutation = Mutation::new(
@@ -656,7 +660,11 @@ impl MutationOperators {
                     val = val.strip_suffix("L").unwrap();
                 }
 
-                let val = val.parse::<i64>().unwrap();
+                let val = val.replace("_", "").parse::<i64>();
+                if val.is_err() {
+                    return;
+                }
+                let val = val.unwrap();
                 // Change the value and create a mutation
                 let mutated_val = generate_random_literal(val, i64::MIN, i64::MAX);
 
@@ -676,7 +684,11 @@ impl MutationOperators {
                 if val.ends_with("f") {
                     val = val.strip_suffix("f").unwrap();
                 }
-                let val = val.parse::<f32>().unwrap();
+                let val = val.parse::<f32>();
+                if val.is_err() {
+                    return;
+                }
+                let val = val.unwrap();
                 // Change the value and create a mutation
                 let mutated_val = generate_random_literal(val, 0.0, 1.0);
                 let mutation = Mutation::new(

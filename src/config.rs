@@ -40,6 +40,11 @@ impl Default for GeneralConfig {
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
                 LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator,
             ],
         }
     }

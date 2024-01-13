@@ -42,36 +42,6 @@ pub fn project_tests_pass(path: &PathBuf) -> Result<bool> {
     Ok(res.success())
 }
 
-/// Checks to see if gradle is installed on the system
-pub fn is_gradle_installed() -> bool {
-    let mut cmd = if cfg!(unix) {
-        Command::new("gradle")
-    } else if cfg!(windows) {
-        Command::new("cmd")
-    } else {
-        panic!("Unsupported OS");
-    };
-    let mut args = vec![];
-    if cfg!(windows) {
-        args.append(&mut ["/C".into(), "gradlew.bat".into()].to_vec())
-    }
-    args.append(&mut ["--version".to_string()].to_vec());
-
-    let res = cmd
-        .args(args)
-        .stderr(Stdio::null())
-        .stdout(Stdio::null())
-        .spawn()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)));
-    match res {
-        Ok(mut child) => {
-            let res = child.wait().unwrap();
-            res.success()
-        }
-        Err(_) => false,
-    }
-}
-
 /// Run the gradle commands, assemble and test
 /// This will check to see if there is a gradlew file in the root of the directory
 pub fn run(
@@ -117,7 +87,7 @@ pub fn run(
     tracing::debug!("Running test for mutation: {}", mutated_file_path.display());
     // Will need to keep an eye on this timeout. The reason its here is because of infinite loops that
     // can occur from the mutations.
-    let res = match child_process.wait_timeout(Duration::from_secs(30)) {
+    let res = match child_process.wait_timeout(Duration::from_secs(120)) {
         Ok(Some(status)) => status,
         Ok(None) => {
             child_process.kill().map_err(|e| {
@@ -161,9 +131,9 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result
         args.append(&mut ["/C".into(), "gradlew.bat".into()].to_vec())
     }
     args.push(command.to_string());
-    if let GradleCommand::Test(filter) = command {
-        args.append(&mut ["--tests".to_string(), format!("{}Test", filter)].to_vec())
-    }
+    // if let GradleCommand::Test(filter) = command {
+    //     args.append(&mut ["--tests".to_string(), format!("{}Test", filter)].to_vec())
+    // }
     if command != GradleCommand::Clean {
         args.append(&mut ["--parallel".to_string(), "--quiet".to_string()].to_vec());
     }

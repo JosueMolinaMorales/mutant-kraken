@@ -1,0 +1,4536 @@
+{
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 16,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 16,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 16,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 16,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 16,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 39,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 39,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 39,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 39,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 39,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/SwitchAccountContract.kt",
+        "line_number": 42,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/OwnerStorage.kt": {
+    "mutations": []
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt": {
+    "mutations": [
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt",
+        "line_number": 47,
+        "new_op": "==",
+        "old_op": ">",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt",
+        "line_number": 47,
+        "new_op": "<",
+        "old_op": ">",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt",
+        "line_number": 47,
+        "new_op": ">=",
+        "old_op": ">",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt",
+        "line_number": 47,
+        "new_op": "!=",
+        "old_op": ">",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Retroauth.kt",
+        "line_number": 47,
+        "new_op": "<=",
+        "old_op": ">",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/Credentials.kt": {
+    "mutations": []
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/AuthenticationRequiredException.kt": {
+    "mutations": []
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/Main.kt": {
+    "mutations": []
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/RequestType.kt": {
+    "mutations": []
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 116,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AccountAuthenticator.kt",
+        "line_number": 128,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"account_credential_type\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/sqlite/data/Account.kt": {
+    "mutations": []
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 56,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 56,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 56,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 56,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 56,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 62,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 62,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 62,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 62,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 62,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 97,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 97,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 97,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 97,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 97,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 61,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerCredentialStorage.kt",
+        "line_number": 84,
+        "new_op": "filter",
+        "old_op": "forEach",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/GithubAuthenticator.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/GithubAuthenticator.kt",
+        "line_number": 20,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"bb86ddeb2dd22163192f\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/GithubAuthenticator.kt",
+        "line_number": 21,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"0b2a017a3e481c1cb69739ff5a6c4de37009ed7a\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/GithubAuthenticator.kt",
+        "line_number": 22,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"https://localhost:8000/accounts/github/login/callback/\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/Authenticated.kt": {
+    "mutations": []
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt": {
+    "mutations": [
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 60,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 60,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 60,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 60,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 60,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 62,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 62,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 62,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 62,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 62,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 63,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 63,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 63,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 63,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 63,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 64,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 64,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 64,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 64,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 64,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 75,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 75,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 75,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 75,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 75,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 76,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 76,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 76,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 76,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 76,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 77,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 77,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 77,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 77,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 77,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 78,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 78,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 78,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 78,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 78,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 61,
+        "new_op": "",
+        "old_op": "?:",
+        "mutation_type": "ElvisRemoveOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 19,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 26,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 38,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 40,
+        "new_op": "lastOrNull",
+        "old_op": "firstOrNull",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 56,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 58,
+        "new_op": "lastOrNull",
+        "old_op": "firstOrNull",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteCredentialStore.kt",
+        "line_number": 69,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt": {
+    "mutations": [
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 42,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 43,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 43,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 43,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 43,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 43,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 41,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 21,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 27,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 50,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 34,
+        "new_op": "any",
+        "old_op": "all",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 34,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 40,
+        "new_op": "none",
+        "old_op": "all",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./sqlite/src/main/kotlin/com/andretietz/retroauth/SQLiteOwnerStore.kt",
+        "line_number": 40,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/RetroauthInitProvider.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/RetroauthInitProvider.kt",
+        "line_number": 12,
+        "new_op": "NullPointerException",
+        "old_op": "error",
+        "mutation_type": "ExceptionChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/CredentialStorage.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 31,
+        "new_op": "-",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 31,
+        "new_op": "/",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 31,
+        "new_op": "%",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 31,
+        "new_op": "*",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 45,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 45,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 45,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 45,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 45,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 68,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 68,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 68,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 68,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 68,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 46,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 46,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 46,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 46,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 46,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 49,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 49,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 49,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 49,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 49,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 50,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 50,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 50,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 50,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 50,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 57,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 57,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 57,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 57,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 57,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 59,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 59,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 59,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 59,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 59,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 69,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 69,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 69,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 69,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 69,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 83,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 83,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 83,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 83,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 83,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 85,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 85,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 85,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 85,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewModel.kt",
+        "line_number": 85,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/DemoAuthenticationService.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt",
+        "line_number": 55,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt",
+        "line_number": 55,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt",
+        "line_number": 55,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt",
+        "line_number": 55,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/di/ApiModule.kt",
+        "line_number": 55,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/RetroauthDemoApplication.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainViewState.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 43,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 43,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 43,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 43,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 43,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 38,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 38,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 38,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 38,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 38,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 39,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 39,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 39,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 39,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/auth/LoginActivity.kt",
+        "line_number": 39,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt": {
+    "mutations": [
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "%",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "*",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "/",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "-",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "%",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "+",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "-",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 138,
+        "new_op": "/",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 119,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 67,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 67,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 67,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 67,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 67,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 79,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 79,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 79,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 79,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 79,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": "!=",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": ">",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": ">=",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": "==",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": "<",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 64,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 64,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 64,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 64,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 64,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 93,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 93,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 93,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 93,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 93,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 110,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 110,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 110,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 110,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 110,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 130,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 130,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 130,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 130,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 130,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 147,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 147,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 147,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 147,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 147,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 73,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "!",
+        "old_op": "++",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "--",
+        "old_op": "++",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 111,
+        "new_op": "",
+        "old_op": "++",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 119,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 119,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 119,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 56,
+        "new_op": "",
+        "old_op": "?:",
+        "mutation_type": "ElvisRemoveOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 139,
+        "new_op": "",
+        "old_op": "?:",
+        "mutation_type": "ElvisRemoveOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 44,
+        "new_op": "1244387523",
+        "old_op": "31",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 57,
+        "new_op": "true",
+        "old_op": "false",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 60,
+        "new_op": "-1789070190",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 129,
+        "new_op": "1991879251",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 71,
+        "new_op": "IllegalArgumentException",
+        "old_op": "AuthenticationRequiredException",
+        "mutation_type": "ExceptionChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 100,
+        "new_op": "UnsupportedOperationException",
+        "old_op": "AuthenticationRequiredException",
+        "mutation_type": "ExceptionChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/CredentialInterceptor.kt",
+        "line_number": 65,
+        "new_op": "lastOrNull",
+        "old_op": "firstOrNull",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/AuthenticationCanceledException.kt": {
+    "mutations": []
+  },
+  "./retroauth/src/test/java/com/andretietz/retroauth/MockServerRule.kt": {
+    "mutations": []
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/sqlite/TableDefinitions.kt": {
+    "mutations": []
+  },
+  "./buildSrc/src/main/kotlin/Dependencies.kt": {
+    "mutations": [
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 2,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"8.1.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 3,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.5.21\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 4,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.5.1\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 5,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"4.13.2\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 6,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"2.9.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 7,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"4.9.1\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 8,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.12.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 11,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.2.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 12,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.1.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 13,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.3.4\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 14,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"4.7.1\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 15,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"2.38.1\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 16,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.3.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 17,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"2.4.0-alpha01\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 18,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"2.0.4\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 19,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.0.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 22,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.3.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 23,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.1.2\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 24,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"4.5.1\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 25,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.3.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 26,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.3.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 31,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"3.7.7\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 32,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"2.2.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 33,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"4.13.2\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 34,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"3.19.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 39,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"7.0.2\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 40,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"0.4.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 41,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"1.4.32\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 42,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"0.18.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 43,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"0.28.0\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 49,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 52,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 53,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 54,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${Versions.coroutines}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 58,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.github.scribejava:scribejava-apis:${Versions.scribe}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 59,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.github.scribejava:scribejava-httpclient-okhttp:${Versions.scribe}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 63,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.okhttp3:okhttp:${Versions.okhttp}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 64,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.okhttp3:mockwebserver:${Versions.okhttp}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 65,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 69,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.retrofit2:retrofit:${Versions.retrofit}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 70,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.retrofit2:converter-moshi:${Versions.retrofit}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 71,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.retrofit2:converter-gson:${Versions.retrofit}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 75,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.moshi:moshi-kotlin:${Versions.moshi}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 78,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 82,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"junit:junit:${Versions.test.junit}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 83,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.mockito:mockito-core:${Versions.test.mockito}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 85,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.test.mockitoKotlin}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 86,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.assertj:assertj-core:${Versions.test.assertj}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 87,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 91,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.appcompat:appcompat:${Versions.android.appcompat}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 92,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.startup:startup-runtime:${Versions.android.startup}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 93,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.jakewharton.timber:timber:${Versions.android.timber}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 94,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.fragment:fragment-ktx:${Versions.android.fragment}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 96,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.constraintlayout:constraintlayout:${Versions.android.constraintLayout}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 98,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.swiperefreshlayout:swiperefreshlayout:${Versions.android.swipeRefresh}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 99,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.recyclerview:recyclerview:${Versions.android.recyclerView}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 100,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.google.dagger:hilt-android:${Versions.android.hilt}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 101,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.google.dagger:hilt-compiler:${Versions.android.hilt}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 104,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.lifecycle:lifecycle-runtime-ktx:${Versions.android.viewmodel}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 106,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.android.viewmodel}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 107,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.lifecycle:lifecycle-livedata-ktx:${Versions.android.viewmodel}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 111,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.test:core:${Versions.android.test.core}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 112,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.test.ext:junit:${Versions.android.test.junit}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 113,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.robolectric:robolectric:${Versions.android.test.robolectric}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 114,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.test:runner:${Versions.android.test.runner}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 115,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"androidx.test:rules:${Versions.android.test.rules}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 122,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.github.ben-manes:gradle-versions-plugin:${Versions.gradle.plugin.versions}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 123,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 125,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.compose:compose-gradle-plugin:${Versions.gradle.plugin.compose}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 126,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"org.jetbrains.dokka:dokka-gradle-plugin:${Versions.gradle.plugin.dokka}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 127,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.android.tools.build:gradle:${Versions.gradle.plugin.android}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 128,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.google.dagger:hilt-android-gradle-plugin:${Versions.android.hilt}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./buildSrc/src/main/kotlin/Dependencies.kt",
+        "line_number": 130,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.vanniktech:gradle-maven-publish-plugin:${Versions.gradle.plugin.mavenPublish}\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 43,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 43,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 43,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 43,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 43,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 85,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 85,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 85,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 85,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/ActivityManager.kt",
+        "line_number": 85,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt": {
+    "mutations": [
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": ">=",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "!=",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "==",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "<",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": ">",
+        "old_op": "<=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./retroauth/src/main/java/com/andretietz/retroauth/Authenticator.kt",
+        "line_number": 55,
+        "new_op": "-644716246",
+        "old_op": "1",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 64,
+        "new_op": "%",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 64,
+        "new_op": "/",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 64,
+        "new_op": "*",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 64,
+        "new_op": "-",
+        "old_op": "+",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 61,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 61,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 61,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 61,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 61,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 124,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 124,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 124,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 124,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 124,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 140,
+        "new_op": ">",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 140,
+        "new_op": "<",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 140,
+        "new_op": "!=",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 140,
+        "new_op": "==",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 140,
+        "new_op": "<=",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 151,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 151,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 151,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 151,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 151,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 53,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 53,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 53,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 53,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 53,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 54,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 54,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 54,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 54,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 54,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 56,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 56,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 56,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 56,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 56,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 69,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 69,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 69,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 69,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 69,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 70,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 70,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 70,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 70,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 70,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 72,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 72,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 72,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 72,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 72,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 153,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 153,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 153,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 153,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationActivity.kt",
+        "line_number": 153,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/AuthenticationService.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 40,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 40,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 40,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 40,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 40,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 44,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 44,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 44,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 44,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 44,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 45,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 45,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 45,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 45,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 45,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 51,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 51,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 51,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 51,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 51,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 55,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 55,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 55,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 55,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 55,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 56,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 56,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 56,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 56,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 56,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 59,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 59,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 59,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 59,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 59,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 60,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 60,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 60,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 60,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 60,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 65,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 65,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 65,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 65,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 65,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 66,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 66,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 66,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 66,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 66,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 70,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 70,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 70,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 70,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 70,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 71,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 71,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 71,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 71,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 71,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 63,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/MainActivity.kt",
+        "line_number": 92,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/api/GithubApi.kt": {
+    "mutations": []
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 41,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 61,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 41,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 41,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 41,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 61,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 61,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 61,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/WeakActivityStack.kt",
+        "line_number": 62,
+        "new_op": "last",
+        "old_op": "first",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt": {
+    "mutations": [
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 61,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 61,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 61,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 61,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 61,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 76,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 76,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 76,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 76,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 76,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 84,
+        "new_op": "<=",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 84,
+        "new_op": ">",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 84,
+        "new_op": "<",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 84,
+        "new_op": "!=",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 84,
+        "new_op": "==",
+        "old_op": ">=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./android-accountmanager/src/main/java/com/andretietz/retroauth/AndroidAccountManagerOwnerStorage.kt",
+        "line_number": 36,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"com.andretietz.retroauth.ACTIVE_ACCOUNT\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./sqlite/src/main/kotlin/com/andretietz/retroauth/sqlite/EntityDefinitions.kt": {
+    "mutations": []
+  },
+  "./android-accountmanager/src/main/java/com/andretietz/retroauth/RetroauthAndroid.kt": {
+    "mutations": []
+  },
+  "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt": {
+    "mutations": [
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 59,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 59,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 59,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 59,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 59,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 62,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 62,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 62,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 62,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 62,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 41,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 41,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 41,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 41,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./demo-android/src/main/java/com/andretietz/retroauth/demo/screen/main/RepositoryAdapter.kt",
+        "line_number": 41,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  }
+}

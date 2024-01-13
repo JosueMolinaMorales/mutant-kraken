@@ -2,6 +2,11 @@
     "general": {
         "timeout": null,
         "operators": [
+            "FunctionalReplacementOperator",
+            "ExceptionChangeOperator",
+            "WhenRemoveBranchOperator",
+            "RemoveLabelOperator",
+            "FunctionalBinaryReplacementOperator",
             "FunctionalReplacementOperator"
         ]
     },
