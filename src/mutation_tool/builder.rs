@@ -106,6 +106,11 @@ mod tests {
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
                 LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator
             ]
         );
     }
@@ -217,6 +222,11 @@ mod tests {
                 ElvisRemoveOperator,
                 ElvisLiteralChangeOperator,
                 LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator
             ]
         );
     }

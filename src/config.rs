@@ -142,7 +142,7 @@ impl Default for LoggingConfig {
 mod tests {
     use super::*;
     use std::{env::temp_dir, fs::File, io::Write};
-
+    use MutationOperators::*;
     #[test]
     fn test_default_general_config() {
         let default_general = GeneralConfig::default();
@@ -150,16 +150,21 @@ mod tests {
         assert_eq!(
             default_general.operators,
             vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                MutationOperators::ElvisRemoveOperator,
-                MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOperator,
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator,
             ]
         );
     }
@@ -196,16 +201,21 @@ mod tests {
         assert_eq!(
             config.general.operators,
             vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                MutationOperators::ElvisRemoveOperator,
-                MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOperator,
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator,
             ]
         );
         assert_eq!(config.ignore.ignore_files.len(), 1);
@@ -288,16 +298,21 @@ mod tests {
         assert_eq!(
             config.general.operators,
             vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                MutationOperators::ElvisRemoveOperator,
-                MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOperator,
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator,
             ]
         );
     }
@@ -315,16 +330,21 @@ mod tests {
         assert_eq!(
             config.general.operators,
             vec![
-                MutationOperators::ArithmeticReplacementOperator,
-                MutationOperators::UnaryRemovalOperator,
-                MutationOperators::LogicalReplacementOperator,
-                MutationOperators::RelationalReplacementOperator,
-                MutationOperators::AssignmentReplacementOperator,
-                MutationOperators::UnaryReplacementOperator,
-                MutationOperators::NotNullAssertionOperator,
-                MutationOperators::ElvisRemoveOperator,
-                MutationOperators::ElvisLiteralChangeOperator,
-                MutationOperators::LiteralChangeOperator,
+                ArithmeticReplacementOperator,
+                UnaryRemovalOperator,
+                LogicalReplacementOperator,
+                RelationalReplacementOperator,
+                AssignmentReplacementOperator,
+                UnaryReplacementOperator,
+                NotNullAssertionOperator,
+                ElvisRemoveOperator,
+                ElvisLiteralChangeOperator,
+                LiteralChangeOperator,
+                ExceptionChangeOperator,
+                WhenRemoveBranchOperator,
+                RemoveLabelOperator,
+                FunctionalBinaryReplacementOperator,
+                FunctionalReplacementOperator,
             ]
         );
     }
