@@ -18,7 +18,7 @@ pub fn build_html_page(data: &Vec<Mutation>, path: &Path) {
             : doctype::HTML;
             html {
                 head {
-                    title: "Kode Kraken Results";
+                    title: "Mutant Kraken Results";
                 }
                 body {
                     style(type="text/css") {

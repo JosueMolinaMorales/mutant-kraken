@@ -66,12 +66,14 @@ pub fn run(
 
     // Compile the project first, skip if compilation fails
     let res = build_gradle_command(config_path, GradleCommand::Assemble)?
-        .wait()
+        .wait_with_output()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
 
-    if !res.success() {
+    if !res.status.success() {
         tracing::info!("Build failed for: {}", mutated_file_path.display());
         mutation.result = MutationResult::BuildFailed;
+        // Log the error
+        tracing::info!("Error: {}", String::from_utf8_lossy(&res.stderr));
         return Ok(());
     }
 
@@ -140,7 +142,7 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result
     cmd.args(args)
         .current_dir(config_path)
         .stdout(Stdio::null())
-        .stderr(Stdio::null())
+        .stderr(Stdio::piped())
         .spawn()
         .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))
 }

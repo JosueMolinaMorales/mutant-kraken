@@ -469,7 +469,11 @@ impl MutationOperators {
         let val = root_node.utf8_text(file).unwrap();
 
         // If the value is not a label, return
-        if !val.contains("@") {
+        if !val.contains("@")
+            || !val.starts_with("return")
+            || !val.starts_with("continue")
+            || !val.starts_with("break")
+        {
             return;
         }
 
