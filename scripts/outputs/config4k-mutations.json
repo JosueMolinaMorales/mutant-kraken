@@ -1,0 +1,1769 @@
+{
+  "./src/test/kotlin/io/github/config4k/TestToConfigForFile.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ArrayReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArrayReader.kt",
+        "line_number": 13,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 68,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 68,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 68,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 68,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 68,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 79,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 79,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 79,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 79,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 79,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 56,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 67,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/SelectReader.kt",
+        "line_number": 69,
+        "new_op": "all",
+        "old_op": "any",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/TypeReference.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/MemorySizeReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestArbitraryGenericType.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ConfigReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ListReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ListReader.kt",
+        "line_number": 8,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"key\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ListReader.kt",
+        "line_number": 7,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/Config4kException.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestCollections.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/UUIDReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/PeriodReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/DurationReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ConfigValueReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestConfig4kException.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestEnum.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestArbitraryTypeCollection.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestToConfigForArbitraryGenericType.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/StringReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/GetConfigMap.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 17,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 17,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 17,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 17,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 17,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 13,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 13,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 14,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 14,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 26,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 26,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 25,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"dummy\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/GetConfigMap.kt",
+        "line_number": 16,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/BooleanReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/JavaBeanReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/CustomType.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/SetReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/DocExamples.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 121,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 121,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 121,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 121,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 121,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 54,
+        "new_op": "301274971",
+        "old_op": "5",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 55,
+        "new_op": "-566462012",
+        "old_op": "6",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 75,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"foo\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/DocExamples.kt",
+        "line_number": 76,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"bar\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ObjectReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ObjectReader.kt",
+        "line_number": 6,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ObjectReader.kt",
+        "line_number": 6,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/PathReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/LongReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestToConfigForPrimitives.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/MapReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 15,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 15,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 15,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 15,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 15,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/MapReader.kt",
+        "line_number": 25,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/test/kotlin/io/github/config4k/TestExtension.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "-",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "/",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "+",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "%",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "+",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "/",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "-",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "%",
+        "old_op": "*",
+        "mutation_type": "ArithmeticReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 19,
+        "new_op": "2035012973",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 25,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"str\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 31,
+        "new_op": "false",
+        "old_op": "true",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 37,
+        "new_op": "0.99070907",
+        "old_op": "0.1",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 43,
+        "new_op": "0.95223904",
+        "old_op": "0.1",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 49,
+        "new_op": "7166493508659512737",
+        "old_op": "1000",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 55,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"100KiB\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "-994701886",
+        "old_op": "1024",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 57,
+        "new_op": "-2128044930",
+        "old_op": "1024",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 61,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"60minutes\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 67,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"10years\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 73,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\".*\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 79,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"5weeks\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 101,
+        "new_op": "false",
+        "old_op": "true",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 109,
+        "new_op": "-1928885723",
+        "old_op": "10",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 115,
+        "new_op": "-217450053",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 122,
+        "new_op": "1757757462",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 129,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"str\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 136,
+        "new_op": "false",
+        "old_op": "true",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 143,
+        "new_op": "0.5919734",
+        "old_op": "0.1",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 150,
+        "new_op": "0.76524687",
+        "old_op": "0.1",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 157,
+        "new_op": "3425982654632662675",
+        "old_op": "1000",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 164,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"100KiB\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "193659355",
+        "old_op": "1024",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 167,
+        "new_op": "1383628784",
+        "old_op": "1024",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 171,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"60minutes\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 178,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"10years\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 185,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\".*\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 192,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"5weeks\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtension.kt",
+        "line_number": 214,
+        "new_op": "false",
+        "old_op": "true",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/test/kotlin/io/github/config4k/TestMap.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestMap.kt",
+        "line_number": 89,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestMap.kt",
+        "line_number": 89,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestMap.kt",
+        "line_number": 89,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestMap.kt",
+        "line_number": 89,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestMap.kt",
+        "line_number": 89,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/Extension.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 48,
+        "new_op": ">",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 48,
+        "new_op": "!=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 48,
+        "new_op": "==",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 48,
+        "new_op": ">=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 48,
+        "new_op": "<=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 67,
+        "new_op": "==",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 67,
+        "new_op": "!=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 67,
+        "new_op": ">",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 67,
+        "new_op": ">=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 67,
+        "new_op": "<=",
+        "old_op": "<",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 99,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 99,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 99,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 99,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 99,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 132,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 132,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 132,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 132,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 132,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 135,
+        "new_op": "==",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 135,
+        "new_op": "<",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 135,
+        "new_op": ">",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 135,
+        "new_op": ">=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 135,
+        "new_op": "<=",
+        "old_op": "!=",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 33,
+        "new_op": "",
+        "old_op": "?:",
+        "mutation_type": "ElvisRemoveOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 38,
+        "new_op": "",
+        "old_op": "?:",
+        "mutation_type": "ElvisRemoveOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 106,
+        "new_op": "865296653",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 101,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 109,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 116,
+        "new_op": "any",
+        "old_op": "all",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/Extension.kt",
+        "line_number": 125,
+        "new_op": "forEach",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/test/kotlin/io/github/config4k/TestTypeReference.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 36,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 36,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 48,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 48,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 64,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestTypeReference.kt",
+        "line_number": 64,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/test/kotlin/io/github/config4k/TestToConfigForCollection.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/FileReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/EnumReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/EnumReader.kt",
+        "line_number": 16,
+        "new_op": "findLast",
+        "old_op": "find",
+        "mutation_type": "FunctionalBinaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/EnumReader.kt",
+        "line_number": 17,
+        "new_op": "filter",
+        "old_op": "map",
+        "mutation_type": "FunctionalReplacementOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 59,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryRemovalOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "||",
+        "old_op": "&&",
+        "mutation_type": "LogicalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 39,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 39,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 39,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 39,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 39,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 40,
+        "new_op": "-=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 40,
+        "new_op": "/=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 40,
+        "new_op": "*=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 40,
+        "new_op": "%=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 40,
+        "new_op": "+=",
+        "old_op": "=",
+        "mutation_type": "AssignmentReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 58,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 59,
+        "new_op": "++",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 59,
+        "new_op": "",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 59,
+        "new_op": "--",
+        "old_op": "!",
+        "mutation_type": "UnaryReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 24,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 24,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 36,
+        "new_op": "?",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 36,
+        "new_op": "",
+        "old_op": "!!",
+        "mutation_type": "NotNullAssertionOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/ArbitraryTypeReader.kt",
+        "line_number": 31,
+        "new_op": "",
+        "old_op": "When Branch",
+        "mutation_type": "WhenRemoveBranchOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/URLReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestNullable.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestNullable.kt",
+        "line_number": 10,
+        "new_op": "802470716",
+        "old_op": "0",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 52,
+        "new_op": "!=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 52,
+        "new_op": "<=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 52,
+        "new_op": ">=",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 52,
+        "new_op": "<",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 52,
+        "new_op": ">",
+        "old_op": "==",
+        "mutation_type": "RelationalReplacementOperator",
+        "result": "InProgress"
+      },
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestExtensibleTypes.kt",
+        "line_number": 39,
+        "new_op": "IllegalStateException",
+        "old_op": "IllegalArgumentException",
+        "mutation_type": "ExceptionChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/IntReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/DoubleReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/Reader.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/main/kotlin/io/github/config4k/readers/Reader.kt",
+        "line_number": 15,
+        "new_op": "return",
+        "old_op": "return@value",
+        "mutation_type": "RemoveLabelOperator",
+        "result": "InProgress"
+      }
+    ]
+  },
+  "./src/main/kotlin/io/github/config4k/readers/FloatReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/TemporalAmountReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestToConfigForArbitraryType.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/ByteReader.kt": {
+    "mutations": []
+  },
+  "./src/main/kotlin/io/github/config4k/readers/RegexReader.kt": {
+    "mutations": []
+  },
+  "./src/test/kotlin/io/github/config4k/TestArbitraryType.kt": {
+    "mutations": [
+      {
+        "file_name": "./src/test/kotlin/io/github/config4k/TestArbitraryType.kt",
+        "line_number": 143,
+        "new_op": "\"Hello I am a Mutant!\"",
+        "old_op": "\"https://config4k.github.io/config4k/\"",
+        "mutation_type": "LiteralChangeOperator",
+        "result": "InProgress"
+      }
+    ]
+  }
+}

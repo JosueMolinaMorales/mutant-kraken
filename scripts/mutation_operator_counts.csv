@@ -1,0 +1,16 @@
+Mutation Operator,Count
+ArithmeticReplacementOperator,16248
+UnaryRemovalOperator,2262
+RelationalReplacementOperator,31980
+AssignmentReplacementOperator,29405
+UnaryReplacementOperator,5382
+LiteralChangeOperator,7395
+ExceptionChangeOperator,1080
+WhenRemoveBranchOperator,1246
+NotNullAssertionOperator,1874
+FunctionalReplacementOperator,1645
+ElvisRemoveOperator,1695
+ElvisLiteralChangeOperator,303
+LogicalReplacementOperator,2528
+RemoveLabelOperator,435
+FunctionalBinaryReplacementOperator,724
