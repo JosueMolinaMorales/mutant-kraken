@@ -474,7 +474,6 @@ impl MutationOperators {
             && !val.starts_with("continue")
             && !val.starts_with("break")
         {
-            println!("Value is not a label: {}", val);
             return;
         }
 
