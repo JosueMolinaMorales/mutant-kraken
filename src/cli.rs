@@ -4,8 +4,8 @@ use clap::{Args, CommandFactory, Parser, Subcommand};
 use tracing_appender::non_blocking::WorkerGuard;
 
 use crate::{
-    config::KodeKrakenConfig,
-    error::{self, KodeKrakenError},
+    config::MutantKrakenConfig,
+    error::{self, MutantKrakenError},
     mutation_tool::MutationToolBuilder,
 };
 
@@ -18,7 +18,7 @@ pub enum Commands {
     /// Display help text on how to setup the config file
     /// or create a config file in the current directory
     Config(ConfigCommandConfig),
-    /// Clean the kode-kraken-dist directory
+    /// Clean the mutant-kraken-dist directory
     /// This will delete all files in the directory
     /// This is useful if you want to remove all the files
     Clean(MutationCommandConfig),
@@ -77,7 +77,7 @@ where
     // Wait for the function to finish or timeout
     match receiver.recv_timeout(timeout) {
         Ok(res) => res,
-        Err(_) => Err(KodeKrakenError::Error(
+        Err(_) => Err(MutantKrakenError::Error(
             format!(
                 "Timeout reached, mutation tool took longer than {} seconds to finish",
                 timeout.as_secs()
@@ -89,14 +89,14 @@ where
 
 pub fn run_cli() {
     let _guard: WorkerGuard;
-    tracing::info!("Starting Kode Kraken");
+    tracing::info!("Starting mutant Kraken");
 
     let args = Cli::parse();
     let mutate_tool_builder = MutationToolBuilder::new();
 
     match args.command {
         Commands::Mutate(mutate_config) => {
-            let config = KodeKrakenConfig::load_config(mutate_config.path.clone());
+            let config = MutantKrakenConfig::load_config(mutate_config.path.clone());
             _guard = setup_logging(&config.logging.log_level, mutate_config.path.clone());
 
             let mut tool = mutate_tool_builder
@@ -104,7 +104,7 @@ pub fn run_cli() {
                 .set_general_config(config)
                 .set_mutation_comment(true)
                 .build();
-            let res = match tool.kodekraken_config.general.timeout {
+            let res = match tool.mutantkraken_config.general.timeout {
                 Some(timeout) => {
                     run_with_timeout(move || tool.mutate(), Duration::from_secs(timeout))
                 }
@@ -112,18 +112,18 @@ pub fn run_cli() {
             };
             if let Err(e) = res {
                 let error_msg = match e {
-                    error::KodeKrakenError::FileReadingError(msg) => msg,
-                    error::KodeKrakenError::MutationGenerationError => {
+                    error::MutantKrakenError::FileReadingError(msg) => msg,
+                    error::MutantKrakenError::MutationGenerationError => {
                         "Error Generating Mutations".into()
                     }
-                    error::KodeKrakenError::MutationGatheringError => {
+                    error::MutantKrakenError::MutationGatheringError => {
                         "Error Gathering Mutations".into()
                     }
-                    error::KodeKrakenError::MutationBuildTestError => {
+                    error::MutantKrakenError::MutationBuildTestError => {
                         "Error Building and Testing Mutations".into()
                     }
-                    error::KodeKrakenError::ConversionError => "Error Converting".into(),
-                    error::KodeKrakenError::Error(msg) => msg,
+                    error::MutantKrakenError::ConversionError => "Error Converting".into(),
+                    error::MutantKrakenError::Error(msg) => msg,
                 };
                 Cli::command()
                     .error(clap::error::ErrorKind::Io, error_msg)
@@ -132,7 +132,7 @@ pub fn run_cli() {
         }
         Commands::Config(config) => {
             if config.setup {
-                let config_file_path = Path::new("kodekraken.config.json");
+                let config_file_path = Path::new("mutantkraken.config.json");
                 if config_file_path.exists() {
                     println!("Config file already exists");
                 } else {
@@ -143,7 +143,7 @@ pub fn run_cli() {
             } else {
                 println!("Config file setup instructions:");
                 println!(
-                    "1. Create a file named kodekraken.config.json in the root of your project"
+                    "1. Create a file named mutantkraken.config.json in the root of your project"
                 );
                 println!("2. Copy the following into the file:");
                 println!("{}", include_str!("../assets/config.json"));
@@ -152,7 +152,7 @@ pub fn run_cli() {
         }
         Commands::Clean(config) => {
             // Check to see if the output directory exists
-            let output_dir = Path::new(config.path.as_str()).join("kode-kraken-dist");
+            let output_dir = Path::new(config.path.as_str()).join("mutant-kraken-dist");
             if output_dir.exists() {
                 // Delete the output directory
                 std::fs::remove_dir_all(output_dir).expect("Could not delete output directory");
@@ -172,10 +172,10 @@ fn setup_logging(log_level: &str, dir: String) -> WorkerGuard {
     };
     // Create dist log folder if it doesn't exist
     let log_dir = Path::new(dir.as_str())
-        .join("kode-kraken-dist")
+        .join("mutant-kraken-dist")
         .join("logs");
     std::fs::create_dir_all(&log_dir).expect("Could not create log directory");
-    let file_appender = tracing_appender::rolling::never(log_dir, "kode-kraken.log");
+    let file_appender = tracing_appender::rolling::never(log_dir, "mutant-kraken.log");
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()
         .with_max_level(log_level)

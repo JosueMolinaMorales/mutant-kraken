@@ -2,7 +2,7 @@ use rand::{distributions::uniform::SampleUniform, seq::SliceRandom, Rng};
 use tree_sitter::Node;
 
 use crate::{
-    error::{KodeKrakenError, Result},
+    error::{MutantKrakenError, Result},
     kotlin_types::{KotlinExceptions, KotlinTypes},
     mutation_tool::Mutation,
 };
@@ -131,7 +131,7 @@ impl MutationOperators {
             .collect(),
             MutationOperators::NotNullAssertionOperator => vec![
                 KotlinTypes::NonNamedType("!!".to_string()),
-                KotlinTypes::NonNamedType("?".to_string()),
+                KotlinTypes::NonNamedType("?.".to_string()),
                 KotlinTypes::RemoveOperator,
             ]
             .into_iter()
@@ -145,6 +145,7 @@ impl MutationOperators {
             MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
                 KotlinTypes::LineStringLiteral,
+                KotlinTypes::StringLiteral,
                 KotlinTypes::BooleanLiteral,
                 KotlinTypes::LongLiteral,
                 KotlinTypes::RealLiteral,
@@ -199,6 +200,7 @@ impl MutationOperators {
             MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
                 KotlinTypes::LineStringLiteral,
+                KotlinTypes::StringLiteral,
                 KotlinTypes::BooleanLiteral,
                 KotlinTypes::LongLiteral,
                 KotlinTypes::RealLiteral,
@@ -253,7 +255,8 @@ impl MutationOperators {
         file_name: &String,
     ) {
         root.children(&mut cursor.clone()).for_each(|node| {
-            let root_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
+            let root_type = KotlinTypes::new(node.kind())
+                .expect(format!("Failed to convert to KotlinType: {:?}", node.kind()).as_str());
             let parent_type = parent
                 .map(|p| KotlinTypes::new(p.kind()).expect("Failed to convert to KotlinType"));
             mutations_made.append(
@@ -295,7 +298,8 @@ impl MutationOperators {
         if !mutation_operators.contains(root)
             || parent.is_none()
             || (!parent_types.contains(&KotlinTypes::AnyParent)
-                && !parent_types.contains(parent.as_ref().ok_or(KodeKrakenError::ConversionError)?))
+                && !parent_types
+                    .contains(parent.as_ref().ok_or(MutantKrakenError::ConversionError)?))
         {
             return Ok(mutations_made);
         }
@@ -594,12 +598,15 @@ impl MutationOperators {
         let children = root_node
             .children(&mut root_node.walk())
             .collect::<Vec<tree_sitter::Node>>();
+        println!("Root Node: {:?}", root_node.kind());
+        println!("Children: {:?}", children);
         let node = match children.iter().last() {
             Some(node) => node,
             None => root_node,
         };
 
-        let child_type = KotlinTypes::new(node.kind()).expect("Failed to convert to KotlinType");
+        let child_type = KotlinTypes::new(node.kind())
+            .expect(format!("Failed to convert to KotlinType: {:?}", node.kind()).as_str());
         // Change the literal to a different literal
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
@@ -627,7 +634,7 @@ impl MutationOperators {
                 // Recurse down to the literal
                 self.mutate_literal(node, mutations_made, file_name)
             }
-            KotlinTypes::LineStringLiteral => {
+            KotlinTypes::StringLiteral => {
                 // Replace the string with a different string
                 let val = r#""Hello I am a Mutant!""#.to_string();
 
@@ -735,7 +742,10 @@ impl MutationOperators {
                 );
                 mutations_made.push(mutation);
             }
-            _ => {}
+            _ => {
+                println!("No mutation for {:?}", val);
+                println!("No mutation for {:?}", child_type);
+            }
         }
     }
 }
@@ -981,6 +991,7 @@ mod tests {
             &mut mutations_made,
             &temp_file.to_str().unwrap().to_string(),
         );
+        println!("{:#?}", mutations_made);
         assert_eq!(mutations_made.len(), 12);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {

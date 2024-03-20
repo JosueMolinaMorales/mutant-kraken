@@ -7,7 +7,7 @@ use std::{
 use wait_timeout::ChildExt;
 
 use crate::{
-    error::{KodeKrakenError, Result},
+    error::{MutantKrakenError, Result},
     mutation_tool::{Mutation, MutationResult},
 };
 
@@ -31,14 +31,14 @@ impl<'a> ToString for GradleCommand<'a> {
 pub fn build_project_success(path: &PathBuf) -> Result<bool> {
     let res = build_gradle_command(path, GradleCommand::Assemble)?
         .wait()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+        .map_err(|e| MutantKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     Ok(res.success())
 }
 
 pub fn project_tests_pass(path: &PathBuf) -> Result<bool> {
     let res = build_gradle_command(path, GradleCommand::Test("*"))?
         .wait()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+        .map_err(|e| MutantKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
     Ok(res.success())
 }
 
@@ -52,14 +52,14 @@ pub fn run(
 ) -> Result<()> {
     // Check to see if gradlew exists in the root of the directory
     if !config_path.join("gradlew").exists() {
-        return Err(KodeKrakenError::Error(
+        return Err(MutantKrakenError::Error(
             "gradlew does not exist at the root of this project".into(),
         ));
     }
     // Run Clean Build
     build_gradle_command(config_path, GradleCommand::Clean)?
         .wait()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+        .map_err(|e| MutantKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
 
     // Copy the mutated file to the original file
     fs::copy(mutated_file_path, original_file_path)?;
@@ -67,7 +67,7 @@ pub fn run(
     // Compile the project first, skip if compilation fails
     let res = build_gradle_command(config_path, GradleCommand::Assemble)?
         .wait_with_output()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
+        .map_err(|e| MutantKrakenError::Error(format!("Failed to run gradle command: {}", e)))?;
 
     if !res.status.success() {
         tracing::info!("Build failed for: {}", mutated_file_path.display());
@@ -79,11 +79,11 @@ pub fn run(
 
     let filter = original_file_path
         .file_name()
-        .ok_or(KodeKrakenError::ConversionError)?
+        .ok_or(MutantKrakenError::ConversionError)?
         .to_str()
-        .ok_or(KodeKrakenError::ConversionError)?
+        .ok_or(MutantKrakenError::ConversionError)?
         .strip_suffix(".kt")
-        .ok_or(KodeKrakenError::ConversionError)?;
+        .ok_or(MutantKrakenError::ConversionError)?;
 
     let mut child_process = build_gradle_command(config_path, GradleCommand::Test(filter))?;
     tracing::debug!("Running test for mutation: {}", mutated_file_path.display());
@@ -93,7 +93,7 @@ pub fn run(
         Ok(Some(status)) => status,
         Ok(None) => {
             child_process.kill().map_err(|e| {
-                KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
+                MutantKrakenError::Error(format!("Failed to kill child process: {}", e))
             })?;
             tracing::error!("Test timed out for: {}", mutated_file_path.display());
 
@@ -103,7 +103,7 @@ pub fn run(
         Err(e) => {
             tracing::error!("Test failed: {}", e);
             child_process.kill().map_err(|e| {
-                KodeKrakenError::Error(format!("Failed to kill child process: {}", e))
+                MutantKrakenError::Error(format!("Failed to kill child process: {}", e))
             })?;
             mutation.result = MutationResult::Failed;
             return Ok(());
@@ -144,7 +144,7 @@ fn build_gradle_command(config_path: &PathBuf, command: GradleCommand) -> Result
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
         .spawn()
-        .map_err(|e| KodeKrakenError::Error(format!("Failed to run gradle command: {}", e)))
+        .map_err(|e| MutantKrakenError::Error(format!("Failed to run gradle command: {}", e)))
 }
 
 #[cfg(test)]

@@ -128,7 +128,7 @@ fun main() {
     val h = -16.0f
     val i = true
     val j = false
-    val k = 'a'
+    val k = 'c'
     val l = "a"
 }
 "#;

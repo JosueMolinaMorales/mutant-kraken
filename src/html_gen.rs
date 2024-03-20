@@ -37,7 +37,7 @@ pub fn build_html_page(data: &Vec<Mutation>, path: &Path) {
                         thead {
                             tr {
                                 th(class="tg-baqh", colspan="5") {
-                                    : "Kode Kraken Results";
+                                    : "Mutant Kraken Results";
                                 }
                             }
                         }
@@ -94,7 +94,7 @@ pub fn build_html_page(data: &Vec<Mutation>, path: &Path) {
             }
         }
     );
-    // write file to kode-kraken-dist/report.html
+    // write file to Mutant-kraken-dist/report.html
     let file_path = path.join("report.html");
     let mut file = File::create(file_path).expect("Could not create report.html file");
     file.write_all(report.as_bytes()).unwrap();
@@ -158,8 +158,8 @@ mod test {
             mutation4.clone(),
         ];
 
-        // Create kode-kraken-dist directory
-        std::fs::create_dir_all("kode-kraken-dist").unwrap();
+        // Create mutant-kraken-dist directory
+        std::fs::create_dir_all("mutant-kraken-dist").unwrap();
 
         // Create test data
         let mut file_mutations = HashMap::new();
@@ -170,10 +170,10 @@ mod test {
         }
 
         // Call the function
-        build_html_page(&mutations, Path::new("./kode-kraken-dist"));
+        build_html_page(&mutations, Path::new("./mutant-kraken-dist"));
 
         // Read the generated HTML file
-        let file_path = Path::new("kode-kraken-dist").join("report.html");
+        let file_path = Path::new("mutant-kraken-dist").join("report.html");
         let mut file_content = String::new();
         File::open(file_path)
             .expect("Failed to open the generated HTML file")
@@ -183,7 +183,7 @@ mod test {
         // Verify that HTML content contains information about each file and mutation
         assert_contains(
             &file_content,
-            "<th class=\"tg-baqh\" colspan=\"5\">Kode Kraken Results</th>",
+            "<th class=\"tg-baqh\" colspan=\"5\">Mutant Kraken Results</th>",
         );
         assert_contains(&file_content, "<td class=\"tg-0lax\">File Name</td>");
         assert_contains(&file_content, "<td class=\"tg-0lax\"># of Mutations</td>");

@@ -1,12 +1,12 @@
 use std::path::Path;
 
-use crate::{cli::MutationCommandConfig, config::KodeKrakenConfig};
+use crate::{cli::MutationCommandConfig, config::MutantKrakenConfig};
 
 use super::MutationTool;
 
 pub struct MutationToolBuilder {
     mutate_config: Option<MutationCommandConfig>,
-    kodekraken_config: Option<KodeKrakenConfig>,
+    mutantkraken_config: Option<MutantKrakenConfig>,
     enable_mutation_comment: bool,
 }
 
@@ -21,14 +21,14 @@ impl MutationToolBuilder {
     pub fn new() -> Self {
         Self {
             mutate_config: None,
-            kodekraken_config: None,
+            mutantkraken_config: None,
             enable_mutation_comment: false,
         }
     }
 
     /// Sets the general config for the mutation tool
-    pub fn set_general_config(mut self, config: KodeKrakenConfig) -> Self {
-        self.kodekraken_config = Some(config);
+    pub fn set_general_config(mut self, config: MutantKrakenConfig) -> Self {
+        self.mutantkraken_config = Some(config);
         self
     }
 
@@ -46,18 +46,18 @@ impl MutationToolBuilder {
 
     pub fn build(self) -> MutationTool {
         let mutate_config = self.mutate_config.unwrap_or_default();
-        let kodekraken_config = self.kodekraken_config.unwrap_or_default();
+        let mutantkraken_config = self.mutantkraken_config.unwrap_or_default();
 
         let output_directory = Path::new(&mutate_config.path)
-            .join("kode-kraken-dist")
+            .join("mutant-kraken-dist")
             .to_str()
             .unwrap_or_default()
             .to_string();
         MutationTool::new(
             mutate_config.clone(),
-            kodekraken_config.clone(),
+            mutantkraken_config.clone(),
             output_directory,
-            kodekraken_config.general.operators.clone(),
+            mutantkraken_config.general.operators.clone(),
             self.enable_mutation_comment,
         )
         .unwrap()
@@ -86,7 +86,7 @@ mod tests {
 
         // Add assertions based on your specific default values
         assert_eq!(mutation_tool.enable_mutation_comment, false);
-        assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::new());
+        assert_eq!(mutation_tool.mutantkraken_config, MutantKrakenConfig::new());
         assert_eq!(
             mutation_tool.mutate_config,
             MutationCommandConfig {
@@ -122,7 +122,7 @@ mod tests {
         // Create the temp directory
         std::fs::create_dir_all(&temp_dir).unwrap();
 
-        let general_config = KodeKrakenConfig {
+        let general_config = MutantKrakenConfig {
             general: GeneralConfig {
                 timeout: Some(10),
                 operators: vec![
@@ -140,9 +140,9 @@ mod tests {
             .set_general_config(general_config.clone());
         let mutation_tool = builder.build();
 
-        assert_eq!(mutation_tool.kodekraken_config.general.timeout, Some(10));
+        assert_eq!(mutation_tool.mutantkraken_config.general.timeout, Some(10));
         assert_eq!(
-            mutation_tool.kodekraken_config.general.operators,
+            mutation_tool.mutantkraken_config.general.operators,
             vec![
                 MutationOperators::AssignmentReplacementOperator,
                 MutationOperators::UnaryRemovalOperator
@@ -202,7 +202,10 @@ mod tests {
 
         // Add assertions based on your specific default values
         assert_eq!(mutation_tool.enable_mutation_comment, false);
-        assert_eq!(mutation_tool.kodekraken_config, KodeKrakenConfig::default());
+        assert_eq!(
+            mutation_tool.mutantkraken_config,
+            MutantKrakenConfig::default()
+        );
         assert_eq!(
             mutation_tool.mutate_config,
             MutationCommandConfig {

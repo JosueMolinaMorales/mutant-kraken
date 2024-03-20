@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::mutation_tool::MutationOperators;
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
-pub struct KodeKrakenConfig {
+pub struct MutantKrakenConfig {
     pub general: GeneralConfig,
     pub ignore: IgnoreConfig,
     pub threading: ThreadingConfig,
@@ -71,13 +71,13 @@ pub struct OutputConfig {
     pub display_end_table: bool,
 }
 
-impl KodeKrakenConfig {
+impl MutantKrakenConfig {
     pub fn new() -> Self {
         Self::default()
     }
 
     pub fn load_config<P: AsRef<Path>>(path: P) -> Self {
-        let mut config = match fs::File::open(path.as_ref().join("kodekraken.config.json")) {
+        let mut config = match fs::File::open(path.as_ref().join("mutantkraken.config.json")) {
             Ok(file) => {
                 let buffer_reader = BufReader::new(file);
                 match serde_json::from_reader(buffer_reader) {
@@ -93,7 +93,7 @@ impl KodeKrakenConfig {
                 }
             }
             Err(_) => {
-                println!("[WARNING] ⚠️  Could not find kodekraken.config.json file in root directory, using default config.");
+                println!("[WARNING] ⚠️  Could not find mutantkraken.config.json file in root directory, using default config.");
                 Self::default()
             }
         };
@@ -195,8 +195,8 @@ mod tests {
     }
 
     #[test]
-    fn test_new_kodekraken_config() {
-        let config = KodeKrakenConfig::new();
+    fn test_new_mutantkraken_config() {
+        let config = MutantKrakenConfig::new();
         assert_eq!(config.general.timeout, None);
         assert_eq!(
             config.general.operators,
@@ -228,11 +228,11 @@ mod tests {
     #[test]
     fn test_load_config_from_valid_file() {
         let temp_dir = temp_dir();
-        let file_path = temp_dir.join("kodekraken.config.json");
+        let file_path = temp_dir.join("mutantkraken.config.json");
         let mut file = File::create(file_path).expect("Failed to create temporary file");
 
         // Create a valid JSON content
-        let config = KodeKrakenConfig {
+        let config = MutantKrakenConfig {
             general: GeneralConfig {
                 timeout: Some(10),
                 operators: vec![
@@ -257,7 +257,7 @@ mod tests {
         file.write_all(config_json.as_bytes())
             .expect("Failed to write to temporary file");
 
-        let config = KodeKrakenConfig::load_config(temp_dir);
+        let config = MutantKrakenConfig::load_config(temp_dir);
         assert_eq!(config.general.timeout, Some(10));
         assert_eq!(
             config.general.operators,
@@ -280,7 +280,7 @@ mod tests {
         // Create the temporary directory
         fs::create_dir_all(&temp_dir).expect("Failed to create temporary directory");
         // Create the temporary file
-        let file_path = temp_dir.join("kodekraken.config.json");
+        let file_path = temp_dir.join("mutantkraken.config.json");
         let mut file = File::create(file_path).expect("Failed to create temporary file");
 
         let invalid_json_content = r#"
@@ -292,7 +292,7 @@ mod tests {
         "#;
 
         writeln!(file, "{}", invalid_json_content).expect("Failed to write to temporary file");
-        let config = KodeKrakenConfig::load_config(temp_dir);
+        let config = MutantKrakenConfig::load_config(temp_dir);
         // Since the JSON is invalid, it should fall back to default values
         assert_eq!(config.general.timeout, None);
         assert_eq!(
@@ -324,7 +324,7 @@ mod tests {
         // Create the temp directory
         fs::create_dir_all(&temp_dir).expect("Failed to create temporary directory");
         // Test loading config from a missing file
-        let config = KodeKrakenConfig::load_config(temp_dir);
+        let config = MutantKrakenConfig::load_config(temp_dir);
         // Since the file is missing, it should fall back to default values
         assert_eq!(config.general.timeout, None);
         assert_eq!(

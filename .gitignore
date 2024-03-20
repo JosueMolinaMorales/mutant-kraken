@@ -1,5 +1,5 @@
 /target
-**/kode-kraken-dist
+**/mutant-kraken-dist
 
 *.iml
 .gradle

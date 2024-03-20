@@ -1,23 +1,23 @@
 use assert_cmd::prelude::*;
-use kode_kraken::{config::KodeKrakenConfig, mutation_tool::MutationOperators};
+use mutant_kraken::{config::MutantKrakenConfig, mutation_tool::MutationOperators};
 use std::{fs, path::Path, process::Command};
 
 #[test]
 fn test_tool_runs_correctly() {
     // Set the config
-    let mut config = KodeKrakenConfig::default();
+    let mut config = MutantKrakenConfig::default();
     config.general.operators = vec![
         MutationOperators::ArithmeticReplacementOperator,
         MutationOperators::AssignmentReplacementOperator,
     ];
     // Create or replace the config file
     fs::write(
-        "tests/kotlin-test-projects/demo/kodekraken.config.json",
+        "tests/kotlin-test-projects/demo/mutantkraken.config.json",
         serde_json::to_string(&config).unwrap(),
     )
     .unwrap();
 
-    let mut cmd = Command::cargo_bin("kode-kraken").expect("Could not find kode-kraken binary");
+    let mut cmd = Command::cargo_bin("mutant-kraken").expect("Could not find mutant-kraken binary");
 
     // Create command
     cmd.arg("mutate").arg("tests/kotlin-test-projects/demo");
@@ -25,8 +25,8 @@ fn test_tool_runs_correctly() {
     // Assert that the command runs successfully
     cmd.assert().success();
 
-    let dir_path = Path::new("tests/kotlin-test-projects/demo/kode-kraken-dist");
-    // Assert that kode-kraken-dist was created
+    let dir_path = Path::new("tests/kotlin-test-projects/demo/mutant-kraken-dist");
+    // Assert that mutant-kraken-dist was created
     assert!(dir_path.exists());
     // Assert that the backups directory was created and that the backup file exists
     let backup_path = dir_path.join("backups");
@@ -41,7 +41,7 @@ fn test_tool_runs_correctly() {
     // Assert that the logs directory was created and that the log file exists
     let log_path = dir_path.join("logs");
     assert!(log_path.exists());
-    assert!(log_path.join("kode-kraken.log").exists());
+    assert!(log_path.join("mutant-kraken.log").exists());
     // Assert that the mutations directory was created and that the mutations file exists
     let mutations_path = dir_path.join("mutations");
     assert!(mutations_path.exists());

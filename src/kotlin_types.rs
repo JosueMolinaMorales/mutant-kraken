@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use rand::seq::SliceRandom;
 
-use crate::error::{KodeKrakenError, Result};
+use crate::error::{MutantKrakenError, Result};
 
 // TODO: Add more exceptions, and move to a separate file
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
@@ -33,7 +33,7 @@ impl fmt::Display for KotlinExceptions {
 }
 
 impl FromStr for KotlinExceptions {
-    type Err = KodeKrakenError;
+    type Err = MutantKrakenError;
 
     fn from_str(s: &str) -> Result<Self> {
         let res = match s {
@@ -44,7 +44,7 @@ impl FromStr for KotlinExceptions {
             "IndexOutOfBoundsException" => KotlinExceptions::IndexOutOfBoundsException,
             "NoSuchElementException" => KotlinExceptions::NoSuchElementException,
             "UnsupportedOperationException" => KotlinExceptions::UnsupportedOperationException,
-            _ => return Err(KodeKrakenError::ConversionError),
+            _ => return Err(MutantKrakenError::ConversionError),
         };
         Ok(res)
     }
@@ -76,7 +76,7 @@ impl KotlinExceptions {
 }
 
 /// Holds all characters that are not named in kotlin
-const NON_NAMED_TYPES: [&str; 128] = [
+const NON_NAMED_TYPES: [&str; 129] = [
     "!",
     "!!",
     "!=",
@@ -119,6 +119,7 @@ const NON_NAMED_TYPES: [&str; 128] = [
     ">",
     ">=",
     "?:",
+    "?.",
     "@",
     "L",
     "[",
@@ -254,6 +255,7 @@ pub enum KotlinTypes {
     FunctionModifier,
     FunctionType,
     FunctionTypeParameters,
+    FunctionValueParameters,
     Getter,
     Identifier,
     IfExpression,
@@ -269,9 +271,11 @@ pub enum KotlinTypes {
     LambdaLiteral,
     LambdaParameters,
     LineStringLiteral,
+    LineComment,
     LongLiteral,
     MemberModifier,
     Modifiers,
+    MultiLineComment,
     MultiLineStringLiteral,
     MultiplicativeExpression,
     NavigationExpression,
@@ -305,6 +309,7 @@ pub enum KotlinTypes {
     SpreadExpression,
     Statements,
     SuperExpression,
+    StringLiteral,
     ThisExpression,
     TryExpression,
     TypeAlias,
@@ -477,6 +482,10 @@ impl fmt::Display for KotlinTypes {
             KotlinTypes::NonNamedType(s) => write!(f, "{s}"),
             KotlinTypes::Error => write!(f, "Error"),
             KotlinTypes::AnyParent => write!(f, "AnyParent"),
+            KotlinTypes::FunctionValueParameters => write!(f, "FunctionValueParameters"),
+            KotlinTypes::LineComment => write!(f, "LineComment"),
+            KotlinTypes::StringLiteral => write!(f, "StringLiteral"),
+            KotlinTypes::MultiLineComment => write!(f, "MultiLineComment"),
         }
     }
 }
@@ -555,6 +564,7 @@ impl KotlinTypes {
             "LambdaLiteral" => KotlinTypes::LambdaLiteral,
             "LambdaParameters" => KotlinTypes::LambdaParameters,
             "LineStringLiteral" => KotlinTypes::LineStringLiteral,
+            "LineComment" => KotlinTypes::LineComment,
             "LongLiteral" => KotlinTypes::LongLiteral,
             "MemberModifier" => KotlinTypes::MemberModifier,
             "Modifiers" => KotlinTypes::Modifiers,
@@ -588,6 +598,7 @@ impl KotlinTypes {
             "SourceFile" => KotlinTypes::SourceFile,
             "SpreadExpression" => KotlinTypes::SpreadExpression,
             "Statements" => KotlinTypes::Statements,
+            "StringLiteral" => KotlinTypes::StringLiteral,
             "SuperExpression" => KotlinTypes::SuperExpression,
             "ThisExpression" => KotlinTypes::ThisExpression,
             "TryExpression" => KotlinTypes::TryExpression,
@@ -626,9 +637,11 @@ impl KotlinTypes {
             "ReificationModifier" => KotlinTypes::ReificationModifier,
             "ERROR" => KotlinTypes::Error,
             "REMOVE" => KotlinTypes::RemoveOperator,
+            "FunctionValueParameters" => KotlinTypes::FunctionValueParameters,
+            "MultilineComment" => KotlinTypes::MultiLineComment,
             unnamed => {
                 if !NON_NAMED_TYPES.contains(&unnamed) {
-                    return Err(KodeKrakenError::ConversionError);
+                    return Err(MutantKrakenError::ConversionError);
                 }
                 KotlinTypes::NonNamedType(unnamed.to_string())
             }
