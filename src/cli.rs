@@ -98,7 +98,6 @@ pub fn run_cli() {
         Commands::Mutate(mutate_config) => {
             let config = MutantKrakenConfig::load_config(mutate_config.path.clone());
             _guard = setup_logging(&config.logging.log_level, mutate_config.path.clone());
-
             let mut tool = mutate_tool_builder
                 .set_mutate_config(mutate_config)
                 .set_general_config(config)

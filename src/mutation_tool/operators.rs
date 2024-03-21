@@ -598,8 +598,6 @@ impl MutationOperators {
         let children = root_node
             .children(&mut root_node.walk())
             .collect::<Vec<tree_sitter::Node>>();
-        println!("Root Node: {:?}", root_node.kind());
-        println!("Children: {:?}", children);
         let node = match children.iter().last() {
             Some(node) => node,
             None => root_node,
@@ -742,10 +740,7 @@ impl MutationOperators {
                 );
                 mutations_made.push(mutation);
             }
-            _ => {
-                println!("No mutation for {:?}", val);
-                println!("No mutation for {:?}", child_type);
-            }
+            _ => {}
         }
     }
 }
@@ -991,7 +986,6 @@ mod tests {
             &mut mutations_made,
             &temp_file.to_str().unwrap().to_string(),
         );
-        println!("{:#?}", mutations_made);
         assert_eq!(mutations_made.len(), 12);
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
