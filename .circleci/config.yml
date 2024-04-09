@@ -26,6 +26,8 @@ jobs:
     macos:
       xcode: 12.5.1
     steps:
+      - attach_workspace:
+          at: $CIRCLE_ARTIFACTS
       - checkout
       - run:
           name: Build macOS app
@@ -33,8 +35,6 @@ jobs:
       - run:
           name: Create Tarball
           command: tar -czf $CIRCLE_ARTIFACTS/mutant-kraken-macos.tar.gz -C target/release mutant-kraken
-    attach_workspace:
-      at: $CIRCLE_ARTIFACTS
 
   publish-github-release:
     docker:
@@ -56,7 +56,7 @@ jobs:
 
   deploy-homebrew:
     docker:
-      - image: circleci/rust:stable
+      - image: cimg/rust:1.77.0
     steps:
       - checkout
       # Install necessary dependencies
