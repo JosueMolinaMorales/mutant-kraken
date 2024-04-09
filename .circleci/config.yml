@@ -8,12 +8,89 @@ jobs:
     machine:
       image: ubuntu-2004:current
     steps:
-        - checkout
-        - rust/install
-        - rust/build:
-            release: true
-        - rust/test
+      - checkout
+      - rust/install
+      - rust/build:
+          release: true
+
+  test-app:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: cargo test
+
+  build-app-macos:
+    macos:
+      xcode: 12.5.1
+    steps:
+      - checkout
+      - run:
+          name: Build macOS app
+          command: cargo build --release
+      - run:
+          name: Create Tarball
+          command: tar -czf $CIRCLE_ARTIFACTS/mutant-kraken-macos.tar.gz -C target/release mutant-kraken
+    attach_workspace:
+      at: $CIRCLE_ARTIFACTS
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: $CIRCLE_ARTIFACTS
+      # Get version from cargo.toml
+      - run:
+          name: Get version from cargo.toml
+          command: |
+            VERSION=$(grep -oP 'version = "\K[^"]+' Cargo.toml)
+            echo "Version: $VERSION"
+            echo "export VERSION=$VERSION" >> $BASH_ENV
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} $CIRCLE_ARTIFACTS
+
+  deploy-homebrew:
+    docker:
+      - image: circleci/rust:stable
+    steps:
+      - checkout
+      # Install necessary dependencies
+      - run:
+          name: Install Homebrew
+          command: |
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      # Update Homebrew formula
+      # - run:
+      #     name: Update Homebrew formula
+      #     command: |
+      #       git clone https://github.com/josuemolinamorales/homebrew-mutant-kraken.git
+      #       cd homebrew-mutant-kraken/Formula
+      #       sed -i '' "s|url .*|url \"https://github.com/josuemolinamorales/mutant-kraken/archive/v$VERSION.tar.gz\"|" mutant-kraken.rb
+      #       sed -i '' "s|sha256 .*|sha256 \"$(curl -Ls https://github.com/yourusername/projectname/archive/v$VERSION.tar.gz | shasum -a 256 | cut -d' ' -f1)\"|" mutant-kraken.rb
+      #       cat projectname.rb
+
 workflows:
   build-function:
     jobs:
       - build-app
+      - test-app
+
+  build-and-deploy:
+    # when: equal [main, << pipeline.git.branch >>]
+    jobs:
+      - test-app
+      - build-app-macos:
+          requires:
+            - test-app
+      - publish-github-release:
+          requires:
+            - build-app-macos
+      - deploy-homebrew:
+          requires:
+            - publish-github-release
