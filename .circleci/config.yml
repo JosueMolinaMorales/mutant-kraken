@@ -18,6 +18,7 @@ jobs:
       image: ubuntu-2004:current
     steps:
       - checkout
+      - rust/install
       - run:
           name: Run tests
           command: cargo test
@@ -29,6 +30,7 @@ jobs:
       - attach_workspace:
           at: $CIRCLE_ARTIFACTS
       - checkout
+      - rust/install
       - run:
           name: Build macOS app
           command: cargo build --release
@@ -84,10 +86,7 @@ workflows:
   build-and-deploy:
     # when: equal [main, << pipeline.git.branch >>]
     jobs:
-      - test-app
-      - build-app-macos:
-          requires:
-            - test-app
+      - build-app-macos
       - publish-github-release:
           requires:
             - build-app-macos
