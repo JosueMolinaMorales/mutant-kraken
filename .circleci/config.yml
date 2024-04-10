@@ -5,11 +5,7 @@ orbs:
   github-cli: circleci/github-cli@2.3.0
 
 executors:
-  macos-executor:
-    macos:
-      xcode: 12.5.1
-    working_directory: ~/repo
-  rust-executor:
+  executor:
     docker:
       - image: cimg/rust:1.55.0
     working_directory: ~/repo
@@ -35,7 +31,7 @@ jobs:
           command: cargo test
 
   build-app-macos:
-    executor: macos-executor
+    executor: executor
     steps:
       - checkout
       - rust/install
@@ -52,7 +48,7 @@ jobs:
             - mutant-kraken-macos.tar.gz
 
   publish-github-release:
-    executor: rust-executor
+    executor: executor
     steps:
       - checkout
       - attach_workspace:
@@ -72,7 +68,7 @@ jobs:
             gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz
 
   deploy-homebrew:
-    executor: rust-executor
+    executor: executor
     steps:
       - checkout
       - attach_workspace:
