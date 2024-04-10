@@ -2,15 +2,12 @@ version: 2.1
 
 orbs:
   rust: circleci/rust@1.6.1
+  github-cli: circleci/github-cli@2.3.0
 
 executors:
   macos-executor:
     macos:
       xcode: 12.5.1
-    working_directory: ~/repo
-  github-executor:
-    docker:
-      - image: cibuilds/github:0.10
     working_directory: ~/repo
   rust-executor:
     docker:
@@ -55,7 +52,7 @@ jobs:
             - mutant-kraken-macos.tar.gz
 
   publish-github-release:
-    executor: github-executor
+    executor: rust-executor
     steps:
       - checkout
       - attach_workspace:
@@ -67,10 +64,12 @@ jobs:
             VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
             echo "Version: $VERSION"
             echo "export VERSION=$VERSION" >> $BASH_ENV
+      - github-cli/setup:
+          token: $GITHUB_TOKEN
       - run:
-          name: "Publish Release on GitHub"
+          name: "Create Release on GitHub"
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} mutant-kraken-macos.tar.gz
+            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz
 
   deploy-homebrew:
     executor: rust-executor
