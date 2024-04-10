@@ -474,9 +474,9 @@ impl MutationOperators {
 
         // If the value is not a label, return
         if !val.contains("@")
-            && !val.starts_with("return")
-            && !val.starts_with("continue")
-            && !val.starts_with("break")
+            && (!val.starts_with("return")
+                || !val.starts_with("continue")
+                || !val.starts_with("break"))
         {
             return;
         }
@@ -632,7 +632,7 @@ impl MutationOperators {
                 // Recurse down to the literal
                 self.mutate_literal(node, mutations_made, file_name)
             }
-            KotlinTypes::StringLiteral => {
+            KotlinTypes::StringLiteral | KotlinTypes::LineStringLiteral => {
                 // Replace the string with a different string
                 let val = r#""Hello I am a Mutant!""#.to_string();
 
