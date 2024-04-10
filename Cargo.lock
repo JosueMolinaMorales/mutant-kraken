@@ -378,7 +378,7 @@ dependencies = [
 
 [[package]]
 name = "mutant-kraken"
-version = "0.1.5-beta"
+version = "0.1.0-beta"
 dependencies = [
  "assert_cmd",
  "clap",
