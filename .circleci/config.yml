@@ -1,19 +1,134 @@
 version: 2.1
 
 orbs:
-  rust: circleci/rust@1.6.0
+  rust: circleci/rust@1.6.1
+  github-cli: circleci/github-cli@2.3.0
+
+executors:
+  macos-executor:
+    macos:
+      xcode: 12.5.1
+    shell: /bin/bash
+    working_directory: ~/repo
+  executor:
+    docker:
+      - image: cimg/rust:1.55.0
+    working_directory: ~/repo
 
 jobs:
   build-app:
     machine:
       image: ubuntu-2004:current
     steps:
-        - checkout
-        - rust/install
-        - rust/build:
-            release: true
-        - rust/test
+      - checkout
+      - rust/install
+      - rust/build:
+          release: true
+
+  test-app:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+      - checkout
+      - rust/install
+      - run:
+          name: Run tests
+          command: cargo test
+
+  build-app-macos:
+    executor: macos-executor
+    steps:
+      - checkout
+      - rust/install
+      - run:
+          name: Build macOS app
+          command: cargo build --release
+      - run:
+          name: Create Tarball
+          command: |
+            cd target/release && tar -czf mutant-kraken-macos.tar.gz mutant-kraken
+      - persist_to_workspace:
+          root: target/release
+          paths:
+            - mutant-kraken-macos.tar.gz
+
+  publish-github-release:
+    executor: executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      # Get version from cargo.toml
+      - run:
+          name: Get version from cargo.toml
+          command: |
+            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            echo "Version: $VERSION"
+            echo "export VERSION=$VERSION" >> $BASH_ENV
+      - github-cli/setup:
+          token: GITHUB_TOKEN
+      - run:
+          name: "Create Release on GitHub"
+          command: |
+            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz
+
+  deploy-homebrew:
+    executor: executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Get version from cargo.toml
+          command: |
+            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            echo "Version: $VERSION"
+            echo "export VERSION=$VERSION" >> $BASH_ENV
+      # Update Homebrew formula
+      - run:
+          name: Pull Homebrew Repository
+          command: |
+            git clone https://github.com/josuemolinamorales/homebrew-mutant-kraken.git
+
+      - run:
+          name: Update Homebrew Formula
+          command: |
+            cd homebrew-mutant-kraken/Formula
+            # Update the formula with the new version
+            sed -i "s|version \".*\"|version \"$VERSION\"|" mutant-kraken.rb
+            # Update the sha256
+            shasum -a 256 ~/repo/mutant-kraken-macos.tar.gz | cut -d ' ' -f 1 > mutant-kraken-macos.tar.gz.sha256
+            # Display the sha256
+            cat mutant-kraken-macos.tar.gz.sha256
+            sed -i "s|sha256 \".*\"|sha256 \"$(cat mutant-kraken-macos.tar.gz.sha256 )\"|" mutant-kraken.rb
+            # Update the URL
+            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/v$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
+            # Display the changes
+            cat mutant-kraken.rb
+      - run:
+          name: Push changes to Homebrew Repository
+          command: |
+            cd homebrew-mutant-kraken/Formula
+            git config --global user.email "molinajosue92@hotmail.com"
+            git config --global user.name "CircleCI Job"
+            git add mutant-kraken.rb
+            git commit -m "Update mutant-kraken to $VERSION"
+            git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
+
 workflows:
   build-function:
     jobs:
       - build-app
+      - test-app
+
+  build-and-deploy:
+    when:
+      equal: [releases, << pipeline.git.branch >>]
+    jobs:
+      - build-app-macos
+      - publish-github-release:
+          requires:
+            - build-app-macos
+      - deploy-homebrew:
+          requires:
+            - publish-github-release

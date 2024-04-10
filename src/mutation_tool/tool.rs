@@ -555,7 +555,6 @@ impl MutationTool {
         let file_mutations: Arc<Mutex<HashMap<String, FileMutations>>> =
             Arc::new(Mutex::new(HashMap::new()));
         let mutation_count = Arc::new(Mutex::new(0));
-        println!("Mutation operators: {:#?}", self.mutation_operators);
         // Use thread pool to parallelize mutation gathering for each file
         self.thread_pool.scope(|s| {
             for file in existing_files {
