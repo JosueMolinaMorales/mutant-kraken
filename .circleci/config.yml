@@ -78,11 +78,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # Install necessary dependencies
-      - run:
-          name: Install Homebrew
-          command: |
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       - run:
           name: Get version from cargo.toml
           command: |
@@ -121,13 +116,13 @@ jobs:
             git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
 
 workflows:
-  # build-function:
-  #   jobs:
-  #     - build-app
-  #     - test-app
+  build-function:
+    jobs:
+      - build-app
+      - test-app
 
   build-and-deploy:
-    # when: equal [main, << pipeline.git.branch >>]
+    when: equal [main, << pipeline.git.branch >>]
     jobs:
       - build-app-macos
       - publish-github-release:

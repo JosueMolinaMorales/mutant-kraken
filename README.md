@@ -34,7 +34,7 @@ A kotlin mutation testing tool built in Rust.
 
 ## Installation
 
-Mutant Kraken is currently in development and is not yet available on crates.io. To install, clone the repository and run `cargo run` in the root directory to get the help menu.
+Mutant Kraken is currently in beta and is not ready for production use.
 
 ## Usage
 
