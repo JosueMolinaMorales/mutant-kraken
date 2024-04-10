@@ -65,7 +65,7 @@ jobs:
             echo "Version: $VERSION"
             echo "export VERSION=$VERSION" >> $BASH_ENV
       - github-cli/setup:
-          token: $GITHUB_TOKEN
+          token: GITHUB_TOKEN
       - run:
           name: "Create Release on GitHub"
           command: |
