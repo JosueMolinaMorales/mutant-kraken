@@ -123,7 +123,7 @@ workflows:
 
   build-and-deploy:
     when:
-      equal: [main, << pipeline.git.branch >>]
+      equal: [releases, << pipeline.git.branch >>]
     jobs:
       - build-app-macos
       - publish-github-release:
