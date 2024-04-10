@@ -106,7 +106,7 @@ jobs:
             cat mutant-kraken-macos.tar.gz.sha256
             sed -i "s|sha256 \".*\"|sha256 \"$(cat mutant-kraken-macos.tar.gz.sha256 )\"|" mutant-kraken.rb
             # Update the URL
-            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
+            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/v$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
             # Display the changes
             cat mutant-kraken.rb
       - run:
