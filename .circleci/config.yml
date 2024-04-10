@@ -5,6 +5,9 @@ orbs:
   github-cli: circleci/github-cli@2.3.0
 
 executors:
+  unix-machine:
+    machine:
+      image: ubuntu-2004:current
   executor:
     docker:
       - image: cimg/rust:1.55.0
@@ -31,7 +34,7 @@ jobs:
           command: cargo test
 
   build-app-macos:
-    executor: executor
+    executor: unix-machine
     steps:
       - checkout
       - rust/install
