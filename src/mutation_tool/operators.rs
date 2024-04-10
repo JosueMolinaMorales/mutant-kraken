@@ -632,7 +632,7 @@ impl MutationOperators {
                 // Recurse down to the literal
                 self.mutate_literal(node, mutations_made, file_name)
             }
-            KotlinTypes::StringLiteral => {
+            KotlinTypes::StringLiteral | KotlinTypes::LineStringLiteral => {
                 // Replace the string with a different string
                 let val = r#""Hello I am a Mutant!""#.to_string();
 

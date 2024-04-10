@@ -21,6 +21,7 @@ Types of changes
 
 - Fixed bug where tool would crash because of missing kotlin types in the AST. This was caused by the tool being moved to the most recent version of `kotlin-tree-sitter` without updating the AST types in the mutation operators. The version of `kotlin-tree-sitter` has been downgraded to the previous version to fix this issue. Will come back to this issue in a future release.
 - Fixed a bug where the tool would crash because of unwrapping a null value while trying to fine `LabelRemoveOperator` mutations. This was cause by a bad condition in an if statement.
+- Fixed an issue where string literals were not mutated correctly.
 
 ## [0.1.0-beta] - 2024-09-04
 
