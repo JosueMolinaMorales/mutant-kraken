@@ -474,9 +474,9 @@ impl MutationOperators {
 
         // If the value is not a label, return
         if !val.contains("@")
-            && !val.starts_with("return")
-            && !val.starts_with("continue")
-            && !val.starts_with("break")
+            && (!val.starts_with("return")
+                || !val.starts_with("continue")
+                || !val.starts_with("break"))
         {
             return;
         }
