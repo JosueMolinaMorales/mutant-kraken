@@ -1,7 +1,21 @@
 version: 2.1
 
 orbs:
-  rust: circleci/rust@1.6.0
+  rust: circleci/rust@1.6.1
+
+executors:
+  macos-executor:
+    macos:
+      xcode: 12.5.1
+    working_directory: ~/repo
+  github-executor:
+    docker:
+      - image: cibuilds/github:0.10
+    working_directory: ~/repo
+  rust-executor:
+    docker:
+      - image: cimg/rust:1.55.0
+    working_directory: ~/repo
 
 jobs:
   build-app:
@@ -24,11 +38,8 @@ jobs:
           command: cargo test
 
   build-app-macos:
-    macos:
-      xcode: 12.5.1
+    executor: macos-executor
     steps:
-      - attach_workspace:
-          at: $CIRCLE_ARTIFACTS
       - checkout
       - rust/install
       - run:
@@ -36,52 +47,84 @@ jobs:
           command: cargo build --release
       - run:
           name: Create Tarball
-          command: tar -czf $CIRCLE_ARTIFACTS/mutant-kraken-macos.tar.gz -C target/release mutant-kraken
+          command: |
+            cd target/release && tar -czf mutant-kraken-macos.tar.gz mutant-kraken
+      - persist_to_workspace:
+          root: target/release
+          paths:
+            - mutant-kraken-macos.tar.gz
 
   publish-github-release:
-    docker:
-      - image: cibuilds/github:0.10
+    executor: github-executor
     steps:
+      - checkout
       - attach_workspace:
-          at: $CIRCLE_ARTIFACTS
+          at: ~/repo
       # Get version from cargo.toml
       - run:
           name: Get version from cargo.toml
           command: |
-            VERSION=$(grep -oP 'version = "\K[^"]+' Cargo.toml)
+            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
             echo "Version: $VERSION"
             echo "export VERSION=$VERSION" >> $BASH_ENV
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} $CIRCLE_ARTIFACTS
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} mutant-kraken-macos.tar.gz
 
   deploy-homebrew:
-    docker:
-      - image: cimg/rust:1.77.0
+    executor: rust-executor
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo
       # Install necessary dependencies
       - run:
           name: Install Homebrew
           command: |
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
+      - run:
+          name: Get version from cargo.toml
+          command: |
+            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            echo "Version: $VERSION"
+            echo "export VERSION=$VERSION" >> $BASH_ENV
       # Update Homebrew formula
-      # - run:
-      #     name: Update Homebrew formula
-      #     command: |
-      #       git clone https://github.com/josuemolinamorales/homebrew-mutant-kraken.git
-      #       cd homebrew-mutant-kraken/Formula
-      #       sed -i '' "s|url .*|url \"https://github.com/josuemolinamorales/mutant-kraken/archive/v$VERSION.tar.gz\"|" mutant-kraken.rb
-      #       sed -i '' "s|sha256 .*|sha256 \"$(curl -Ls https://github.com/yourusername/projectname/archive/v$VERSION.tar.gz | shasum -a 256 | cut -d' ' -f1)\"|" mutant-kraken.rb
-      #       cat projectname.rb
+      - run:
+          name: Pull Homebrew Repository
+          command: |
+            git clone https://github.com/josuemolinamorales/homebrew-mutant-kraken.git
+
+      - run:
+          name: Update Homebrew Formula
+          command: |
+            cd homebrew-mutant-kraken/Formula
+            # Update the formula with the new version
+            sed -i "s|version \".*\"|version \"$VERSION\"|" mutant-kraken.rb
+            # Update the sha256
+            shasum -a 256 ~/repo/mutant-kraken-macos.tar.gz | cut -d ' ' -f 1 > mutant-kraken-macos.tar.gz.sha256
+            # Display the sha256
+            cat mutant-kraken-macos.tar.gz.sha256
+            sed -i "s|sha256 \".*\"|sha256 \"$(cat mutant-kraken-macos.tar.gz.sha256 )\"|" mutant-kraken.rb
+            # Update the URL
+            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
+            # Display the changes
+            cat mutant-kraken.rb
+      - run:
+          name: Push changes to Homebrew Repository
+          command: |
+            cd homebrew-mutant-kraken/Formula
+            git config --global user.email "molinajosue92@hotmail.com"
+            git config --global user.name "CircleCI Job"
+            git add mutant-kraken.rb
+            git commit -m "Update mutant-kraken to $VERSION"
+            git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
 
 workflows:
-  build-function:
-    jobs:
-      - build-app
-      - test-app
+  # build-function:
+  #   jobs:
+  #     - build-app
+  #     - test-app
 
   build-and-deploy:
     # when: equal [main, << pipeline.git.branch >>]
