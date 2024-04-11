@@ -2,6 +2,11 @@
 name = "mutant-kraken"
 version = "0.1.1-beta"
 edition = "2021"
+license = "MIT"
+authors = ["Josue Molina Morales <molinajosue92@hotmail.com>"]
+description = "A mutation testing tool for Kotlin"
+repository = "https://github.com/JosueMolinaMorales/mutant-kraken"
+keywords = ["mutation", "testing", "kotlin"]
 
 [[bin]]
 name = "mutant-kraken"

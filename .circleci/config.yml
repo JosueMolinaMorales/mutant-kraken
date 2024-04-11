@@ -14,6 +14,10 @@ executors:
     docker:
       - image: cimg/rust:1.55.0
     working_directory: ~/repo
+  linux-executor:
+    machine:
+      image: ubuntu-2004:current
+    working_directory: ~/repo
 
 jobs:
   build-app:
@@ -52,6 +56,23 @@ jobs:
           paths:
             - mutant-kraken-macos.tar.gz
 
+  build-app-linux:
+    executor: linux-executor
+    steps:
+      - checkout
+      - rust/install
+      - run:
+          name: Build Linux app
+          command: cargo build --release
+      - run:
+          name: Create Tarball
+          command: |
+            cd target/release && tar -czf mutant-kraken-linux.tar.gz mutant-kraken
+      - persist_to_workspace:
+          root: target/release
+          paths:
+            - mutant-kraken-linux.tar.gz
+
   publish-github-release:
     executor: executor
     steps:
@@ -70,7 +91,7 @@ jobs:
       - run:
           name: "Create Release on GitHub"
           command: |
-            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz
+            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
 
   deploy-homebrew:
     executor: executor
@@ -126,9 +147,11 @@ workflows:
       equal: [releases, << pipeline.git.branch >>]
     jobs:
       - build-app-macos
+      - build-app-linux
       - publish-github-release:
           requires:
             - build-app-macos
+            - build-app-linux
       - deploy-homebrew:
           requires:
             - publish-github-release
