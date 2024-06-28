@@ -173,7 +173,7 @@ impl MutationTool {
         self.save_results(&mutations)?;
         // Phase 7: Generate HTML Report
         println!("[7/7] 📊 Generating HTML report...");
-        html_gen::build_html_page(&mutations, &Path::new(self.output_directory.as_str()));
+        html_gen::build_html_page(&mutations, Path::new(self.output_directory.as_str()));
         Ok(())
     }
 
@@ -359,8 +359,7 @@ impl MutationTool {
                     }
                 }
                 fs::create_dir_all(&td).expect("Failed to create temp directory");
-                self.create_temp_directory(dir, &td)
-                    .expect("Failed to create temp directory");
+                create_temp_directory(dir, &td).expect("Failed to create temp directory");
                 // Run gradle build and tests in parallel
                 let path = path.clone();
                 let mutation_dir = mutation_dir.clone();
@@ -429,53 +428,10 @@ impl MutationTool {
                 "Project does not build successfully. Please fix the errors and try again.".into(),
             ));
         }
-
-        Ok(if !gradle::project_tests_pass(&path)? {
+        if !gradle::project_tests_pass(&path)? {
             return Err(MutantKrakenError::Error(
                 "Project tests do not pass. Please fix the errors and try again.".into(),
             ));
-        })
-    }
-
-    /// Recursively creates a temporary directory and copies all files from the given directory into it,
-    /// excluding the "mutant-kraken-dist" folder. If a file is named "gradlew" or "gradlew.bat", it is copied
-    /// to the temporary directory with the same permissions. All other files are written to the temporary
-    /// directory with their original contents.
-    ///
-    /// # Arguments
-    ///
-    /// * `dir` - The directory to copy files from.
-    /// * `temp_dir` - The temporary directory to create and copy files into.
-    ///
-    /// # Returns
-    ///
-    /// Returns `Ok(())` if the operation is successful, or an error if any file operations fail.
-    fn create_temp_directory(&self, dir: PathBuf, temp_dir: &Path) -> Result<()> {
-        for entry in dir.read_dir()? {
-            let path = entry?.path();
-            let file_name = path
-                .file_name()
-                .ok_or(MutantKrakenError::ConversionError)?
-                .to_str()
-                .ok_or(MutantKrakenError::ConversionError)?;
-            // Ignore the mutant-kraken-dist folder
-            // We can add to this to ignore more things.
-            if file_name == "mutant-kraken-dist" {
-                continue;
-            }
-            if path.is_dir() {
-                let temp_dir = temp_dir.join(file_name);
-                fs::create_dir(&temp_dir)?;
-                self.create_temp_directory(path, &temp_dir)?;
-            } else {
-                let file_contents = fs::read(&path)?;
-                if file_name == "gradlew" || file_name == "gradlew.bat" {
-                    // We copy here so that we keep the same permissions
-                    fs::copy(&path, temp_dir.join(file_name))?;
-                } else {
-                    fs::write(temp_dir.join(file_name), file_contents)?;
-                }
-            }
         }
         Ok(())
     }
@@ -616,10 +572,10 @@ impl MutationTool {
                 "No mutations were found in the project".into(),
             ));
         }
-        Ok(Arc::try_unwrap(file_mutations)
+        Arc::try_unwrap(file_mutations)
             .map_err(|_| MutantKrakenError::Error("Failed to unwrap file_mutations".to_string()))?
             .into_inner()
-            .map_err(|_| MutantKrakenError::Error("Failed to unwrap file_mutations".to_string()))?)
+            .map_err(|_| MutantKrakenError::Error("Failed to unwrap file_mutations".to_string()))
     }
 
     /// Gets all files from the given directory and adds them to the given vector.
@@ -715,6 +671,49 @@ impl MutationTool {
 
         Ok(())
     }
+}
+
+/// Recursively creates a temporary directory and copies all files from the given directory into it,
+/// excluding the "mutant-kraken-dist" folder. If a file is named "gradlew" or "gradlew.bat", it is copied
+/// to the temporary directory with the same permissions. All other files are written to the temporary
+/// directory with their original contents.
+///
+/// # Arguments
+///
+/// * `dir` - The directory to copy files from.
+/// * `temp_dir` - The temporary directory to create and copy files into.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if the operation is successful, or an error if any file operations fail.
+fn create_temp_directory(dir: PathBuf, temp_dir: &Path) -> Result<()> {
+    for entry in dir.read_dir()? {
+        let path = entry?.path();
+        let file_name = path
+            .file_name()
+            .ok_or(MutantKrakenError::ConversionError)?
+            .to_str()
+            .ok_or(MutantKrakenError::ConversionError)?;
+        // Ignore the mutant-kraken-dist folder
+        // We can add to this to ignore more things.
+        if file_name == "mutant-kraken-dist" {
+            continue;
+        }
+        if path.is_dir() {
+            let temp_dir = temp_dir.join(file_name);
+            fs::create_dir(&temp_dir)?;
+            create_temp_directory(path, &temp_dir)?;
+        } else {
+            let file_contents = fs::read(&path)?;
+            if file_name == "gradlew" || file_name == "gradlew.bat" {
+                // We copy here so that we keep the same permissions
+                fs::copy(&path, temp_dir.join(file_name))?;
+            } else {
+                fs::write(temp_dir.join(file_name), file_contents)?;
+            }
+        }
+    }
+    Ok(())
 }
 
 fn create_mutation_chucks(file_mutations: &HashMap<String, FileMutations>) -> Vec<Vec<Mutation>> {

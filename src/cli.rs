@@ -77,13 +77,10 @@ where
     // Wait for the function to finish or timeout
     match receiver.recv_timeout(timeout) {
         Ok(res) => res,
-        Err(_) => Err(MutantKrakenError::Error(
-            format!(
-                "Timeout reached, mutation tool took longer than {} seconds to finish",
-                timeout.as_secs()
-            )
-            .into(),
-        )),
+        Err(_) => Err(MutantKrakenError::Error(format!(
+            "Timeout reached, mutation tool took longer than {} seconds to finish",
+            timeout.as_secs()
+        ))),
     }
 }
 

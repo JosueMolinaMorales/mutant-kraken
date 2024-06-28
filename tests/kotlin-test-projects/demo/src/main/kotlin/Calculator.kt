@@ -46,7 +46,18 @@ class Calculator {
             3 -> 3
             else -> 0
         }
+        val box: Box<Int> = Box<Int>(1)
     }
 
 
+}
+
+class Box<T>(t: T) {
+    var value = t
+}
+
+fun copy(from: Array<Any>, to: Array<Any>) {
+    assert(from.size == to.size)
+    for (i in from.indices)
+        to[i] = from[i]
 }
