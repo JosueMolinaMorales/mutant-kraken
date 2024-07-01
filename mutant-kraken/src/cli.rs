@@ -24,7 +24,7 @@ pub enum Commands {
     Clean(MutationCommandConfig),
 }
 
-const ABOUT: &str = include_str!("../../assets/about.txt");
+const ABOUT: &str = include_str!("../assets/about.txt");
 
 #[derive(Parser, Debug)]
 #[command(
@@ -132,7 +132,7 @@ pub fn run_cli() {
                 if config_file_path.exists() {
                     println!("Config file already exists");
                 } else {
-                    std::fs::write(config_file_path, include_str!("../../assets/config.json"))
+                    std::fs::write(config_file_path, include_str!("../assets/config.json"))
                         .expect("Could not write config file");
                     println!("Config file created");
                 }
@@ -142,7 +142,7 @@ pub fn run_cli() {
                     "1. Create a file named mutantkraken.config.json in the root of your project"
                 );
                 println!("2. Copy the following into the file:");
-                println!("{}", include_str!("../../assets/config.json"));
+                println!("{}", include_str!("../assets/config.json"));
                 println!("3. Edit the config file to your liking");
             }
         }
