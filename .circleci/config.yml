@@ -155,6 +155,19 @@ jobs:
             git add mutant-kraken.rb
             git commit -m "Update mutant-kraken to $VERSION"
             git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
+  deploy-cargo:
+    executor: executor
+    steps:
+      - checkout
+      - run:
+          name: Install Rust and Cargo tools
+          command: |
+            rustup update
+            rustup default stable
+      - run:
+          name: Publish new version to crates.io
+          command: |
+            cargo publish --token $CARGO_TOKEN
 
 workflows:
   build-function:
@@ -173,5 +186,8 @@ workflows:
             - build-app-macos
             - build-app-linux
       - deploy-homebrew:
+          requires:
+            - publish-github-release
+      - deploy-cargo:
           requires:
             - publish-github-release
