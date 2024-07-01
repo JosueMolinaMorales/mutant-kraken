@@ -83,7 +83,7 @@ jobs:
       - run:
           name: Get version from cargo.toml
           command: |
-            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            VERSION=$(cat ./mutant-kraken/Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
             echo "Version: $VERSION"
             echo "export VERSION=$VERSION" >> $BASH_ENV
       - github-cli/setup:
@@ -102,7 +102,7 @@ jobs:
       - run:
           name: Get version from cargo.toml
           command: |
-            VERSION=$(cat ./Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            VERSION=$(cat ./mutant-kraken/Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
             echo "Version: $VERSION"
             echo "export VERSION=$VERSION" >> $BASH_ENV
       # Update Homebrew formula

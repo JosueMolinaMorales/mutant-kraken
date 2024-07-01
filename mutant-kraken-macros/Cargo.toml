@@ -1,0 +1,17 @@
+[package]
+name = "mutant-kraken-macros"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quote = "1.0.36"
+serde = "1.0.203"
+serde_json = "1.0.119"
+syn = "2.0.68"
+proc-macro2 = "1.0"
+tree-sitter-kotlin = "0.3.6"

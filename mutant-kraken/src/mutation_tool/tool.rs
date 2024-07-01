@@ -67,7 +67,7 @@ impl MutationTool {
     ) -> Result<Self> {
         let mut parser = tree_sitter::Parser::new();
         parser
-            .set_language(tree_sitter_kotlin::language())
+            .set_language(&tree_sitter_kotlin::language())
             .map_err(|e| {
                 MutantKrakenError::Error(format!("Error while setting language: {}", e))
             })?;
