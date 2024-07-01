@@ -159,6 +159,14 @@ jobs:
     executor: executor
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Get version of mutant-kraken-macros
+          command: |
+            MKM_VERSION=$(cat ./mutant-kraken-macros/Cargo.toml | grep version | head -1 | grep -o '"[^"]\+"' | sed -e 's/^"//' -e 's/"$//')
+            echo "Version: $MKM_VERSION"
+            echo "export MKM_VERSION=$MKM_VERSION" >> $BASH_ENV
       - run:
           name: Install Rust and Cargo tools
           command: |
@@ -167,7 +175,21 @@ jobs:
       - run:
           name: Publish new version to crates.io
           command: |
-            cargo publish --token $CARGO_TOKEN
+            if cargo search mutant-kraken-macros | grep -q $MKM_VERSION; then
+              echo "Version $MKM_VERSION already exists in crates.io for mutant-kraken-macros"
+            else
+              echo "Publishing new version $MKM_VERSION"
+              cargo publish -p mutant-kraken-macros --token $CARGO_TOKEN
+            fi
+      - run:
+          name: Publish new version of mutant-kraken to crates.io
+          command: |
+            if cargo search mutant-kraken | grep -q $VERSION; then
+              echo "Version $VERSION already exists in crates.io for mutant-kraken"
+            else
+              echo "Publishing new version $VERSION"
+              cargo publish -p mutant-kraken --token $CARGO_TOKEN
+            fi
 
 workflows:
   build-function:
