@@ -88,10 +88,10 @@ jobs:
             echo "export VERSION=$VERSION" >> $BASH_ENV
       - github-cli/setup:
           token: GITHUB_TOKEN
-      - run:
-          name: "Create Release on GitHub"
-          command: |
-            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
+      # - run:
+      #     name: "Create Release on GitHub"
+      #     command: |
+      #       gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
 
   deploy-homebrew:
     executor: executor
@@ -144,7 +144,7 @@ jobs:
                   system "#{bin}/mutant-kraken", "--version"
                 end
               end
-              EOF
+            EOF
               )
             cat $FORMULA_CONTENT
       - run:
