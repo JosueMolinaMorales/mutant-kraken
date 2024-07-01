@@ -135,8 +135,14 @@ jobs:
               elsif OS.linux?
                 url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-linux.tar.gz"
                 sha256 "$LINUX_SHA256"
+              end
+
               def install
                 bin.install "mutant-kraken"
+              end
+
+              test do
+                system "#{bin}/mutant-kraken", "--version"
               end
             end
             EOF
