@@ -374,7 +374,7 @@ dependencies = [
  "csv",
  "horrorshow",
  "indicatif",
- "mutant-kraken-macros 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "mutant-kraken-macros 0.1.0",
  "num-traits",
  "predicates",
  "rand",
@@ -394,6 +394,8 @@ dependencies = [
 [[package]]
 name = "mutant-kraken-macros"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36b51106d9758e1c01dea1a772958b0c54964cfadfaa1fd5919feec5b1cf98ea"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -405,9 +407,7 @@ dependencies = [
 
 [[package]]
 name = "mutant-kraken-macros"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36b51106d9758e1c01dea1a772958b0c54964cfadfaa1fd5919feec5b1cf98ea"
+version = "0.1.1"
 dependencies = [
  "proc-macro2",
  "quote",

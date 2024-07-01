@@ -1,6 +1,6 @@
 [package]
 name = "mutant-kraken-macros"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Josue Molina Morales <molinajosue92@hotmail.com>"]
 description = "Procedural macros for mutant-kraken"
