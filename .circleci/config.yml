@@ -146,11 +146,12 @@ jobs:
               end
             EOF
               )
-            echo $FORMULA_CONTENT > formula.rb
+            echo "export FORMULA_CONTENT=$FORMULA_CONTENT" >> $BASH_ENV
+            echo $FORMULA_CONTENT
       - run:
           name: Push changes to Homebrew Repository
           command: |
-            cat formula.rb > mutant-kraken.rb
+            echo "${FORMULA_CONTENT}"> mutant-kraken.rb
             git config --global user.email "molinajosue92@hotmail.com"
             git config --global user.name "CircleCI Job"
             git add mutant-kraken.rb
