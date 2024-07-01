@@ -32,6 +32,10 @@ Types of changes
 
 - Added a new crate called `mutant-kraken-macros` which contains the procedural macros used to generate the `KotlinTypes` enum
 
+### Removed
+
+- Removed the `KotlinTypes::LineStringLiteral` variant that was used throughout the project. This type no longer exists in the `kotlin-tree-sitter` AST.
+
 ## [0.1.2] - 2024-07-01
 
 ### Added
