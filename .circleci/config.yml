@@ -7,7 +7,7 @@ orbs:
 executors:
   macos-executor:
     macos:
-      xcode: 12.5.1
+      xcode: 14.2.0
     shell: /bin/bash
     working_directory: ~/repo
   executor:
