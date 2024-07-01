@@ -150,8 +150,7 @@ jobs:
       - run:
           name: Push changes to Homebrew Repository
           command: |
-            cd homebrew-mutant-kraken/Formula
-            cat ../../formula.rb > mutant-kraken.rb
+            cat formula.rb > mutant-kraken.rb
             git config --global user.email "molinajosue92@hotmail.com"
             git config --global user.name "CircleCI Job"
             git add mutant-kraken.rb
