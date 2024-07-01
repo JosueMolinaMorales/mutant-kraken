@@ -165,9 +165,13 @@ jobs:
             rustup update
             rustup default stable
       - run:
-          name: Publish new version to crates.io
+          name: Publish new version of mutant-kraken-macros to crates.io
           command: |
-            cargo publish --token $CARGO_TOKEN
+            cargo publish -p mutant-kraken-macros --token $CARGO_TOKEN
+      - run:
+          name: Publish new version of mutant-kraken to crates.io
+          command: |
+            cargo publish -p mutant-kraken --token $CARGO_TOKEN
 
 workflows:
   build-function:

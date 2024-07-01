@@ -15,6 +15,12 @@ Types of changes
 - **Fixed** for any bug fixes.
 - **Security** in case of vulnerabilities.
 
+## [0.1.4] - 2024-07-01
+
+### Fixed
+
+- Fixed assets not being properly copied to the target directory when building the project.
+
 ## [0.1.3] - 2024-07-01
 
 ### Security
