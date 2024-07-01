@@ -13,6 +13,6 @@ local.properties
 .externalNativeBuild
 .cxx
 local.properties
-
+.vscode/
 shelf/
 workspace.xml

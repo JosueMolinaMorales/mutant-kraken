@@ -473,7 +473,7 @@ impl MutationOperators {
         let val = root_node.utf8_text(file).unwrap();
 
         // If the value is not a label, return
-        if !val.contains("@")
+        if !val.contains('@')
             && (!val.starts_with("return")
                 || !val.starts_with("continue")
                 || !val.starts_with("break"))
@@ -482,7 +482,7 @@ impl MutationOperators {
         }
 
         // Remove the label
-        let label_start = val.find("@").unwrap();
+        let label_start = val.find('@').unwrap();
         let mut_value = val[0..label_start].to_string();
 
         let mutation = Mutation::new(
@@ -609,7 +609,7 @@ impl MutationOperators {
         let mut val = node.utf8_text(file).unwrap();
         match child_type {
             KotlinTypes::IntegerLiteral => {
-                let val = val.replace("_", "").parse::<i32>();
+                let val = val.replace('_', "").parse::<i32>();
                 if val.is_err() {
                     return;
                 }
@@ -665,11 +665,11 @@ impl MutationOperators {
             }
             KotlinTypes::LongLiteral => {
                 // Need to strip off the l at the end
-                if val.ends_with("L") {
-                    val = val.strip_suffix("L").unwrap();
+                if val.ends_with('L') {
+                    val = val.strip_suffix('L').unwrap();
                 }
 
-                let val = val.replace("_", "").parse::<i64>();
+                let val = val.replace('_', "").parse::<i64>();
                 if val.is_err() {
                     return;
                 }
@@ -690,8 +690,8 @@ impl MutationOperators {
             }
             KotlinTypes::RealLiteral => {
                 // Need to strip off the f at the end
-                if val.ends_with("f") {
-                    val = val.strip_suffix("f").unwrap();
+                if val.ends_with('f') {
+                    val = val.strip_suffix('f').unwrap();
                 }
                 let val = val.parse::<f32>();
                 if val.is_err() {
@@ -715,18 +715,18 @@ impl MutationOperators {
             KotlinTypes::CharacterLiteral => {
                 // Remove the single quotes and get the value
                 let val = val
-                    .strip_prefix("'")
+                    .strip_prefix('\'')
                     .unwrap()
-                    .strip_suffix("'")
+                    .strip_suffix('\'')
                     .unwrap()
                     .chars()
                     .next()
                     .unwrap();
 
                 // Get a random character between 'a' and 'z'
-                let mut rnd_val = rand::thread_rng().gen_range(b'a'..b'z') as char;
+                let mut rnd_val = rand::thread_rng().gen_range(b'a'..=b'z') as char;
                 while rnd_val == val {
-                    rnd_val = rand::thread_rng().gen_range(b'a'..b'z') as char;
+                    rnd_val = rand::thread_rng().gen_range(b'a'..=b'z') as char;
                 }
                 let mut_val = format!("'{}'", rnd_val);
                 let mutation = Mutation::new(

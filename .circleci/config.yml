@@ -7,12 +7,16 @@ orbs:
 executors:
   macos-executor:
     macos:
-      xcode: 12.5.1
+      xcode: 14.2.0
     shell: /bin/bash
     working_directory: ~/repo
   executor:
     docker:
       - image: cimg/rust:1.55.0
+    working_directory: ~/repo
+  linux-executor:
+    machine:
+      image: ubuntu-2004:current
     working_directory: ~/repo
 
 jobs:
@@ -52,6 +56,23 @@ jobs:
           paths:
             - mutant-kraken-macos.tar.gz
 
+  build-app-linux:
+    executor: linux-executor
+    steps:
+      - checkout
+      - rust/install
+      - run:
+          name: Build Linux app
+          command: cargo build --release
+      - run:
+          name: Create Tarball
+          command: |
+            cd target/release && tar -czf mutant-kraken-linux.tar.gz mutant-kraken
+      - persist_to_workspace:
+          root: target/release
+          paths:
+            - mutant-kraken-linux.tar.gz
+
   publish-github-release:
     executor: executor
     steps:
@@ -70,7 +91,7 @@ jobs:
       - run:
           name: "Create Release on GitHub"
           command: |
-            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz
+            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
 
   deploy-homebrew:
     executor: executor
@@ -94,21 +115,40 @@ jobs:
           name: Update Homebrew Formula
           command: |
             cd homebrew-mutant-kraken/Formula
-            # Update the formula with the new version
-            sed -i "s|version \".*\"|version \"$VERSION\"|" mutant-kraken.rb
-            # Update the sha256
+            # Get the macos sha
             shasum -a 256 ~/repo/mutant-kraken-macos.tar.gz | cut -d ' ' -f 1 > mutant-kraken-macos.tar.gz.sha256
-            # Display the sha256
-            cat mutant-kraken-macos.tar.gz.sha256
-            sed -i "s|sha256 \".*\"|sha256 \"$(cat mutant-kraken-macos.tar.gz.sha256 )\"|" mutant-kraken.rb
-            # Update the URL
-            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/v$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
-            # Display the changes
-            cat mutant-kraken.rb
-      - run:
-          name: Push changes to Homebrew Repository
-          command: |
-            cd homebrew-mutant-kraken/Formula
+            MACOS_SHA256=$(cat mutant-kraken-macos.tar.gz.sha256)
+            echo "macOS SHA256: $MACOS_SHA256"
+            # Get the linux sha
+            shasum -a 256 ~/repo/mutant-kraken-linux.tar.gz | cut -d ' ' -f 1 > mutant-kraken-linux.tar.gz.sha256
+            LINUX_SHA256=$(cat mutant-kraken-linux.tar.gz.sha256)
+            echo "Linux SHA256: $LINUX_SHA256"
+
+            FORMULA_CONTENT=$(cat \<<EOF
+              class MutantKraken < Formula
+                desc "Mutation Testing tool for Kotlin written in Rust"
+                homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
+
+                if OS.mac?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-macos.tar.gz"
+                  sha256 $MACOS_SHA256
+                elsif OS.linux?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-linux.tar.gz"
+                  sha256 $LINUX_SHA256
+
+                def install
+                  bin.install "mutant-kraken"
+                end
+
+                test do
+                  system "#{bin}/mutant-kraken", "--version"
+                end
+              end
+            EOF
+              )
+            echo "export FORMULA_CONTENT=$FORMULA_CONTENT" >> $BASH_ENV
+            # Push to github
+            echo $FORMULA_CONTENT > mutant-kraken.rb
             git config --global user.email "molinajosue92@hotmail.com"
             git config --global user.name "CircleCI Job"
             git add mutant-kraken.rb
@@ -126,9 +166,11 @@ workflows:
       equal: [releases, << pipeline.git.branch >>]
     jobs:
       - build-app-macos
+      - build-app-linux
       - publish-github-release:
           requires:
             - build-app-macos
+            - build-app-linux
       - deploy-homebrew:
           requires:
             - publish-github-release
