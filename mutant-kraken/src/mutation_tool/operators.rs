@@ -144,7 +144,6 @@ impl MutationOperators {
             }
             MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
-                KotlinTypes::LineStringLiteral,
                 KotlinTypes::StringLiteral,
                 KotlinTypes::BooleanLiteral,
                 KotlinTypes::LongLiteral,
@@ -199,7 +198,6 @@ impl MutationOperators {
             }
             MutationOperators::LiteralChangeOperator => vec![
                 KotlinTypes::IntegerLiteral,
-                KotlinTypes::LineStringLiteral,
                 KotlinTypes::StringLiteral,
                 KotlinTypes::BooleanLiteral,
                 KotlinTypes::LongLiteral,
@@ -632,7 +630,7 @@ impl MutationOperators {
                 // Recurse down to the literal
                 self.mutate_literal(node, mutations_made, file_name)
             }
-            KotlinTypes::StringLiteral | KotlinTypes::LineStringLiteral => {
+            KotlinTypes::StringLiteral => {
                 // Replace the string with a different string
                 let val = r#""Hello I am a Mutant!""#.to_string();
 
@@ -775,7 +773,7 @@ mod tests {
     fn get_ast(text: &str) -> tree_sitter::Tree {
         let mut parser = Parser::new();
         parser
-            .set_language(tree_sitter_kotlin::language())
+            .set_language(&tree_sitter_kotlin::language())
             .expect("Failed to set language for parser");
         parser.parse(text, None).expect("Failed to parse text")
     }
@@ -896,7 +894,7 @@ mod tests {
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
-            assert_eq!(mutation.new_op, "".to_string());
+            assert_eq!(mutation.new_op, "RemoveOperator".to_string());
         }
     }
 
@@ -936,7 +934,7 @@ mod tests {
         // Assert that the old operator is not the same as the new operator
         for mutation in mutations_made {
             assert_ne!(mutation.old_op, mutation.new_op);
-            assert_eq!(mutation.new_op, "".to_string());
+            assert_eq!(mutation.new_op, "RemoveOperator".to_string());
         }
     }
 
