@@ -15,6 +15,30 @@ Types of changes
 - **Fixed** for any bug fixes.
 - **Security** in case of vulnerabilities.
 
+## [0.1.3] - 2024-07-01
+
+### Security
+
+- Updated `tree-sitter` to 0.22.6
+- Updated `tree-sitter-kotlin` to 0.3.6
+
+### Changed
+
+- Changed how the `KotlinTypes` enum is created by utilizing Rust's Procedural macros
+- Updated the structure of the project by created a workspace and moving the project into a `mutant-kraken` subdirectory
+- Updated `config.yml` to use the new structure of the project
+
+### Added
+
+- Added a new crate called `mutant-kraken-macros` which contains the procedural macros used to generate the `KotlinTypes` enum
+
+## [0.1.2] - 2024-07-01
+
+### Added
+
+- Added publishing for Linux using homebrew
+- Added publishing to cargo crates.io within ci
+
 ## [0.1.1-beta] - 2024-09-05
 
 ### Fixed

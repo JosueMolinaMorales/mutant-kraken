@@ -9,7 +9,7 @@ struct JsonItem {
 }
 
 #[proc_macro]
-pub fn generate_types(_input: TokenStream) -> TokenStream {
+pub fn generate_kotlin_types_enum(_input: TokenStream) -> TokenStream {
     const JSON_DATA: &str = tree_sitter_kotlin::NODE_TYPES;
     let json_items: Vec<JsonItem> = serde_json::from_str(JSON_DATA).expect("Failed to parse JSON");
 

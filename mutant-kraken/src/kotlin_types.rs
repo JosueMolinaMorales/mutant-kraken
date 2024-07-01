@@ -75,7 +75,7 @@ impl KotlinExceptions {
     }
 }
 
-mutant_kraken_kt_types_macro::generate_types!();
+mutant_kraken_macros::generate_kotlin_types_enum!();
 
 #[cfg(test)]
 mod tests {

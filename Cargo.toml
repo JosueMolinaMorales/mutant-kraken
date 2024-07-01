@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "mutant-kraken",
-    "mutant-kraken-kt-types-macro"
+    "mutant-kraken-macros"
 ]
 
 resolver = "1"
