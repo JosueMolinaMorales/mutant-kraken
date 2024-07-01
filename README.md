@@ -94,6 +94,14 @@ brew install mutant-kraken
 mutant-kraken -v
 ```
 
+You can also install Mutant-Kraken with the Rust toolchain:
+
+```bash
+cargo install mutant-kraken
+```
+
+This will install Mutant-Kraken in `~/.cargo/bin` by default.
+
 ## Usage
 
 Mutant-Kraken is a mutation testing tool for Kotlin. It is currently in Beta. Please expect issues. If you come across any issues, please report them through the issues tab on the GitHub repository.
