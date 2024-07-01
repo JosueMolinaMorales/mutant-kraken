@@ -130,10 +130,10 @@ jobs:
               homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
               version "$VERSION"
               if OS.mac?
-                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-macos.tar.gz"
+                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-macos.tar.gz"
                 sha256 "$MACOS_SHA256"
               elsif OS.linux?
-                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-linux.tar.gz"
+                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-linux.tar.gz"
                 sha256 "$LINUX_SHA256"
               end
 
