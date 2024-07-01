@@ -115,33 +115,48 @@ jobs:
           name: Update Homebrew Formula
           command: |
             cd homebrew-mutant-kraken/Formula
-            # Update the formula with the new version
-            sed -i "s|version \".*\"|version \"$VERSION\"|" mutant-kraken.rb
-            # Update the sha256 for macOS
+            # Get the macos sha
             shasum -a 256 ~/repo/mutant-kraken-macos.tar.gz | cut -d ' ' -f 1 > mutant-kraken-macos.tar.gz.sha256
             MACOS_SHA256=$(cat mutant-kraken-macos.tar.gz.sha256)
             echo "macOS SHA256: $MACOS_SHA256"
-            sed -i "s|sha256 \".*\"|sha256 \"$MACOS_SHA256\"|" mutant-kraken.rb
-            # Update the URL for macOS
-            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/v$VERSION/mutant-kraken-macos.tar.gz\"|" mutant-kraken.rb
-            # Update the sha256 for Linux
+            # Get the linux sha
             shasum -a 256 ~/repo/mutant-kraken-linux.tar.gz | cut -d ' ' -f 1 > mutant-kraken-linux.tar.gz.sha256
             LINUX_SHA256=$(cat mutant-kraken-linux.tar.gz.sha256)
             echo "Linux SHA256: $LINUX_SHA256"
-            sed -i "s|sha256 \".*\"|sha256 \"$LINUX_SHA256\"|" mutant-kraken.rb
-            # Update the URL for Linux
-            sed -i "s|url \".*\"|url \"https://github.com/josuemolinamorales/mutant-kraken/releases/download/v$VERSION/mutant-kraken-linux.tar.gz\"|" mutant-kraken.rb
-            # Display the changes
-            cat mutant-kraken.rb
-      # - run:
-      #     name: Push changes to Homebrew Repository
-      #     command: |
-      #       cd homebrew-mutant-kraken/Formula
-      #       git config --global user.email "molinajosue92@hotmail.com"
-      #       git config --global user.name "CircleCI Job"
-      #       git add mutant-kraken.rb
-      #       git commit -m "Update mutant-kraken to $VERSION"
-      #       git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
+
+            FORMULA_CONTENT=$(cat <<EOF
+              class MutantKraken < Formula
+                desc "Mutation Testing tool for Kotlin written in Rust"
+                homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
+
+                if OS.mac?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/\${VERSION}/mutant-kraken-macos.tar.gz"
+                  sha256 $MACOS_SHA256
+                elsif OS.linux?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/\${VERSION}/mutant-kraken-linux.tar.gz"
+                  sha256 $LINUX_SHA256
+
+                def install
+                  bin.install "mutant-kraken"
+                end
+
+                test do
+                  system "#{bin}/mutant-kraken", "--version"
+                end
+              end
+              EOF
+              )
+            cat $FORMULA_CONTENT
+      - run:
+          name: Push changes to Homebrew Repository
+          command: |
+            cd homebrew-mutant-kraken/Formula
+            echo "\${FORMULA_CONTENT}" > mutant-kraken.rb
+            git config --global user.email "molinajosue92@hotmail.com"
+            git config --global user.name "CircleCI Job"
+            git add mutant-kraken.rb
+            git commit -m "Update mutant-kraken to $VERSION"
+            git push -q https://$GITHUB_TOKEN@github.com/josuemolinamorales/homebrew-mutant-kraken.git main
 
 workflows:
   build-function:
