@@ -7,7 +7,7 @@ description = "Procedural macros for mutant-kraken"
 repository = "https://github.com/JosueMolinaMorales/mutant-kraken"
 keywords = ["mutation", "testing", "kotlin"]
 license = "MIT"
-readme = "../README.md"
+readme = "README.md"
 
 [lib]
 proc-macro = true

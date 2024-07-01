@@ -7,6 +7,7 @@ authors = ["Josue Molina Morales <molinajosue92@hotmail.com>"]
 description = "A mutation testing tool for Kotlin"
 repository = "https://github.com/JosueMolinaMorales/mutant-kraken"
 keywords = ["mutation", "testing", "kotlin"]
+readme = "../README.md"
 
 [[bin]]
 name = "mutant-kraken"
