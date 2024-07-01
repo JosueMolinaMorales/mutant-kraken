@@ -130,10 +130,10 @@ jobs:
                 homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
 
                 if OS.mac?
-                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/\${VERSION}/mutant-kraken-macos.tar.gz"
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-macos.tar.gz"
                   sha256 $MACOS_SHA256
                 elsif OS.linux?
-                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/\${VERSION}/mutant-kraken-linux.tar.gz"
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/${VERSION}/mutant-kraken-linux.tar.gz"
                   sha256 $LINUX_SHA256
 
                 def install
@@ -146,12 +146,12 @@ jobs:
               end
             EOF
               )
-            echo $FORMULA_CONTENT
+            echo $FORMULA_CONTENT > formula.rb
       - run:
           name: Push changes to Homebrew Repository
           command: |
             cd homebrew-mutant-kraken/Formula
-            echo "${FORMULA_CONTENT}" > mutant-kraken.rb
+            cat ../../formula.rb > mutant-kraken.rb
             git config --global user.email "molinajosue92@hotmail.com"
             git config --global user.name "CircleCI Job"
             git add mutant-kraken.rb
