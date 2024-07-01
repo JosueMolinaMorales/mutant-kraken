@@ -124,7 +124,7 @@ jobs:
             LINUX_SHA256=$(cat mutant-kraken-linux.tar.gz.sha256)
             echo "Linux SHA256: $LINUX_SHA256"
 
-            FORMULA_CONTENT=$(cat <<EOF
+            FORMULA_CONTENT=$(cat \<<EOF
               class MutantKraken < Formula
                 desc "Mutation Testing tool for Kotlin written in Rust"
                 homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
