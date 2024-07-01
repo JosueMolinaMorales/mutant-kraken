@@ -91,7 +91,13 @@ jobs:
       - run:
           name: "Create Release on GitHub"
           command: |
-            gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
+            # Check if the release already exists
+            if gh release view v${VERSION} > /dev/null 2>&1; then
+              echo "Release v${VERSION} already exists"
+            else
+              echo "Creating release v${VERSION}"
+              gh release create v${VERSION} --generate-notes mutant-kraken-macos.tar.gz mutant-kraken-linux.tar.gz
+            fi
 
   deploy-homebrew:
     executor: executor
