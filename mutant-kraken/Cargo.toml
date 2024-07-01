@@ -1,12 +1,13 @@
 [package]
 name = "mutant-kraken"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 license = "MIT"
 authors = ["Josue Molina Morales <molinajosue92@hotmail.com>"]
 description = "A mutation testing tool for Kotlin"
 repository = "https://github.com/JosueMolinaMorales/mutant-kraken"
 keywords = ["mutation", "testing", "kotlin"]
+readme = "../README.md"
 
 [[bin]]
 name = "mutant-kraken"
@@ -38,4 +39,4 @@ horrorshow = "0.8.4"
 num-traits = "0.2.17"
 assert_cmd = "2.0.12"
 predicates = "3.0.4"
-mutant-kraken-macros = { path = "../mutant-kraken-macros" }
+mutant-kraken-macros = "0.1.0"

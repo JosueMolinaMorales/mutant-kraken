@@ -173,7 +173,7 @@ jobs:
             rustup update
             rustup default stable
       - run:
-          name: Publish new version to crates.io
+          name: Publish new version of mutant-kraken-macros to crates.io
           command: |
             if cargo search mutant-kraken-macros | grep -q $MKM_VERSION; then
               echo "Version $MKM_VERSION already exists in crates.io for mutant-kraken-macros"
