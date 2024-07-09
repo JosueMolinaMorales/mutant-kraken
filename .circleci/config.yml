@@ -7,7 +7,7 @@ orbs:
 executors:
   executor:
     docker:
-      - image: cimg/rust:1.55.0
+      - image: cimg/rust:1.78.0
     working_directory: ~/repo
 
 jobs:
