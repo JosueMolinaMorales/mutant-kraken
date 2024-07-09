@@ -5,19 +5,17 @@ orbs:
   github-cli: circleci/github-cli@2.3.0
 
 executors:
-  arm64:
+  ubuntu-executor:
     machine:
       image: ubuntu-2004:current
-    resource_class: arm.medium
     working_directory: ~/repo
-  amd64:
-    machine:
-      image: ubuntu-2004:current
-    resource_class: medium
+  macos-executor:
+    macos:
+      xcode: "15.0.0"
     working_directory: ~/repo
   executor:
     docker:
-      - image: cimg/rust:1.55.0
+      - image: cimg/rust:1.78.0
     working_directory: ~/repo
 
 jobs:
@@ -39,40 +37,6 @@ jobs:
       - run:
           name: Run tests
           command: cargo test
-
-  build-app-x86:
-    executor: executor
-    steps:
-      - checkout
-      - rust/install
-      - run:
-          name: Build app
-          command: cargo build --release
-      - run:
-          name: Create Tarball
-          command: |
-            cd target/release && tar -czf mutant-kraken-x86_64.tar.gz mutant-kraken
-      - persist_to_workspace:
-          root: target/release
-          paths:
-            - mutant-kraken-x86_64.tar.gz
-
-  build-app-arm64:
-    executor: arm64
-    steps:
-      - checkout
-      - rust/install
-      - run:
-          name: Build app
-          command: cargo build --release
-      - run:
-          name: Create Tarball
-          command: |
-            cd target/release && tar -czf mutant-kraken-arm64.tar.gz mutant-kraken
-      - persist_to_workspace:
-          root: target/release
-          paths:
-            - mutant-kraken-arm64.tar.gz
 
   publish-github-release:
     executor: executor
@@ -97,7 +61,7 @@ jobs:
               echo "Release v${VERSION} already exists"
             else
               echo "Creating release v${VERSION}"
-              gh release create v${VERSION} --generate-notes mutant-kraken-arm64.tar.gz mutant-kraken-x86_64.tar.gz
+              gh release create v${VERSION} --generate-notes mutant-kraken-aarch64-apple-darwin.tar.gz mutant-kraken-x86_64-apple-darwin.tar.gz mutant-kraken-aarch64-unknown-linux-gnu.tar.gz mutant-kraken-x86_64-unknown-linux-gnu.tar.gz
             fi
 
   deploy-homebrew:
@@ -130,13 +94,24 @@ jobs:
               echo "Updating formula to version $VERSION"
             fi
 
-            # Get the ARM sha
-            shasum -a 256 ~/repo/mutant-kraken-arm64.tar.gz | cut -d ' ' -f 1 > mutant-kraken-arm64.tar.gz.sha256
-            ARM_SHA256=$(cat mutant-kraken-arm64.tar.gz.sha256)
-            echo "ARM SHA256: $ARM_SHA256"
-            # Get the x86 sha
-            shasum -a 256 ~/repo/mutant-kraken-x86_64.tar.gz | cut -d ' ' -f 1 > mutant-kraken-x86_64.tar.gz.sha256
-            X86_SHA256=$(cat mutant-kraken-x86_64.tar.gz.sha256)
+            # Get the aarch64-apple-darwin sha
+            shasum -a 256 ~/repo/mutant-kraken-aarch64-apple-darwin.tar.gz | cut -d ' ' -f 1 > mutant-kraken-aarch64-apple-darwin.tar.gz.sha256
+            AARCH64_MACOS_SHA256=$(cat mutant-kraken-aarch64-apple-darwin.tar.gz.sha256)
+            echo "AARCH64 SHA256: $AARCH64_MACOS_SHA256"
+
+            # Get the x86_64-apple-darwin sha
+            shasum -a 256 ~/repo/mutant-kraken-x86_64-apple-darwin.tar.gz | cut -d ' ' -f 1 > mutant-kraken-x86_64-apple-darwin.tar.gz.sha256
+            X86_MACOS_SHA256=$(cat mutant-kraken-x86_64-apple-darwin.tar.gz.sha256)
+            echo "X86_MACOS SHA256: $X86_MACOS_SHA256"
+
+            # Get the aarch64-unknown-linux-gnu sha
+            shasum -a 256 ~/repo/mutant-kraken-aarch64-unknown-linux-gnu.tar.gz | cut -d ' ' -f 1 > mutant-kraken-aarch64-unknown-linux-gnu.tar.gz.sha256
+            AARCH64_SHA256=$(cat mutant-kraken-aarch64-unknown-linux-gnu.tar.gz.sha256)
+            echo "AARCH64 SHA256: $AARCH64_SHA256"
+
+            # Get the x86_64-unknown-linux-gnu sha
+            shasum -a 256 ~/repo/mutant-kraken-x86_64-unknown-linux-gnu.tar.gz | cut -d ' ' -f 1 > mutant-kraken-x86_64-unknown-linux-gnu.tar.gz.sha256
+            X86_SHA256=$(cat mutant-kraken-x86_64-unknown-linux-gnu.tar.gz.sha256)
             echo "X86 SHA256: $X86_SHA256"
 
             FORMULA_CONTENT=$(cat \<<EOF
@@ -145,12 +120,22 @@ jobs:
               homepage "https://github.com/JosueMolinaMorales/mutant-kraken"
               version "$VERSION"
 
-              if Hardware::CPU.arm?
-                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-arm64.tar.gz"
-                sha256 "$ARM_SHA256"
-              elsif Hardware::CPU.intel?
-                url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-x86_64.tar.gz"
-                sha256 "$X86_SHA256"
+              if OS.mac?
+                if Hardware::CPU.arm?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-aarch64-apple-darwin.tar.gz"
+                  sha256 "$AARCH64_MACOS_SHA256"
+                elsif Hardware::CPU.intel?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-x86_64-apple-darwin.tar.gz"
+                  sha256 "$X86_MACOS_SHA256"
+                end
+              elsif OS.linux?
+                if Hardware::CPU.arm?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-aarch64-unknown-linux-gnu.tar.gz"
+                  sha256 "$AARCH64_SHA256"
+                elsif Hardware::CPU.intel?
+                  url "https://github.com/JosueMolinaMorales/mutant-kraken/releases/download/v${VERSION}/mutant-kraken-x86_64-unknown-linux-gnu.tar.gz"
+                  sha256 "$X86_SHA256"
+                end 
               end
 
               def install
@@ -212,6 +197,50 @@ jobs:
               echo "Publishing new version $VERSION"
               cargo publish -p mutant-kraken --token $CARGO_TOKEN
             fi
+  build-for-release:
+    parameters:
+      target:
+        type: string
+      use-cross:
+        type: boolean
+        default: true
+      e:
+        type: executor
+        default: ubuntu-executor
+    executor: << parameters.e >>
+    steps:
+      - checkout
+      - rust/install
+      - run:
+          name: Install Rust toolchain
+          command: rustup target add << parameters.target >>
+      - when:
+          condition: << parameters.use-cross >>
+          steps:
+            - run:
+                name: Install Cross
+                command: cargo install cross
+      - when:
+          condition: << parameters.use-cross >>
+          steps:
+            - run:
+                name: Build << parameters.target >> with Cross
+                command: cross build --release --target << parameters.target >>
+      - when:
+          condition:
+            not: << parameters.use-cross >>
+          steps:
+            - run:
+                name: Build using cargo for << parameters.target >>
+                command: cargo build --release --target << parameters.target >>
+      - run:
+          name: Create Tarball
+          command: |
+            cd target/<< parameters.target >>/release && tar -czf mutant-kraken-<< parameters.target >>.tar.gz mutant-kraken
+      - persist_to_workspace:
+          root: target/<< parameters.target >>/release
+          paths:
+            - mutant-kraken-<< parameters.target >>.tar.gz
 
 workflows:
   build-function:
@@ -223,12 +252,28 @@ workflows:
     when:
       equal: [releases, << pipeline.git.branch >>]
     jobs:
-      - build-app-x86
-      - build-app-arm64
+      - build-for-release:
+          name: build-aarch64-macos
+          target: aarch64-apple-darwin
+          use-cross: false
+          e: macos-executor
+      - build-for-release:
+          name: build-app-x86
+          target: x86_64-unknown-linux-gnu
+      - build-for-release:
+          name: build-app-arm64
+          target: aarch64-unknown-linux-gnu
+      - build-for-release:
+          name: build-app-x86-macos
+          target: x86_64-apple-darwin
+          use-cross: false
+          e: macos-executor
       - publish-github-release:
           requires:
             - build-app-x86
             - build-app-arm64
+            - build-app-x86-macos
+            - build-aarch64-macos
       - deploy-homebrew:
           requires:
             - publish-github-release
