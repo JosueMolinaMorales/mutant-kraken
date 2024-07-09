@@ -1,6 +1,6 @@
 [package]
 name = "mutant-kraken"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 license = "MIT"
 authors = ["Josue Molina Morales <molinajosue92@hotmail.com>"]
