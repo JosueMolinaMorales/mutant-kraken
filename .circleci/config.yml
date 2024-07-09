@@ -214,12 +214,12 @@ jobs:
       - run:
           name: Install Rust toolchain
           command: rustup target add << parameters.target >>
-      - run:
-          name: Install Cross
-          command: cargo install cross
-      - run:
-          name: Install docker for cross-compilation
-          command: sudo apt-get update && sudo apt-get install -y docker.io
+      - when:
+          condition: << parameters.use-cross >>
+          steps:
+            - run:
+                name: Install Cross
+                command: cargo install cross
       - when:
           condition: << parameters.use-cross >>
           steps:
