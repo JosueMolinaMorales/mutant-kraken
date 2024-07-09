@@ -256,6 +256,7 @@ workflows:
           name: build-aarch64-macos
           target: aarch64-apple-darwin
           use-cross: false
+          e: macos-executor
       - build-for-release:
           name: build-app-x86
           target: x86_64-unknown-linux-gnu
@@ -266,6 +267,7 @@ workflows:
           name: build-app-x86-macos
           target: x86_64-apple-darwin
           use-cross: false
+          e: macos-executor
       - publish-github-release:
           requires:
             - build-app-x86
