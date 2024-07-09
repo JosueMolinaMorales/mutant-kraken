@@ -15,6 +15,12 @@ Types of changes
 - **Fixed** for any bug fixes.
 - **Security** in case of vulnerabilities.
 
+## [0.1.5] - 2024-07-08
+
+### Fixed
+
+- Fixed the issue where the sha256 was not properly set in the formula for the homebrew package. This was causing the package to not be installed properly. Addressed this by adding a check to the `Update Formula` step in the CI pipeline to ensure that the version is new so that the sha is not overwritten.
+
 ## [0.1.4] - 2024-07-01
 
 ### Fixed
