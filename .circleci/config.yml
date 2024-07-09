@@ -5,6 +5,14 @@ orbs:
   github-cli: circleci/github-cli@2.3.0
 
 executors:
+  ubuntu-executor:
+    machine:
+      image: ubuntu-2004:current
+    working_directory: ~/repo
+  macos-executor:
+    macos:
+      xcode: "15.0.0"
+    working_directory: ~/repo
   executor:
     docker:
       - image: cimg/rust:1.78.0
@@ -53,7 +61,7 @@ jobs:
               echo "Release v${VERSION} already exists"
             else
               echo "Creating release v${VERSION}"
-              gh release create v${VERSION} --generate-notes mutant-kraken-arm64.tar.gz mutant-kraken-x86_64.tar.gz
+              gh release create v${VERSION} --generate-notes mutant-kraken-aarch64-apple-darwin.tar.gz mutant-kraken-x86_64-apple-darwin.tar.gz mutant-kraken-aarch64-unknown-linux-gnu.tar.gz mutant-kraken-x86_64-unknown-linux-gnu.tar.gz
             fi
 
   deploy-homebrew:
@@ -190,13 +198,16 @@ jobs:
               cargo publish -p mutant-kraken --token $CARGO_TOKEN
             fi
   build-for-release:
-    executor: executor
     parameters:
       target:
         type: string
       use-cross:
         type: boolean
         default: true
+      e:
+        type: executor
+        default: ubuntu-executor
+    executor: << parameters.e >>
     steps:
       - checkout
       - run:
@@ -205,6 +216,9 @@ jobs:
       - run:
           name: Install Cross
           command: cargo install cross
+      - run:
+          name: Install docker for cross-compilation
+          command: sudo apt-get update && sudo apt-get install -y docker.io
       - when:
           condition: << parameters.use-cross >>
           steps:
