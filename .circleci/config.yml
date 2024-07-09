@@ -127,7 +127,8 @@ jobs:
               exit 0
             else
               echo "Updating formula to version $VERSION"
-              
+            fi
+
             # Get the macos sha
             shasum -a 256 ~/repo/mutant-kraken-macos.tar.gz | cut -d ' ' -f 1 > mutant-kraken-macos.tar.gz.sha256
             MACOS_SHA256=$(cat mutant-kraken-macos.tar.gz.sha256)
