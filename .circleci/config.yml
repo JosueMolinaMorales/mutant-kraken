@@ -210,11 +210,7 @@ jobs:
     executor: << parameters.e >>
     steps:
       - checkout
-      - run:
-          name: Install Rust
-          command: |
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-            source $HOME/.cargo/env
+      - rust/install
       - run:
           name: Install Rust toolchain
           command: rustup target add << parameters.target >>
