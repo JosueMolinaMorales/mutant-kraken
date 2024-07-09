@@ -87,12 +87,12 @@ jobs:
           command: |
             cd homebrew-mutant-kraken/Formula
             # Check if the version already exists in the formula
-            # if grep -q "version \"$VERSION\"" mutant-kraken.rb; then
-            #   echo "Version $VERSION already exists in the formula"
-            #   exit 0
-            # else
-            #   echo "Updating formula to version $VERSION"
-            # fi
+            if grep -q "version \"$VERSION\"" mutant-kraken.rb; then
+              echo "Version $VERSION already exists in the formula"
+              exit 0
+            else
+              echo "Updating formula to version $VERSION"
+            fi
 
             # Get the aarch64-apple-darwin sha
             shasum -a 256 ~/repo/mutant-kraken-aarch64-apple-darwin.tar.gz | cut -d ' ' -f 1 > mutant-kraken-aarch64-apple-darwin.tar.gz.sha256
@@ -243,14 +243,14 @@ jobs:
             - mutant-kraken-<< parameters.target >>.tar.gz
 
 workflows:
-  # build-function:
-  #   jobs:
-  #     - build-app
-  #     - test-app
+  build-function:
+    jobs:
+      - build-app
+      - test-app
 
   build-and-deploy:
-    # when:
-    #   equal: [releases, << pipeline.git.branch >>]
+    when:
+      equal: [releases, << pipeline.git.branch >>]
     jobs:
       - build-for-release:
           name: build-aarch64-macos
