@@ -20,7 +20,7 @@ use crate::mutation_tool::{
     mutation::{FileMutations, Mutation, MutationResult},
     MutationOperators,
 };
-use crate::{gradle, html_gen};
+use crate::{gradle, html_gen, report};
 
 use super::MutationToolBuilder;
 
@@ -173,7 +173,23 @@ impl MutationTool {
         self.save_results(&mutations)?;
         // Phase 7: Generate HTML Report
         println!("[7/7] 📊 Generating HTML report...");
-        html_gen::build_html_page(&mutations, Path::new(self.output_directory.as_str()));
+        let file_reports = file_mutations
+            .iter()
+            .map(|(file, fm)| report::FileReport {
+                file_name: file.clone(),
+                mutations: fm.mutations.clone(),
+                file: vec![],
+            })
+            .collect();
+        report::Report::new(
+            file_reports,
+            Path::new(self.output_directory.as_str()),
+            0,
+            0,
+            0,
+        )
+        .create_report();
+        // html_gen::build_html_page(&mutations, Path::new(self.output_directory.as_str()));
         Ok(())
     }
 

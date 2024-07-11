@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Code with Line Numbers</title>
+		<style>
+			body {
+				font-family: monospace;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				background-color: #f5f5f5;
+			}
+			.code-container {
+				display: flex;
+				flex-direction: column;
+				border: 1px solid #ccc;
+				padding: 10px;
+				position: relative;
+				background-color: #fff;
+				overflow: auto;
+				max-height: 80vh;
+			}
+			.code-line {
+				display: flex;
+				white-space: pre;
+			}
+			.line-number {
+				display: inline-block;
+				width: 30px;
+				text-align: right;
+				margin-right: 10px;
+			}
+			.circle {
+				display: inline-block;
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				border: 2px solid red;
+				text-align: center;
+				cursor: pointer;
+			}
+			.popup {
+				display: none;
+				position: absolute;
+				background: #f9f9f9;
+				border: 1px solid #ccc;
+				padding: 10px;
+				z-index: 1;
+				top: 0;
+				left: 50px;
+				white-space: normal;
+			}
+			.popup.active {
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="code-container" id="code-container">
+			<!-- Lines will be generated dynamically -->
+		</div>
+		<script>
+			// Example code lines
+			const codeLines = [
+				"fun main() {",
+				'    println("Hello, World!")',
+				"    val x = 10",
+				"    println(x)",
+				"}",
+			];
+
+			// Example mutation lines
+			const mutationLines = [2, 3];
+
+			const codeContainer = document.getElementById("code-container");
+
+			// Function to generate code lines with line numbers and mutation markers
+			function generateCodeLines(lines, mutationLines) {
+				lines.forEach((line, index) => {
+					const lineNumber = index + 1;
+					const codeLineDiv = document.createElement("div");
+					codeLineDiv.classList.add("code-line");
+
+					const lineNumberDiv = document.createElement("div");
+					lineNumberDiv.classList.add("line-number");
+					lineNumberDiv.textContent = lineNumber;
+
+					if (mutationLines.includes(lineNumber)) {
+						lineNumberDiv.textContent = undefined;
+
+						const circleDiv = document.createElement("div");
+						circleDiv.classList.add("circle");
+						circleDiv.textContent = lineNumber;
+						circleDiv.onclick = (event) =>
+							togglePopup(event, `popup-${lineNumber}`);
+						lineNumberDiv.appendChild(circleDiv);
+
+						const popupDiv = document.createElement("div");
+						popupDiv.classList.add("popup");
+						popupDiv.id = `popup-${lineNumber}`;
+						popupDiv.textContent = `Mutation made at line ${lineNumber}`;
+						codeLineDiv.appendChild(popupDiv);
+					}
+
+					codeLineDiv.appendChild(lineNumberDiv);
+					codeLineDiv.appendChild(document.createTextNode(line));
+
+					codeContainer.appendChild(codeLineDiv);
+				});
+			}
+
+			// Function to toggle the popup visibility
+			function togglePopup(event, id) {
+				const popup = document.getElementById(id);
+				popup.classList.toggle("active");
+				event.stopPropagation();
+			}
+
+			// Close all popups when clicking outside
+			document.addEventListener("click", () => {
+				const popups = document.querySelectorAll(".popup");
+				popups.forEach((popup) => popup.classList.remove("active"));
+			});
+
+			// Generate the code lines on page load
+			generateCodeLines(codeLines, mutationLines);
+		</script>
+	</body>
+</html>

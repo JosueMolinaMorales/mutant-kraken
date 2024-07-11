@@ -5,3 +5,4 @@ pub mod gradle;
 pub mod html_gen;
 pub mod kotlin_types;
 pub mod mutation_tool;
+pub mod report;
